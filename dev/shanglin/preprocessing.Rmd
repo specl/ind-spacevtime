@@ -1,0 +1,119 @@
+```{r}
+library(jsonlite)
+
+exclude_ids <- c("22", "31", "98")
+col_map <- list(
+  TLetter = list(stim = "letter",      p1 = "soa1",      p2 = "soa2"),
+  TGabor  = list(stim = "orientation", p1 = "soa1",      p2 = "soa2"),
+  TPi     = list(stim = "orientation", p1 = "soa1",      p2 = "soa2"),
+  SLetter = list(stim = "letter",      p1 = "alpha1",    p2 = "alpha2"),
+  SGabor  = list(stim = "orientation", p1 = "contrast1", p2 = "contrast2"),
+  SPi     = list(stim = "orientation", p1 = "diff1",     p2 = "diff2")
+)
+perception_tasks <- names(col_map)
+read_perception_task <- function(task) {
+  m       <- col_map[[task]]
+  folder  <- file.path("Data",task, "Data")
+  pattern <- paste0("_", task, "\\.csv$")
+  files   <- list.files(folder, pattern = pattern, full.names = TRUE)
+
+  dat_list <- lapply(files, function(f) {
+    tmp <- read.csv(f, stringsAsFactors = FALSE)
+    id  <- sub(pattern, "", basename(f))
+    data.frame(
+      id        = id,
+      task_name = task,
+      session   = tmp$session,
+      trial     = tmp$trial,
+      staircase = tmp$staircase,
+      stimulus  = tmp[[m$stim]],
+      response  = tmp$response,
+      correct   = tmp$correct,
+      param1    = tmp[[m$p1]],
+      param2    = tmp[[m$p2]],
+      stringsAsFactors = FALSE
+    )
+  })
+  do.call(rbind, dat_list)
+}
+all_perception_raw <- do.call(rbind, lapply(perception_tasks, read_perception_task))
+all_perception_raw <- subset(all_perception_raw, !id %in% exclude_ids)
+write.csv(all_perception_raw, "Data/summary/all_perception_raw.csv", row.names = FALSE)
+
+read_span_task <- function(task) {
+  folder    <- file.path("Data",task, "Data_summary")
+  pattern   <- paste0("_", task, "_summary\\.csv$")
+  files     <- list.files(folder, pattern = pattern, full.names = TRUE)
+  score_col <- if (task == "OSpan") "ospan_absolute" else "abs_perfect_sum"
+
+  dat_list <- lapply(files, function(f) {
+    tmp <- read.csv(f, stringsAsFactors = FALSE)
+    id  <- sub(pattern, "", basename(f))
+    data.frame(id = id, task_name = task, score = tmp[[score_col]],
+               stringsAsFactors = FALSE)
+  })
+  do.call(rbind, dat_list)
+}
+span_scores <- do.call(rbind, lapply(c("OSpan","CSpan"), read_span_task))
+pid_map  <- read.csv("Data/Matrix/pid.csv",  check.names = FALSE, stringsAsFactors = FALSE)
+code_map <- read.csv("Data/Matrix/code.csv", check.names = FALSE, stringsAsFactors = FALSE)
+
+pick_valid_battery <- function(batteries) {
+  n_summary <- sapply(batteries, function(b) length(b$Summary))
+  valid_idx <- which(n_summary > 0)
+  if (length(valid_idx) == 0) return(NULL)
+  batteries[[valid_idx[length(valid_idx)]]]
+}
+
+corsi_rows  <- vector("list", nrow(pid_map))
+matrix_rows <- vector("list", nrow(pid_map))
+
+for (k in seq_len(nrow(pid_map))) {
+  id          <- pid_map$Pid[k]
+  server_code <- pid_map$`Server code`[k]
+  subject_id  <- paste0("sycm", server_code)
+  j   <- match(subject_id, code_map$`Subject ID`)
+  uid <- code_map$`Logging Name`[j]
+
+  path <- list.files(file.path("Data", "Matrix"), pattern = paste0("^", uid, ".*\\.json$"),
+                    full.names = TRUE, recursive = TRUE)
+  dat <- fromJSON(path, simplifyVector = FALSE)
+
+  battery_names <- sapply(dat$data, function(b) b$Battery)
+  corsi_idx  <- grep("corsi",       battery_names, ignore.case = TRUE)
+  matrix_idx <- grep("wircs|ucmrt", battery_names, ignore.case = TRUE)
+
+  # ---- Corsi ----
+  corsi_battery <- pick_valid_battery(dat$data[corsi_idx])
+  corsi_score <- NA
+  if (!is.null(corsi_battery)) {
+    corsi_summary <- corsi_battery$Summary
+    summary3      <- corsi_summary[[length(corsi_summary)]]
+    corsi_score <- ifelse(
+      !is.null(summary3$TotalCorrectResponsesCorrectSpot),
+      summary3$TotalCorrectResponsesCorrectSpot,
+      summary3$CorrectResponsesCorrectSpot
+    )
+  } else {
+    warning(sprintf("id %s: no matched corsi battery, skipped", id))
+  }
+  corsi_rows[[k]] <- data.frame(id = as.character(id), task_name = "Corsi", score = corsi_score)
+
+  # ---- Matrix reasoning ----
+  matrix_battery <- pick_valid_battery(dat$data[matrix_idx])
+  matrix_score <- NA
+  if (!is.null(matrix_battery)) {
+    matrix_score <- matrix_battery$Summary[[1]]$Hits
+  } else {
+    warning(sprintf("id %s (uid=%s): no matched matrix battery, skipped", id, uid))
+  }
+  matrix_rows[[k]] <- data.frame(id = as.character(id), task_name = "Matrix", score = matrix_score)
+}
+matrix_corsi_scores <- rbind(do.call(rbind, corsi_rows), do.call(rbind, matrix_rows))
+
+all_cognitive_scores <- rbind(span_scores, matrix_corsi_scores)
+all_cognitive_scores$id <- as.character(all_cognitive_scores$id)
+all_cognitive_scores <- subset(all_cognitive_scores, !id %in% exclude_ids)
+write.csv(all_cognitive_scores, "Data/summary/all_cognitive_scores.csv", row.names = FALSE)
+```
+

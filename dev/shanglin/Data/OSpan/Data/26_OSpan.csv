@@ -1,0 +1,163 @@
+﻿block_type,set_index,set_size,trial_in_set,problem_text,shown_answer,is_true_display,resp_true,resp_correct,timeout,rt_problem,rt_answer,letter,letter_position,letter_shown,recall_letter,recall_click_index
+practice_combined,1,2,1,12 / 2 = ?,6,True,True,True,False,1.216900200000964,0.8238694999599829,H,1,True,,
+practice_combined,1,2,2,8 + 6 = ?,14,True,True,True,False,2.3690705000190064,0.7899526000255719,T,2,True,,
+practice_combined_recall,1,2,1,,,,,,,,,H,1,False,H,1
+practice_combined_recall,1,2,2,,,,,,,,,T,2,False,T,2
+practice_combined,2,2,1,6 + 5 = ?,11,True,True,True,False,1.6253228000132367,0.6660245999810286,P,1,True,,
+practice_combined,2,2,2,6 + 2 = ?,8,True,True,True,False,0.5384115999913774,0.620511399989482,F,2,True,,
+practice_combined_recall,2,2,1,,,,,,,,,P,1,False,P,1
+practice_combined_recall,2,2,2,,,,,,,,,F,2,False,F,2
+practice_combined,3,2,1,5 - 2 = ?,3,True,True,True,False,1.0850130000035278,0.973316400020849,H,1,True,,
+practice_combined,3,2,2,6 - 1 = ?,3,False,False,True,False,0.7179859000025317,0.7734953000326641,K,2,True,,
+practice_combined_recall,3,2,1,,,,,,,,,H,1,False,H,1
+practice_combined_recall,3,2,2,,,,,,,,,K,2,False,K,2
+main,1,7,1,7 - 2 = ?,3,False,False,True,False,0.7125917000230402,0.9541013999842107,H,1,True,,
+main,1,7,2,8 / 1 = ?,8,True,True,True,False,0.7220201000454836,0.5944635999621823,P,2,True,,
+main,1,7,3,9 / 3 = ?,4,False,False,True,False,0.8242660000105388,0.9232125999988057,Y,3,True,,
+main,1,7,4,8 - 7 = ?,2,False,False,True,False,0.6456199000240304,0.8902141000144184,S,4,True,,
+main,1,7,5,7 / 7 = ?,1,True,True,True,False,0.7876777999917977,1.8121049999608658,K,5,True,,
+main,1,7,6,7 + 4 = ?,11,True,True,True,False,2.8375561999855563,0.948229200032074,F,6,True,,
+main,1,7,7,3 * 8 = ?,24,True,True,True,False,2.2391002000076696,0.5641634999774396,Q,7,True,,
+main_recall,1,7,1,,,,,,,,,H,1,False,H,1
+main_recall,1,7,2,,,,,,,,,P,2,False,P,2
+main_recall,1,7,3,,,,,,,,,Y,3,False,Y,3
+main_recall,1,7,4,,,,,,,,,S,4,False,S,4
+main_recall,1,7,5,,,,,,,,,K,5,False,K,5
+main_recall,1,7,6,,,,,,,,,F,6,False,Q,6
+main_recall,1,7,7,,,,,,,,,Q,7,False,,7
+main,2,6,1,3 * 6 = ?,17,False,False,True,False,3.598522599961143,0.8870786000043154,T,1,True,,
+main,2,6,2,3 * 7 = ?,21,True,True,True,False,1.545932300039567,0.8194258000003174,L,2,True,,
+main,2,6,3,7 - 4 = ?,1,False,False,True,False,0.7551034999778494,0.7684055999852717,Y,3,True,,
+main,2,6,4,5 - 1 = ?,4,True,True,True,False,0.6876654999796301,1.283896700013429,S,4,True,,
+main,2,6,5,63 / 7 = ?,12,False,False,True,False,4.176370000001043,1.5539851000066847,N,5,True,,
+main,2,6,6,8 + 6 = ?,16,False,False,True,False,1.581131299957633,0.9577101999893785,R,6,True,,
+main_recall,2,6,1,,,,,,,,,T,1,False,T,1
+main_recall,2,6,2,,,,,,,,,L,2,False,L,2
+main_recall,2,6,3,,,,,,,,,Y,3,False,Y,3
+main_recall,2,6,4,,,,,,,,,S,4,False,S,4
+main_recall,2,6,5,,,,,,,,,N,5,False,N,5
+main_recall,2,6,6,,,,,,,,,R,6,False,R,6
+main,3,6,1,3 + 2 = ?,6,False,False,True,False,1.2073477000230923,0.7947462999727577,H,1,True,,
+main,3,6,2,7 - 2 = ?,5,True,True,True,False,1.0195389000000432,1.0009944000048563,Y,2,True,,
+main,3,6,3,4 - 2 = ?,0,False,False,True,False,0.09997079998720437,1.6711354000144638,L,3,True,,
+main,3,6,4,8 / 2 = ?,4,True,True,True,False,1.8243457000353374,0.6434425999759696,N,4,True,,
+main,3,6,5,9 - 6 = ?,2,False,False,True,False,1.8792049000039697,0.8278687999700196,F,5,True,,
+main,3,6,6,1 * 2 = ?,1,False,False,True,False,1.5815127000096254,0.982431499985978,K,6,True,,
+main_recall,3,6,1,,,,,,,,,H,1,False,H,1
+main_recall,3,6,2,,,,,,,,,Y,2,False,L,2
+main_recall,3,6,3,,,,,,,,,L,3,False,Y,3
+main_recall,3,6,4,,,,,,,,,N,4,False,F,4
+main_recall,3,6,5,,,,,,,,,F,5,False,N,5
+main_recall,3,6,6,,,,,,,,,K,6,False,L,6
+main,4,5,1,6 + 5 = ?,12,False,False,True,False,1.5167437000200152,1.6625434000161476,R,1,True,,
+main,4,5,2,3 + 1 = ?,1,False,False,True,False,0.5174463000148535,1.3207927999901585,N,2,True,,
+main,4,5,3,8 - 2 = ?,6,True,True,True,False,0.768935700005386,0.7663293000077829,H,3,True,,
+main,4,5,4,7 - 1 = ?,6,True,True,True,False,3.673772799957078,0.6001862999983132,K,4,True,,
+main,4,5,5,3 + 7 = ?,10,True,True,True,False,2.218276400002651,0.5830428000190295,Q,5,True,,
+main_recall,4,5,1,,,,,,,,,R,1,False,H,1
+main_recall,4,5,2,,,,,,,,,N,2,False,R,2
+main_recall,4,5,3,,,,,,,,,H,3,False,N,3
+main_recall,4,5,4,,,,,,,,,K,4,False,K,4
+main_recall,4,5,5,,,,,,,,,Q,5,False,Q,5
+main,5,3,1,7 * 8 = ?,56,True,True,True,False,3.0578937000245787,0.6163269000244327,J,1,True,,
+main,5,3,2,1 * 6 = ?,4,False,False,True,False,0.10930569999618456,0.9250276000238955,Q,2,True,,
+main,5,3,3,8 - 5 = ?,3,True,True,True,False,1.725441500020679,0.8010219999705441,T,3,True,,
+main_recall,5,3,1,,,,,,,,,J,1,False,J,1
+main_recall,5,3,2,,,,,,,,,Q,2,False,Q,2
+main_recall,5,3,3,,,,,,,,,T,3,False,T,3
+main,6,4,1,1 * 2 = ?,0,False,False,True,False,1.1269972000154667,0.9101342000067234,K,1,True,,
+main,6,4,2,5 * 4 = ?,23,False,False,True,False,0.5006503000040539,0.8289425999973901,Y,2,True,,
+main,6,4,3,2 + 9 = ?,9,False,False,True,False,1.4048613999621011,0.632378600013908,F,3,True,,
+main,6,4,4,24 / 4 = ?,4,False,False,True,False,1.0653333999798633,0.7829796999576502,H,4,True,,
+main_recall,6,4,1,,,,,,,,,K,1,False,K,1
+main_recall,6,4,2,,,,,,,,,Y,2,False,Y,2
+main_recall,6,4,3,,,,,,,,,F,3,False,F,3
+main_recall,6,4,4,,,,,,,,,H,4,False,H,4
+main,7,5,1,5 - 3 = ?,2,True,True,True,False,1.3833935000002384,0.5908627999597229,Y,1,True,,
+main,7,5,2,24 / 8 = ?,4,False,False,True,False,0.5273886999930255,0.7748604000080377,T,2,True,,
+main,7,5,3,24 / 8 = ?,3,True,True,True,False,0.6123742000199854,0.9052707999944687,Q,3,True,,
+main,7,5,4,7 - 6 = ?,1,True,True,True,False,0.4601873999927193,0.5388208000222221,F,4,True,,
+main,7,5,5,1 / 1 = ?,1,True,True,True,False,0.7442418000428006,0.8834180000121705,S,5,True,,
+main_recall,7,5,1,,,,,,,,,Y,1,False,Y,1
+main_recall,7,5,2,,,,,,,,,T,2,False,T,2
+main_recall,7,5,3,,,,,,,,,Q,3,False,Q,3
+main_recall,7,5,4,,,,,,,,,F,4,False,F,4
+main_recall,7,5,5,,,,,,,,,S,5,False,S,5
+main,8,7,1,8 / 1 = ?,5,False,False,True,False,0.9729437999776565,0.865699100017082,N,1,True,,
+main,8,7,2,5 + 1 = ?,6,True,True,True,False,0.7616088000359014,0.5919141999911517,Q,2,True,,
+main,8,7,3,3 * 2 = ?,3,False,False,True,False,0.803114700014703,0.7770890000392683,R,3,True,,
+main,8,7,4,2 * 4 = ?,8,True,True,True,False,2.9065552999963984,1.6059829000150785,J,4,True,,
+main,8,7,5,6 - 2 = ?,4,True,True,True,False,2.073528399982024,0.5691918000229634,H,5,True,,
+main,8,7,6,21 / 7 = ?,1,False,False,True,False,7.196347499964759,1.1728232000023127,F,6,True,,
+main,8,7,7,9 * 4 = ?,36,True,False,False,False,1.82867310004076,1.1576907000271603,K,7,True,,
+main_recall,8,7,1,,,,,,,,,N,1,False,N,1
+main_recall,8,7,2,,,,,,,,,Q,2,False,Q,2
+main_recall,8,7,3,,,,,,,,,R,3,False,R,3
+main_recall,8,7,4,,,,,,,,,J,4,False,J,4
+main_recall,8,7,5,,,,,,,,,H,5,False,F,5
+main_recall,8,7,6,,,,,,,,,F,6,False,N,6
+main_recall,8,7,7,,,,,,,,,K,7,False,S,7
+main,9,7,1,2 + 7 = ?,6,False,False,True,False,1.1086987000308,1.0519310000236146,P,1,True,,
+main,9,7,2,7 + 8 = ?,15,True,True,True,False,0.4513617999618873,1.3885127999819815,Q,2,True,,
+main,9,7,3,16 / 8 = ?,2,True,True,True,False,1.4594612999935634,3.8499587000114843,S,3,True,,
+main,9,7,4,5 * 5 = ?,28,False,False,True,False,0.6545468000113033,0.918376499961596,Y,4,True,,
+main,9,7,5,5 - 3 = ?,2,True,True,True,False,3.003015900030732,0.6357582000200637,R,5,True,,
+main,9,7,6,3 + 7 = ?,7,False,False,True,False,9.47154599998612,0.8056851999717765,T,6,True,,
+main,9,7,7,6 + 2 = ?,6,False,False,True,False,2.424607900029514,0.9785583000048064,H,7,True,,
+main_recall,9,7,1,,,,,,,,,P,1,False,P,1
+main_recall,9,7,2,,,,,,,,,Q,2,False,Q,2
+main_recall,9,7,3,,,,,,,,,S,3,False,R,3
+main_recall,9,7,4,,,,,,,,,Y,4,False,S,4
+main_recall,9,7,5,,,,,,,,,R,5,False,Y,5
+main_recall,9,7,6,,,,,,,,,T,6,False,T,6
+main_recall,9,7,7,,,,,,,,,H,7,False,H,7
+main,10,3,1,5 - 4 = ?,0,False,False,True,False,0.8960453000036068,0.9009130999911577,Y,1,True,,
+main,10,3,2,32 / 8 = ?,6,False,False,True,False,0.4651072999695316,0.6847915999824181,K,2,True,,
+main,10,3,3,5 - 2 = ?,3,True,True,True,False,0.4917558000306599,1.1501695000333712,J,3,True,,
+main_recall,10,3,1,,,,,,,,,Y,1,False,Y,1
+main_recall,10,3,2,,,,,,,,,K,2,False,K,2
+main_recall,10,3,3,,,,,,,,,J,3,False,J,3
+main,11,4,1,6 + 5 = ?,13,False,False,True,False,0.7102103000506759,0.7856640000245534,T,1,True,,
+main,11,4,2,2 + 7 = ?,9,True,True,True,False,0.6022994000231847,0.9128739999723621,L,2,True,,
+main,11,4,3,4 + 7 = ?,12,False,False,True,False,0.49975600000470877,0.6979936999850906,Y,3,True,,
+main,11,4,4,5 * 5 = ?,24,False,False,True,False,0.5383882999885827,0.8781848999788053,S,4,True,,
+main_recall,11,4,1,,,,,,,,,T,1,False,T,1
+main_recall,11,4,2,,,,,,,,,L,2,False,L,2
+main_recall,11,4,3,,,,,,,,,Y,3,False,Y,3
+main_recall,11,4,4,,,,,,,,,S,4,False,S,4
+main,12,4,1,3 + 2 = ?,2,False,False,True,False,0.6473495000391267,1.1537016000365838,L,1,True,,
+main,12,4,2,6 * 9 = ?,53,False,False,True,False,1.0637290000449866,1.0731831000302918,K,2,True,,
+main,12,4,3,5 * 6 = ?,32,False,False,True,False,0.5036387000000104,0.8062408000114374,P,3,True,,
+main,12,4,4,5 * 5 = ?,24,False,False,True,False,0.8492785000125878,0.7857508000452071,Y,4,True,,
+main_recall,12,4,1,,,,,,,,,L,1,False,L,1
+main_recall,12,4,2,,,,,,,,,K,2,False,K,2
+main_recall,12,4,3,,,,,,,,,P,3,False,P,3
+main_recall,12,4,4,,,,,,,,,Y,4,False,P,4
+main,13,5,1,8 - 5 = ?,1,False,False,True,False,1.1887579999747686,1.154639100015629,Q,1,True,,
+main,13,5,2,6 - 5 = ?,1,True,True,True,False,0.4941543000168167,0.9459790000109933,L,2,True,,
+main,13,5,3,5 - 4 = ?,1,True,True,True,False,0.48273290001088753,0.7258923000190407,Y,3,True,,
+main,13,5,4,1 * 2 = ?,1,False,False,True,False,0.7464423999772407,1.0162609000108205,R,4,True,,
+main,13,5,5,6 + 1 = ?,5,False,False,True,False,1.9715151999844238,0.9286106000072323,T,5,True,,
+main_recall,13,5,1,,,,,,,,,Q,1,False,Q,1
+main_recall,13,5,2,,,,,,,,,L,2,False,Y,2
+main_recall,13,5,3,,,,,,,,,Y,3,False,R,3
+main_recall,13,5,4,,,,,,,,,R,4,False,L,4
+main_recall,13,5,5,,,,,,,,,T,5,False,T,5
+main,14,6,1,1 + 8 = ?,9,True,True,True,False,1.4702359999646433,0.9007389000034891,L,1,True,,
+main,14,6,2,9 - 8 = ?,0,False,False,True,False,0.9305905999499373,0.716026900045108,N,2,True,,
+main,14,6,3,3 * 3 = ?,9,True,True,True,False,0.6937392000108957,1.9369640999939293,R,3,True,,
+main,14,6,4,8 - 6 = ?,2,True,True,True,False,2.4178672999842092,0.7177144999732263,Y,4,True,,
+main,14,6,5,3 + 7 = ?,10,True,True,True,False,4.080259800015483,0.5086221999954432,S,5,True,,
+main,14,6,6,36 / 4 = ?,9,True,True,True,False,2.093643300002441,0.5184526999946684,T,6,True,,
+main_recall,14,6,1,,,,,,,,,L,1,False,L,1
+main_recall,14,6,2,,,,,,,,,N,2,False,R,2
+main_recall,14,6,3,,,,,,,,,R,3,False,N,3
+main_recall,14,6,4,,,,,,,,,Y,4,False,Y,4
+main_recall,14,6,5,,,,,,,,,S,5,False,S,5
+main_recall,14,6,6,,,,,,,,,T,6,False,T,6
+main,15,3,1,2 + 4 = ?,6,True,True,True,False,0.8621717000496574,0.749538499978371,H,1,True,,
+main,15,3,2,8 - 8 = ?,2,False,False,True,False,0.5715902000083588,0.6481615999946371,F,2,True,,
+main,15,3,3,9 - 2 = ?,4,False,False,True,False,0.5530601000064053,0.8312168000265956,Y,3,True,,
+main_recall,15,3,1,,,,,,,,,H,1,False,H,1
+main_recall,15,3,2,,,,,,,,,F,2,False,F,2
+main_recall,15,3,3,,,,,,,,,Y,3,False,Y,3
