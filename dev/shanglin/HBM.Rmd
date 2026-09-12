@@ -1,0 +1,152 @@
+
+Fits the 10-dimensional SIW hierarchical psychometric model
+```{r}
+library(rstan)
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
+
+# Task definitions
+perc_tasks <- c("TLetter", "TGabor", "TPi", "SLetter", "SGabor", "SPi")
+cog_tasks  <- c("OSpan", "CSpan", "Corsi", "Matrix")
+all_tasks  <- c(perc_tasks, cog_tasks)
+n_perc_task <- length(perc_tasks)
+n_cog_task  <- length(cog_tasks)78 
+n_task      <- length(all_tasks)
+
+# Process perception data
+perc_df <- read.csv('Data/summary/all_perception_raw.csv')
+perc_df$correct_num <- ifelse(perc_df$correct == "True", 1, 0)
+perc_df$x_raw <- ifelse(perc_df$staircase == 2, perc_df$param1, perc_df$param2)
+perc_df <- perc_df[perc_df$x_raw > 0,]
+perc_df$x <- log(perc_df$x_raw) # log transform to intensity
+perc_df$x <- ave(perc_df$x, perc_df$task_name, FUN = function(v) as.numeric(scale(v))) # standardize
+
+```
+
+```{r}
+# Exclude (subject, task) cells that is a >4SD outlier or  has a non-converged staircase
+clean_scores    <- read.csv('Data/summary/all_scores_clean.csv')
+clean_scores$id <- as.character(clean_scores$id)
+excluded_cells <- do.call(rbind, lapply(perc_tasks, function(t) {
+  bad_ids <- clean_scores$id[is.na(clean_scores[[t]])]
+  if (length(bad_ids) == 0) return(NULL)
+  data.frame(id = bad_ids, task_name = t, stringsAsFactors = FALSE)
+}))
+
+perc_df$id       <- as.character(perc_df$id)
+perc_df$cell_key <- paste(perc_df$id, perc_df$task_name, sep = "_") # create a temporally column to help deletion
+excluded_keys    <- paste(excluded_cells$id, excluded_cells$task_name, sep = "_") # Match key to the temporally column
+perc_df <- subset(perc_df, !(cell_key %in% excluded_keys))
+perc_df$cell_key <- NULL
+
+# map subject id and task name to vectors
+ids     <- sort(unique(perc_df$id))
+id_map  <- setNames(seq_along(ids), ids)
+task_map <- setNames(seq_along(perc_tasks), perc_tasks)
+perc_df$id_idx   <- id_map[perc_df$id]
+perc_df$task_idx <- task_map[perc_df$task_name]
+n_subj  <- length(ids)
+```
+
+```{r}
+# aggregate Bernoulli trials -> Binomial counts to fasten the sampling
+agg_list <- split(perc_df, list(perc_df$id_idx, perc_df$task_idx, perc_df$x), drop = TRUE)
+agg_df <- do.call(rbind, lapply(agg_list, function(d) {
+  data.frame(id_idx = d$id_idx[1], task_idx = d$task_idx[1], x = d$x[1], k = sum(d$correct_num), n = nrow(d))
+}))
+
+# standardize the cognitive scores
+cog        <- read.csv('Data/summary/all_cognitive_scores.csv')
+cog$id     <- as.character(cog$id)
+cog   <- reshape(cog, idvar = "id", timevar = "task_name", direction = "wide") 
+names(cog) <- gsub("^score\\.", "", names(cog))
+cog[,cog_tasks] = -scale(cog[,cog_tasks])
+cog <- as.matrix(cog[match(ids, cog$id), cog_tasks])
+rownames(cog) <- ids
+```
+
+```{r}
+# prepare Stan data
+stan_data <- list(
+  N           = nrow(agg_df),
+  n_subj      = n_subj,
+  n_perc_task = n_perc_task,
+  n_cog_task  = n_cog_task,
+  n_task      = n_task,
+  id          = agg_df$id_idx,
+  task        = agg_df$task_idx,
+  x           = agg_df$x,
+  k           = agg_df$k,
+  ntrials     = agg_df$n,
+  cog         = cog,
+  nu0         = n_task + 2, 
+  sigma_obs   = 0.01          # noise is very small for cognitive data so that the data will just be itself
+)
+
+# init using MLE
+mle_theta <- matrix(NA, n_subj, n_perc_task, dimnames = list(ids, perc_tasks))
+mle_beta  <- setNames(numeric(n_perc_task), perc_tasks)
+for (t in seq_along(perc_tasks)) {
+  task <- perc_tasks[t]
+  sub  <- subset(perc_df, task_name == task)
+  sub$id <- factor(sub$id, levels = ids)
+  fit_glm <- glm(correct_num ~ 0 + id + x, data = sub, family = binomial(link = "probit"))
+  b_x  <- coef(fit_glm)["x"]; beta <- -b_x
+  a    <- coef(fit_glm)[grepl("^id", names(coef(fit_glm)))]
+  names(a) <- sub("^id", "", names(a))
+  mle_theta[names(a), task] <- a / beta
+  mle_beta[task] <- beta
+}
+for (t in perc_tasks) mle_theta[is.na(mle_theta[, t]), t] <- mean(mle_theta[, t], na.rm = TRUE)
+mu_init <- c(colMeans(mle_theta), colMeans(cog))
+xi_init <- c(apply(mle_theta, 2, sd), apply(cog, 2, sd))
+raw_perc_init <- sweep(sweep(mle_theta, 2, mu_init[1:n_perc_task], "-"), 2, xi_init[1:n_perc_task], "/")
+raw_cog_init  <- sweep(sweep(cog, 2, mu_init[(n_perc_task+1):n_task], "-"), 2, xi_init[(n_perc_task+1):n_task], "/")
+raw_init <- cbind(raw_perc_init, raw_cog_init)
+init_fn <- function() {
+  list(
+    mu = as.numeric(mu_init), beta = as.numeric(mle_beta), xi = as.numeric(xi_init),
+    Sigma_raw = diag(n_task),
+    raw = raw_init + matrix(rnorm(n_subj * n_task, 0, 0.02), n_subj, n_task)
+  )
+}
+
+# run model
+mod <- stan_model("Model/model.stan")
+fit <- sampling(mod, data = stan_data, chains = 3, cores = 3, iter = 20000, warmup = 10000, init = init_fn)
+
+# Diagnostics
+summ <- summary(fit, pars = c("mu", "beta", "sigma_theta", "Omega"))$summary
+cat("Max Rhat overall: ", max(summ[, "Rhat"], na.rm = TRUE), "\n")
+cat("Min n_eff overall:", min(summ[, "n_eff"], na.rm = TRUE), "\n")
+saveRDS(fit, "Data/summary/trace.rds")
+```
+
+
+```{r}
+# read rds, extract theta and Omega and save both
+library(corrplot)
+
+fit <- readRDS("Data/summary/trace.rds")
+all_tasks <- c("TLetter", "TGabor", "TPi", "SLetter", "SGabor", "SPi","OSpan", "CSpan", "Corsi", "Matrix")
+
+# subject x task score matrix (theta posterior mean)
+theta_draws <- rstan::extract(fit, pars = "theta")$theta   # [iter, n_subj, n_task]
+theta_mean  <- apply(theta_draws, c(2, 3), mean)
+colnames(theta_mean) <- all_tasks
+write.csv(theta_mean, "Data/summary/theta.csv", row.names = FALSE)
+
+# correlation matrix 
+omega_draws <- rstan::extract(fit, pars = "Omega")$Omega   # [iter, n_task, n_task]
+corr <- apply(omega_draws, c(2, 3), mean)
+dimnames(corr) <- list(all_tasks, all_tasks)
+write.csv(corr, "Data/summary/corr.csv")
+
+# plot
+corrplot(corr, method = "color", mar = c(0, 0, 1, 0), tl.col = "black", tl.cex = 0.8)
+```
+
+
+
+
+

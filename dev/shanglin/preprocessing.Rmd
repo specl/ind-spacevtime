@@ -1,3 +1,5 @@
+Merge individual scores
+
 ```{r}
 library(jsonlite)
 
@@ -117,3 +119,119 @@ all_cognitive_scores <- subset(all_cognitive_scores, !id %in% exclude_ids)
 write.csv(all_cognitive_scores, "Data/summary/all_cognitive_scores.csv", row.names = FALSE)
 ```
 
+Read 6 perception tasks and 4 cognitive tasks
+```{r}
+# perception task
+perc_df <- read.csv('Data/summary/all_perception_raw.csv')
+head(perc_df)
+# cognitive task
+cog_scores <- read.csv('Data/summary/all_cognitive_scores.csv') 
+head(cog_scores)
+```
+
+Display the raw score
+```{r}
+library(dplyr)
+perc_df$param <- ifelse(perc_df$staircase == 2, perc_df$param1, perc_df$param2) # add a new column distinguish two staircase
+
+# Calculate the perception score using mean of the last 150 trials
+combos <- unique(perc_df[, c("id", "task_name")])   
+combos <- combos[order(combos$id, combos$task_name), ]
+perc_scores <- data.frame(
+  id        = combos$id,
+  task_name = combos$task_name,
+  score     = NA_real_
+)
+for (i in seq_len(nrow(perc_scores))) {
+  sub <- perc_df[perc_df$id == perc_scores$id[i] &
+                  perc_df$task_name == perc_scores$task_name[i], ]
+  sub <- sub[order(sub$session, sub$trial, sub$staircase), ]
+  n <- nrow(sub)
+  last150 <- sub[max(1, n - 149):n, ]
+  perc_scores$score[i] <- round(mean(last150$param, na.rm = TRUE), 4)
+}
+head(perc_scores)
+
+# Merge with cognitive scores
+all_scores <- rbind(perc_scores, cog_scores)
+all_scores <- reshape(all_scores, idvar = "id", timevar = "task_name",direction = "wide")
+all_scores[,8:11] <- -all_scores[,8:11]
+names(all_scores) <- sub("^score\\.", "", names(all_scores))  
+head(all_scores)
+```
+
+Score distribution after cleaning: 1): remove subject task score that is 4 * sd away from the mean. 2) Remove subject task score that does not converge: 5% deviation from targeted accuracy of any of two staircase chain.
+```{r}
+library(corrplot)
+perc_tasks <- c("TLetter","TGabor","TPi","SLetter","SGabor","SPi")
+tasks <- names(all_scores)[names(all_scores) != "id"]
+
+# log and z score
+all_scores_clean <- all_scores
+all_scores_clean[perc_tasks] <- log(all_scores_clean[perc_tasks])
+zscore <- function(x) (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
+all_scores_clean[tasks] <- lapply(all_scores_clean[tasks], zscore)
+
+# remove 4 sd away score
+sd_cutoff <- 4
+all_scores_clean[tasks] <- lapply(all_scores_clean[tasks], function(x) {
+  x[abs(x) > sd_cutoff] <- NA
+  x
+})
+
+# remove not converge task
+margin       <- 0.05
+target_2D1U  <- 0.707
+target_3D1U  <- 0.794
+cutoff_2D1U  <- target_2D1U - margin
+cutoff_3D1U  <- target_3D1U - margin
+
+perc_df$correct_num <- ifelse(perc_df$correct == "True", 1,
+                        ifelse(perc_df$correct == "False", 0, NA))
+
+combos <- unique(perc_df[, c("id", "task_name")])
+combos <- combos[order(combos$id, combos$task_name), ]
+
+acc_flags <- data.frame(id = character(), task_name = character(),
+                         acc_2D1U = numeric(), acc_3D1U = numeric(),
+                         stringsAsFactors = FALSE)
+
+for (i in seq_len(nrow(combos))) {
+  this_id   <- combos$id[i]
+  this_task <- combos$task_name[i]
+
+  sub <- perc_df[perc_df$id == this_id & perc_df$task_name == this_task, ]
+  sub <- sub[order(sub$session, sub$trial, sub$staircase), ]
+  n <- nrow(sub)
+  last150 <- sub[max(1, n - 149):n, ]
+
+  acc2 <- mean(last150$correct_num[last150$staircase == 2], na.rm = TRUE)
+  acc3 <- mean(last150$correct_num[last150$staircase == 3], na.rm = TRUE)
+
+  bad <- (!is.na(acc2) && acc2 < cutoff_2D1U) || (!is.na(acc3) && acc3 < cutoff_3D1U)
+  if (bad) {
+    acc_flags <- rbind(acc_flags, data.frame(id = this_id, task_name = this_task,
+                                              acc_2D1U = round(acc2, 3),
+                                              acc_3D1U = round(acc3, 3)))
+  }
+}
+
+for (k in seq_len(nrow(acc_flags))) {
+  row_idx <- which(all_scores_clean$id == acc_flags$id[k])
+  col_idx <- which(names(all_scores_clean) == acc_flags$task_name[k])
+  if (length(row_idx) == 1 && length(col_idx) == 1) {
+    all_scores_clean[row_idx, col_idx] <- NA
+  }
+}
+
+par(mfrow = c(2, ceiling(length(tasks) / 2)))
+for (t in tasks) {
+  hist(all_scores_clean[[t]], n = 20, main = t, xlab = t, col = "lightblue", border = "white")
+}
+par(mfrow = c(1, 1))
+
+corrplot(cor(all_scores_clean[, tasks], use = "pairwise.complete.obs"), method = 'color')
+
+write.csv(all_scores_clean, "Data/summary/all_scores_clean.csv", row.names = FALSE)
+write.csv(all_scores, "Data/summary/all_scores.csv", row.names = FALSE)
+```
