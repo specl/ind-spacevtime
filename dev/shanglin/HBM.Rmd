@@ -1,4 +1,3 @@
-
 Fits the 10-dimensional SIW hierarchical psychometric model
 ```{r}
 library(rstan)
@@ -10,7 +9,7 @@ perc_tasks <- c("TLetter", "TGabor", "TPi", "SLetter", "SGabor", "SPi")
 cog_tasks  <- c("OSpan", "CSpan", "Corsi", "Matrix")
 all_tasks  <- c(perc_tasks, cog_tasks)
 n_perc_task <- length(perc_tasks)
-n_cog_task  <- length(cog_tasks)78 
+n_cog_task  <- length(cog_tasks)
 n_task      <- length(all_tasks)
 
 # Process perception data
@@ -68,19 +67,19 @@ rownames(cog) <- ids
 ```{r}
 # prepare Stan data
 stan_data <- list(
-  N           = nrow(agg_df),
-  n_subj      = n_subj,
-  n_perc_task = n_perc_task,
-  n_cog_task  = n_cog_task,
-  n_task      = n_task,
-  id          = agg_df$id_idx,
-  task        = agg_df$task_idx,
-  x           = agg_df$x,
-  k           = agg_df$k,
-  ntrials     = agg_df$n,
-  cog         = cog,
-  nu0         = n_task + 2, 
-  sigma_obs   = 0.01          # noise is very small for cognitive data so that the data will just be itself
+  N       = nrow(agg_df),
+  I       = n_subj,
+  J       = n_perc_task,
+  C       = n_cog_task,
+  T       = n_task,
+  id      = agg_df$id_idx,
+  task    = agg_df$task_idx,
+  s       = agg_df$x,
+  k       = agg_df$k,
+  ntrials = agg_df$n,
+  cog     = cog,
+  nu0     = n_task + 2, 
+  tau     = 0.01          # noise is very small for cognitive data so that the data will just be itself
 )
 
 # init using MLE
@@ -105,7 +104,7 @@ raw_cog_init  <- sweep(sweep(cog, 2, mu_init[(n_perc_task+1):n_task], "-"), 2, x
 raw_init <- cbind(raw_perc_init, raw_cog_init)
 init_fn <- function() {
   list(
-    mu = as.numeric(mu_init), beta = as.numeric(mle_beta), xi = as.numeric(xi_init),
+    mu = as.numeric(mu_init), beta = as.numeric(mle_beta), sigma = as.numeric(xi_init),
     Sigma_raw = diag(n_task),
     raw = raw_init + matrix(rnorm(n_subj * n_task, 0, 0.02), n_subj, n_task)
   )
@@ -113,7 +112,7 @@ init_fn <- function() {
 
 # run model
 mod <- stan_model("Model/model.stan")
-fit <- sampling(mod, data = stan_data, chains = 3, cores = 3, iter = 20000, warmup = 10000, init = init_fn)
+fit <- sampling(mod, data = stan_data, chains = 3, cores = 3, iter = 5000, warmup = 2000, init = init_fn)
 
 # Diagnostics
 summ <- summary(fit, pars = c("mu", "beta", "sigma_theta", "Omega"))$summary
@@ -122,6 +121,19 @@ cat("Min n_eff overall:", min(summ[, "n_eff"], na.rm = TRUE), "\n")
 saveRDS(fit, "Data/summary/trace.rds")
 ```
 
+Model Structure
+$$
+\begin{aligned}
+\theta_{i,\cdot} &\sim \mathcal{N}\!\big(\boldsymbol\mu,\; \Sigma\big), & i &= 1,\dots,I \\[6pt]
+y_{i,j,k} &\sim \text{Bernoulli}\big(p_{i,j,k}\big), \quad p_{i,j,k} = \Phi\Big(\beta_{j}\,\big(\theta_{i,j} - s_{i,j,k}\big)\Big), & j &=1,\dots,J,\;\; k=1,\dots,K \\[6pt]
+\text{cog}_{i,c} &\sim \mathcal{N}\big(\theta_{i,\,J+c},\; \tau^2\big), & c &=1,\dots,C \\[6pt]
+\mu_j &\sim \mathcal{N}(0, 5), & j &=1,\dots,T \\[6pt]
+\beta_j &\sim \mathcal{N}(0, 5), & j &=1,\dots,J \\[6pt]
+\Sigma &= D\Sigma_{\text{raw}}D, & D &= \text{diag}(\sigma_1,\dots,\sigma_T) \\[6pt]
+\sigma_j &\sim \text{Half-}t_{3}(0,\, 2.5), & j &=1,\dots,T \\[6pt]
+\Sigma &\sim \text{Inverse-Wishart}(\nu_0,\, S_0), & S_0 &= I_T
+\end{aligned}
+$$
 
 ```{r}
 # read rds, extract theta and Omega and save both
@@ -145,8 +157,6 @@ write.csv(corr, "Data/summary/corr.csv")
 # plot
 corrplot(corr, method = "color", mar = c(0, 0, 1, 0), tl.col = "black", tl.cex = 0.8)
 ```
-
-
 
 
 
