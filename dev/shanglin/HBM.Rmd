@@ -135,10 +135,11 @@ y_{i,j,k} &\sim \text{Bernoulli}\big(p_{i,j,k}\big), \quad p_{i,j,k} = \Phi\Big(
 \end{aligned}
 $$
 
+
+
 ```{r}
 # read rds, extract theta and Omega and save both
 library(corrplot)
-
 fit <- readRDS("Data/summary/trace.rds")
 all_tasks <- c("TLetter", "TGabor", "TPi", "SLetter", "SGabor", "SPi","OSpan", "CSpan", "Corsi", "Matrix")
 
@@ -154,9 +155,12 @@ corr <- apply(omega_draws, c(2, 3), mean)
 dimnames(corr) <- list(all_tasks, all_tasks)
 write.csv(corr, "Data/summary/corr.csv")
 
+# reorder
+stim_order <- c("TLetter", "SLetter", "TGabor", "SGabor", "TPi", "SPi",
+                "OSpan", "CSpan", "Corsi", "Matrix")
+corr_ordered <- corr[stim_order, stim_order]
 # plot
-corrplot(corr, method = "color", mar = c(0, 0, 1, 0), tl.col = "black", tl.cex = 0.8)
+corrplot(corr_ordered, method = "color", mar = c(0, 0, 1, 0), tl.col = "black", tl.cex = 0.8)
 ```
-
 
 
