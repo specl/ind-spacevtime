@@ -163,4 +163,33 @@ corr_ordered <- corr[stim_order, stim_order]
 corrplot(corr_ordered, method = "color", mar = c(0, 0, 1, 0), tl.col = "black", tl.cex = 0.8)
 ```
 
+```{r}
+library(rstan)
+fit <- readRDS("Data/summary/trace.rds")
+perc_tasks <- c("TLetter", "TGabor", "TPi", "SLetter", "SGabor", "SPi")
+cog_tasks  <- c("OSpan", "CSpan", "Corsi", "Matrix")
+all_tasks  <- c(perc_tasks, cog_tasks)
+
+beta_summ  <- summary(fit, pars = "beta")$summary
+sigma_summ <- summary(fit, pars = "sigma_theta")$summary
+rownames(beta_summ)  <- perc_tasks
+rownames(sigma_summ) <- all_tasks
+
+cat("beta\n")
+print(round(beta_summ[, c("mean", "sd", "2.5%", "97.5%", "n_eff", "Rhat")], 3))
+cat("sigma\n")
+print(round(sigma_summ[, c("mean", "sd", "2.5%", "97.5%", "n_eff", "Rhat")], 3))
+
+beta_df  <- data.frame(task = perc_tasks, beta_summ, row.names = NULL)
+sigma_df <- data.frame(task = all_tasks, sigma_summ, row.names = NULL)
+write.csv(beta_df,  "Data/summary/beta.csv",  row.names = FALSE)
+write.csv(sigma_df, "Data/summary/sigma.csv", row.names = FALSE)
+
+beta_draws  <- rstan::extract(fit, pars = "beta")$beta
+colnames(beta_draws) <- perc_tasks
+write.csv(beta_draws, "Data/summary/beta.csv", row.names = FALSE)
+sigma_draws <- rstan::extract(fit, pars = "sigma_theta")$sigma_theta
+colnames(sigma_draws) <- all_tasks
+write.csv(sigma_draws, "Data/summary/sigma.csv", row.names = FALSE)
+```
 

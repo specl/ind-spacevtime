@@ -1,0 +1,13 @@
+```{r}
+library(corrplot)
+theta <- read.csv('Data/summary/theta.csv')
+corr <- as.matrix(read.csv("Data/summary/corr.csv", row.names = 1))
+
+corrplot(corr, method = 'color')
+par(mfrow = c(2, 5))  
+for (task in colnames(theta)) {
+  hist(theta[[task]], main = task, xlab = "Score", col = "skyblue", border = "white",n = 10)
+}
+par(mfrow = c(1, 1))
+```
+
