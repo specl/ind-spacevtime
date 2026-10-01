@@ -1,0 +1,10 @@
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\includegraphics[width=1\linewidth]{Figures/Spatial} \caption{Spatial visual masking tasks.}\label{fig:Spatial}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\includegraphics[width=1\linewidth]{Figures/Temporal} \caption{Temporal visual masking tasks.}\label{fig:Temporal}
+\end{figure*}
