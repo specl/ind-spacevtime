@@ -1,10 +1,15 @@
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
+\includegraphics[width=1\linewidth]{Figures/Temporal} \caption{Backward visual masking tasks.}\label{fig:backward}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
 \includegraphics[width=1\linewidth]{Figures/Spatial} \caption{Simultaneous visual masking tasks.}\label{fig:simultaneous}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/Temporal} \caption{Backward visual masking tasks.}\label{fig:backward}
+\includegraphics[width=1\linewidth]{Figures/summary} \caption{summary statistic}\label{fig:summary}
 \end{figure*}
