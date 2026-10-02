@@ -232,7 +232,15 @@ ABSTRACT
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=1\linewidth]{Figures/summary} \caption{summary statistic}\label{fig:summary}
+\includegraphics[width=1\linewidth]{Figures/corr} \caption{corr plot}\label{fig:corr}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{hcluster}\label{fig:hcluster}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=1\linewidth]{Figures/fit} \caption{model fit}\label{fig:fit}
 \end{figure}
 
 \section{Introduction}\label{introduction}
@@ -334,7 +342,7 @@ The model was implemented in Stan (Carpenter et al., 2017). We ran 4 chains, eac
 
 \section{Result}\label{result}
 
-Figure \ref{fig:summary}A summarizes the model-estimated scores for the six masking tasks and the four cognitive tasks. Because the scales of tasks are different, all scores were standardized before plotting. The distributions on the diagonal were unimodal and roughly symmetric, with substantial spread across participants. Thus, all ten tasks captured meaningful individual differences. The lower triangle of Figure \ref{fig:summary}A shows the model-based correlations among the ten tasks. With a single exception between backward letter task and SSPAN(\emph{r} = -.02), all 45 correlations were positive. The mean correlation was .39 among the six masking tasks and .35 among the four cognitive tasks. The mean correlation between the masking tasks and the cognitive tasks was lower at .26, in part because the backward letter task was nearly unrelated to all four cognitive tasks. We will return to this task in the Discussion.
+Figure \ref{fig:corr} summarizes the model-estimated scores for the six masking tasks and the four cognitive tasks. Because the scales of tasks are different, all scores were standardized before plotting. The distributions on the diagonal were unimodal and roughly symmetric, with substantial spread across participants. Thus, all ten tasks captured meaningful individual differences. The lower triangle of Figure \ref{fig:hcluster} shows the model-based correlations among the ten tasks. With a single exception between backward letter task and SSPAN(\emph{r} = -.02), all 45 correlations were positive. The mean correlation was .39 among the six masking tasks and .35 among the four cognitive tasks. The mean correlation between the masking tasks and the cognitive tasks was lower at .26, in part because the backward letter task was nearly unrelated to all four cognitive tasks. We will return to this task in the Discussion.
 
 It is worth noting that the three same-stimulus pairs, in which the same stimulus was tested under backward and simultaneous masking, showed the three highest correlations among the masking tasks (mean \emph{r} = .52). By comparison, the mean correlation was .40 between tasks that shared a masking procedure but differed in stimulus, and .31 between tasks that differed in both. This pattern suggests that stimulus content plays a substantial role in individual differences in masking tasks performance. More direct evidence comes from hierarchical clustering, an unsupervised method that groups tasks according to their similarity without imposing any a priori structure (Figure \ref{fig:summary}B). The first three merges each joined the two masking procedures of the same stimulus, only after these pairs had formed did they combine with one another. By comparison, the three backward masking tasks or the three simultaneous masking tasks fail to form a cluster of their own. The four cognitive tasks formed a separate cluster, which joined the masking tasks only at the final step (distance = .74). Thus, individual differences in masking performance were organized primarily by stimulus rather than by masking procedure.
 

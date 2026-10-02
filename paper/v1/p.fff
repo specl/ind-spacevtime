@@ -11,5 +11,15 @@
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/summary} \caption{summary statistic}\label{fig:summary}
+\includegraphics[width=1\linewidth]{Figures/corr} \caption{corr plot}\label{fig:corr}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{hcluster}\label{fig:hcluster}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\includegraphics[width=1\linewidth]{Figures/fit} \caption{model fit}\label{fig:fit}
 \end{figure*}
