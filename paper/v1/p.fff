@@ -18,8 +18,3 @@
 
 \includegraphics[width=1\linewidth]{Figures/hcluster} \caption{hcluster}\label{fig:hcluster}
 \end{figure*}
-\begin{figure*}[hbt]
-\ifnextchar[{\eatarg}{}
-
-\includegraphics[width=1\linewidth]{Figures/fit} \caption{model fit}\label{fig:fit}
-\end{figure*}

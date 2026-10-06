@@ -1,0 +1,58 @@
+\begin{table*}[hbt]
+\ifnextchar[{\eatarg}{}
+[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:tab-shares}Proportion of variance of each masking task due to each source.}
+
+\begin{tabular}{lcccc}
+\toprule
+Task & \multicolumn{1}{c}{Visual} & \multicolumn{1}{c}{Masking} & \multicolumn{1}{c}{Stimulus} & \multicolumn{1}{c}{Unique}\\
+\midrule
+Backward Letter & .19 [.01, .46] & .14 [.00, .42] & .23 [.01, .53] & .44 [.21, .71]\\
+Backward Gabor & .28 [.04, .57] & .14 [.00, .44] & .19 [.00, .52] & .39 [.16, .68]\\
+Backward Pi & .38 [.11, .66] & .05 [.00, .22] & .18 [.00, .50] & .39 [.18, .65]\\
+Simultaneous Letter & .34 [.09, .60] & .10 [.00, .34] & .16 [.00, .40] & .41 [.21, .66]\\
+Simultaneous Gabor & .41 [.14, .65] & .06 [.00, .23] & .09 [.00, .29] & .45 [.27, .66]\\
+Simultaneous Pi & .33 [.05, .67] & .15 [.00, .49] & .20 [.00, .54] & .31 [.11, .60]\\
+\textbf{Average} & \textbf{.32 [.20, .45]} & \textbf{.11 [.03, .20]} & \textbf{.18 [.08, .29]} & \textbf{.40 [.30, .51]}\\
+\bottomrule
+\end{tabular}
+
+\end{threeparttable}
+\end{center}
+
+\end{table*}
+\begin{table*}[hbt]
+\ifnextchar[{\eatarg}{}
+[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:tab-cor}Correlation of each visual factor with cognitive performance.}
+
+\begin{tabular}{lcc}
+\toprule
+Factor & \multicolumn{1}{c}{$r$} & \multicolumn{1}{c}{$\text{BF}_{10}$}\\
+\midrule
+General visual factor & .58 [.22, .82] & \textbf{34.1}\\
+Backward masking & -.06 [-.46, .38] & 0.50\\
+Simultaneous masking & .21 [-.25, .61] & 0.79\\
+Letter & -.22 [-.55, .20] & 0.86\\
+Gabor & .31 [-.16, .68] & 1.47\\
+Pi & .10 [-.29, .48] & 0.53\\
+\bottomrule
+\addlinespace
+\end{tabular}
+
+\begin{tablenotes}[para]
+\normalsize{\textit{Note.} Bayes factors are Savage--Dickey density ratios. $\text{BF}_{10}$ values above 3 provide positive evidence for a relation, and values above 20 provide strong evidence.}
+\end{tablenotes}
+
+\end{threeparttable}
+\end{center}
+
+\end{table*}

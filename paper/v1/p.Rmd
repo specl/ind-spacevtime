@@ -1,6 +1,6 @@
 ---
-title             : "Individual Differences in Visual Masking Depend more on the Stimulus Type, less on Masking Type"
-shorttitle        : "Individual Difference in Visual Masking"
+title             : "Decomposing visual masking into stimulus type, masking type, and general visual factors: Only the general factor relates to cognitive performance"
+shorttitle        : "Decomposing visual masking"
 
 author:
   - name: Shanglin Yang
@@ -64,10 +64,6 @@ knitr::include_graphics("Figures/corr.png")
 
 ```{r hcluster, echo = FALSE, fig.cap = "hcluster", out.width = "100%"}
 knitr::include_graphics("Figures/hcluster.png")
-```
-
-```{r fit, echo = FALSE, fig.cap = "model fit", out.width = "100%"}
-knitr::include_graphics("Figures/fit.png")
 ```
 # Introduction
 Understanding how fundamental perceptual abilities interrelate and contribute to cognitive performance is one of the central topics in cognitive psychology and individual-differences research. Perhaps the best-known finding in this literature concerns inspection time (IT), the minimum exposure duration at which an observer can reliably make a simple perceptual discrimination. @Vickers.etal.1972a first introduced this paradigm. In its classic form, participants briefly view a stimulus consisting of two vertical lines of clearly unequal length joined at the top (hereafter, the Pi stimulus) and indicate which line is longer. By varying the exposure duration of the Pi stimulus and using a backward mask to prevent further visual processing, the minimum exposure duration required for accurate discrimination can be estimated. @Nettelbeck.Lally.1976a subsequently reported that IT correlated negatively with Performance IQ. This negative relation has since been replicated many times across age groups, sensory modalities, and measures of intelligence [@Deary.etal.1989; @Deary.Stough.1996; @Osmon.Jackson.2002]. Meta-analyses place the uncorrected correlation between IT and intelligence at about -.3, rising to about -.5 after correction for measurement error and range restriction [@Grudnik.Kranzler.2001; @Kranzler.Jensen.1989a]. The standard interpretation of this association is in terms of *processing speed*. Because the mask interrupts further processing of the target, performance depends on how much target information the observer can extract before the mask arrives; individuals who process information faster therefore require shorter exposures to discriminate the stimulus accurately [@Vickers.Smith.1986a]. Faster information processing, in turn, may benefit cognitive performance across a wide range of tasks [@Vernon.1983], resulting in negative correlations between IT and cognitive performance.
@@ -133,7 +129,7 @@ Within each visual masking block, participants completed all six visual masking 
 
 Data were screened separately for each participant and each masking task. A participant's data on a given task were excluded from further analysis if either of two criteria was met. First, the participant's raw threshold, computed as the mean stimulus level across the 250 analyzed trials, deviated by more than four standard deviations from the group mean threshold for that task. Second, the observed accuracy on either staircase deviated by more than 5 percentage points from its target accuracy (70.7% for the two-down–one-up staircase and 79.4% for the three-down–one-up staircase), indicating that the staircase had not converged as intended. In total, 14 task datasets from 10 participants were excluded. These participants' remaining tasks were retained in the analysis.
 
-# Random-effect psychophysics model
+# Hierarchical psychometric model
 
 Individual thresholds on the perceptual tasks and the correlations among them were estimated with a hierarchical psychometric model [@Rouder.Mehrvarz.2026]. The model estimates individual thresholds and their correlations simultaneously from trial-level data, thereby accounting for trial-to-trial noise and avoiding the attenuation of correlations caused by measurement error.
 
@@ -164,13 +160,256 @@ $$
 
 where $\boldsymbol{\mu}$ captures the mean of each task and $\boldsymbol{\Sigma}$ captures the covariance among tasks. The covariance matrix is given a scaled inverse-Wishart (SIW) prior [@Huang.Wand.2013a] which is robust to differences in the measurement scales of the tasks and is computationally efficient to estimate [@Yang.Rouder.2026]. Full details of the model specification are provided in Appendix A.
 
-The model was implemented in Stan [@Carpenter.etal.2017]. We ran 4 chains, each with 2,000 warmup steps followed by 3,000 tuning steps. Convergence was assessed with the rank-normalized $\hat{R}$ statistic [@Vehtari.etal.2021], which was below 1.01 for all parameters.
+The model was implemented in Stan [@Carpenter.etal.2017]. We ran 4 chains, each with 10,000 tuning steps followed by 20,000 drawing steps. Convergence was assessed with the rank-normalized $\hat{R}$ statistic [@Vehtari.etal.2021], which was below 1.01 for all parameters.
 
-# Result
+# Results
 
-Figure \@ref(fig:corr) summarizes the model-estimated scores for the six masking tasks and the four cognitive tasks. Because the scales of tasks are different, all scores were standardized before plotting. The distributions on the diagonal were unimodal and roughly symmetric, with substantial spread across participants. Thus, all ten tasks captured meaningful individual differences. The lower triangle of Figure \@ref(fig:hcluster) shows the model-based correlations among the ten tasks. With a single exception between backward letter task and SSPAN(*r* = -.02), all 45 correlations were positive. The mean correlation was .39 among the six masking tasks and .35 among the four cognitive tasks. The mean correlation between the masking tasks and the cognitive tasks was lower at .26, in part because the backward letter task was nearly unrelated to all four cognitive tasks. We will return to this task in the Discussion.
+## Individual differences and their correlational structure
 
-It is worth noting that the three same-stimulus pairs, in which the same stimulus was tested under backward and simultaneous masking, showed the three highest correlations among the masking tasks (mean *r* = .52). By comparison, the mean correlation was .40 between tasks that shared a masking procedure but differed in stimulus, and .31 between tasks that differed in both. This pattern suggests that stimulus content plays a substantial role in individual differences in masking tasks performance. More direct evidence comes from hierarchical clustering, an unsupervised method that groups tasks according to their similarity without imposing any a priori structure (Figure \@ref(fig:summary)B). The first three merges each joined the two masking procedures of the same stimulus, only after these pairs had formed did they combine with one another. By comparison, the three backward masking tasks or the three simultaneous masking tasks fail to form a cluster of their own. The four cognitive tasks formed a separate cluster, which joined the masking tasks only at the final step (distance = .74). Thus, individual differences in masking performance were organized primarily by stimulus rather than by masking procedure.
+Figure \@ref(fig:corr) summarizes the model-estimated scores for the six masking tasks and the four cognitive tasks. All scores were standardized before plotting. The distributions on the diagonal were unimodal and roughly symmetric, with substantial spread across participants. Thus, all ten tasks captured meaningful individual differences. The lower triangle of Figure \@ref(fig:corr) shows the model-estimated correlations among the ten tasks. All 45 correlations were positive with a single exception between the backward Letter task and SSPAN (*r* = -.02). The mean correlation was .39 among the six masking tasks, .35 among the four cognitive task, and .26 between the masking tasks and the cognitive tasks.
+
+It is worth noting that the three same-stimulus pairs, in which the same stimulus was tested under backward and simultaneous masking, showed the three highest correlations among the masking tasks (mean *r* = .52). By comparison, the mean correlation was .40 between tasks that shared a masking procedure but differed in stimulus, and .31 between tasks that differed in both. This pattern suggests that stimulus type plays a substantial role in individual differences in masking performance. More direct evidence comes from hierarchical clustering, an unsupervised method that groups tasks according to their similarity without imposing any a priori structure (see Figure \@ref(fig:hcluster)). The first three merges each joined the two masking procedures of the same stimulus; only after these pairs had formed did they combine with one another. By comparison, neither the three backward masking tasks nor the three simultaneous masking tasks formed a cluster of their own. The four cognitive tasks formed a separate cluster, which joined the masking tasks only at the final step. Thus, individual differences in masking performance were organized primarily by stimulus rather than by masking procedure.
+
+## Structural decomposition of masking performance
+
+Hierarchical clustering showed the structure among the masking tasks is best described by grouping by stimulus type. The next question is whether stimulus type or masking procedure contributes to cognitive performance. These two questions are different because the covariance that determines how tasks cluster need not be the covariance that predicts cognitive performance. Tasks sharing a stimulus may cluster together because of stimulus-specific variance, while their relation to cognitive performance may instead be carried by other sources of variance, for example, variance from the masking procedure or variance from a common visual factor.
+
+To answer this question, we retained the data level of the hierarchical psychometric model and replaced the covariance matrix $\boldsymbol{\Sigma}$ at the latent level with a structural equation model. For the six masking tasks, the thresholds $\theta_{ij}$ remain linked to the trial-level data through the psychometric function $F(s_{ijk}; \theta_{ij}, \beta_j)$; what changes is how the person-level vector $\boldsymbol{\theta}_i$ is generated. In the new latent structure, $\boldsymbol{\theta}_i$ is expressed as a function of seven latent factors,
+
+$$
+\boldsymbol{\eta}_i = \left(\eta_i^{V}, \eta_i^{\text{Bwd}}, \eta_i^{\text{Sim}}, \eta_i^{\text{Let}}, \eta_i^{\text{Gab}}, \eta_i^{\text{Pi}}, \eta_i^{C}\right)^\top,
+$$
+
+where $\eta_i^{V}$ is a general visual factor shared by all six masking tasks; $\eta_i^{\text{Bwd}}$ and $\eta_i^{\text{Sim}}$ are masking factors, each shared by the three tasks that use the same masking procedure; $\eta_i^{\text{Let}}$, $\eta_i^{\text{Gab}}$, and $\eta_i^{\text{Pi}}$ are stimulus factors, each shared by the two tasks that use the same stimulus; and $\eta_i^{C}$ is a cognitive factor measured by the four cognitive tasks.
+
+The measurement model relates the ten person-level parameters to these factors,
+
+$$
+\boldsymbol{\theta}_i = \boldsymbol{\mu} + \boldsymbol{\Lambda}\,\boldsymbol{\eta}_i + \boldsymbol{\epsilon}_i, \qquad
+\boldsymbol{\epsilon}_i \sim \mathcal{N}_{10}\!\left(\mathbf{0}, \boldsymbol{\Delta}\right), \qquad
+\boldsymbol{\Delta} = \operatorname{diag}\!\left(\delta_1^2, \ldots, \delta_{10}^2\right),
+$$
+
+where $\boldsymbol{\Lambda}$ is a $10 \times 7$ matrix of factor loadings and $\delta_j^2$ is the variance unique to task $j$. With the rows of $\boldsymbol{\Lambda}$ ordered as in $\boldsymbol{\theta}_i$ (backward Letter, Gabor, and Pi; simultaneous Letter, Gabor, and Pi; OSPAN, CSPAN, SSPAN, and UCMRT) and the columns ordered as in $\boldsymbol{\eta}_i$,
+
+$$
+\boldsymbol{\Lambda} =
+\begin{pmatrix}
+\lambda_1^{V} & \lambda_1^{M} & 0 & \lambda_1^{S} & 0 & 0 & 0\\
+\lambda_2^{V} & \lambda_2^{M} & 0 & 0 & \lambda_2^{S} & 0 & 0\\
+\lambda_3^{V} & \lambda_3^{M} & 0 & 0 & 0 & \lambda_3^{S} & 0\\
+\lambda_4^{V} & 0 & \lambda_4^{M} & \lambda_4^{S} & 0 & 0 & 0\\
+\lambda_5^{V} & 0 & \lambda_5^{M} & 0 & \lambda_5^{S} & 0 & 0\\
+\lambda_6^{V} & 0 & \lambda_6^{M} & 0 & 0 & \lambda_6^{S} & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & \lambda_7^{C}\\
+0 & 0 & 0 & 0 & 0 & 0 & \lambda_8^{C}\\
+0 & 0 & 0 & 0 & 0 & 0 & \lambda_9^{C}\\
+0 & 0 & 0 & 0 & 0 & 0 & \lambda_{10}^{C}
+\end{pmatrix}.
+$$
+Each masking task thus loads on the general visual factor ($\lambda_j^{V}$), on the factor for its masking procedure ($\lambda_j^{M}$), and on the factor for its stimulus ($\lambda_j^{S}$), and each cognitive task loads on the cognitive factor ($\lambda_m^{C}$). All other loadings are fixed at zero.
+
+The structural model specifies the relations among the factors,
+
+$$
+\boldsymbol{\eta}_i = \mathbf{B}\,\boldsymbol{\eta}_i + \boldsymbol{\zeta}_i, \qquad
+\boldsymbol{\zeta}_i \sim \mathcal{N}_{7}\!\left(\mathbf{0}, \boldsymbol{\Psi}\right), \qquad
+\boldsymbol{\Psi} = \mathbf{I}_7,
+$$
+
+where $\mathbf{B}$ is a $7 \times 7$ matrix of regression weights among the factors. The cognitive factor is regressed on all six visual factors:
+
+$$
+\mathbf{B} =
+\begin{pmatrix}
+0 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 0\\
+b_{V} & b_{\text{Bwd}} & b_{\text{Sim}} & b_{\text{Let}} & b_{\text{Gab}} & b_{\text{Pi}} & 0
+\end{pmatrix},
+$$
+
+so that $\eta_i^{C} = b_{V}\eta_i^{V} + b_{\text{Bwd}}\eta_i^{\text{Bwd}} + b_{\text{Sim}}\eta_i^{\text{Sim}} + b_{\text{Let}}\eta_i^{\text{Let}} + b_{\text{Gab}}\eta_i^{\text{Gab}} + b_{\text{Pi}}\eta_i^{\text{Pi}} + \zeta_i^{C}$. Setting $\boldsymbol{\Psi} = \mathbf{I}_7$ fixes the variances of the six visual factors and makes the six visual factors mutually orthogonal. Because the visual factors are orthogonal and have unit variance, this structure separates the two questions raised above. First, the variance of each masking task decomposes additively,
+
+$$
+\operatorname{Var}(\theta_{ij}) = \left(\lambda_j^{V}\right)^2 + \left(\lambda_j^{M}\right)^2 + \left(\lambda_j^{S}\right)^2 + \delta_j^2,
+$$
+
+so the proportion of variance due to each source is its term divided by $\operatorname{Var}(\theta_{ij})$. Second, the relation of each visual factor to cognitive performance is captured by its regression weight, and the corresponding correlation is
+
+$$
+\operatorname{Var}\!\left(\eta_i^{C}\right) = \sum_k b_k^2 + 1, \qquad
+\rho_k = \frac{b_k}{\sqrt{\operatorname{Var}\!\left(\eta_i^{C}\right)}}.
+$$
+Derivations are provided in Appendix B. The model was also implemented in Stan. We ran 4 chains, each with 10,000 tuning steps followed by 20,000 drawing steps. Convergence was assessed with the rank-normalized $\hat{R}$ statistic, which was below 1.01 for all parameters.
+```{r bifactor-post, include = FALSE}
+library(R2jags)
+library(papaja)
+library(polspline)
+
+fit_bf <- readRDS("Data/bifactor_fit.rds")
+bf_sl  <- fit_bf$BUGSoutput$sims.list
+
+bf_tasks <- c("Backward Letter", "Backward Gabor", "Backward Pi",
+              "Simultaneous Letter", "Simultaneous Gabor", "Simultaneous Pi")
+bf_vis   <- c("V", "Bwd", "Sim", "Letter", "Gabor", "Pi")
+bf_vis_lab <- c("General visual factor", "Backward masking", "Simultaneous masking",
+                "Letter", "Gabor", "Pi")
+
+# which specific factor each task loads on (order: Bwd, Sim, Letter, Gabor, Pi)
+bf_mask_col <- c(1, 1, 1, 2, 2, 2)
+bf_stim_col <- c(3, 4, 5, 3, 4, 5)
+
+# formatting helpers
+bf_f2  <- function(x) sub("^-\\.00$", ".00", sub("^(-?)0\\.", "\\1.", sprintf("%.2f", x)))
+bf_ci  <- function(x) sprintf("%s [%s, %s]", bf_f2(mean(x)),
+                              bf_f2(quantile(x, .025)), bf_f2(quantile(x, .975)))
+bf_pct <- function(x) sprintf("%.0f%%", 100 * mean(x))
+bf_pct_ci <- function(x) sprintf("%.0f%% [%.0f%%, %.0f%%]", 100 * mean(x),
+                                 100 * quantile(x, .025), 100 * quantile(x, .975))
+bf_range <- function(M) {          # "between 20% (backward Letter) and 40% (simultaneous Gabor)"
+  m <- colMeans(M); lab <- sub("^(\\w+)", "\\L\\1", bf_tasks, perl = TRUE)
+  sprintf("between %.0f%% (%s) and %.0f%% (%s)",
+          100 * min(m), lab[which.min(m)], 100 * max(m), lab[which.max(m)])
+}
+
+# ---- variance components: draws x task ----
+shV <- bf_sl$share_gen
+shM <- sapply(1:6, function(j) bf_sl$share_spec[, j, bf_mask_col[j]])
+shS <- sapply(1:6, function(j) bf_sl$share_spec[, j, bf_stim_col[j]])
+shU <- bf_sl$share_uni
+avgV <- rowMeans(shV); avgM <- rowMeans(shM); avgS <- rowMeans(shS); avgU <- rowMeans(shU)
+
+bf_bold <- function(x) paste0("\\textbf{", x, "}")
+tab_shares <- data.frame(
+  Task     = c(bf_tasks, bf_bold("Average")),
+  Visual        = c(apply(shV, 2, bf_ci), bf_bold(bf_ci(avgV))),
+  Masking  = c(apply(shM, 2, bf_ci), bf_bold(bf_ci(avgM))),
+  Stimulus = c(apply(shS, 2, bf_ci), bf_bold(bf_ci(avgS))),
+  Unique   = c(apply(shU, 2, bf_ci), bf_bold(bf_ci(avgU)))
+)
+p_S_gt_M <- mean(avgS > avgM)
+
+# ---- correlations with cognitive performance and Savage-Dickey Bayes factors ----
+bf_g  <- bf_sl$gamma;     colnames(bf_g)  <- bf_vis    # regression weights b_k, prior N(0, 1)
+bf_gs <- bf_sl$gamma_std; colnames(bf_gs) <- bf_vis    # correlations with C
+
+sd_bf01 <- function(x) dlogspline(0, logspline(x)) / dnorm(0, 0, 1)
+bf01    <- sapply(bf_vis, function(f) sd_bf01(bf_g[, f]))
+
+bf10    <- 1 / bf01                                   # all Bayes factors reported as BF10
+bf10_fmt <- function(x) ifelse(x >= 10, sprintf("%.1f", x), sprintf("%.2f", x))
+bf_txt  <- function(b10) sprintf("$\\text{BF}_{10} = %s$", bf10_fmt(b10))
+r_ci   <- function(f) sprintf("$r = %s$, 95%% CI [%s, %s]", bf_f2(mean(bf_gs[, f])),
+                              bf_f2(quantile(bf_gs[, f], .025)), bf_f2(quantile(bf_gs[, f], .975)))
+
+bf10_col <- bf10_fmt(unname(bf10))
+bf10_col[1] <- bf_bold(bf10_col[1])                   # general visual factor in bold
+tab_cor <- data.frame(
+  Factor = bf_vis_lab,
+  r      = unname(apply(bf_gs, 2, bf_ci)),
+  BF     = bf10_col,
+  row.names = NULL
+)
+names(tab_cor) <- c("Factor", "$r$", "$\\text{BF}_{10}$")
+
+r2_V <- mean(bf_gs[, "V"]^2)
+```
+
+### Sources of variance in masking performance
+
+Table \@ref(tab:tab-shares) shows how the variance of each masking task was distributed across the general visual factor, the masking factors, the stimulus factors, and task-unique variance. The general visual factor was the largest shared source of variance. It accounted for 32% of the variance on average. The stimulus factors were the second largest shared source, accounting for 18% of the variance on average. The masking factors accounted for the smallest share, accounting for 11% of the variance on average. In addition, the task-unique variance accounted for 40% of the variance on average.
+
+```{r tab-shares, results = "asis"}
+apa_table(
+  tab_shares,
+  caption = "Proportion of variance of each masking task due to each source.",
+  note = NULL,
+  align = c("l", "c", "c", "c", "c"),
+  escape = FALSE
+)
+```
+
+The decomposition shows two results: first, masking-specific variance was small, accounting for roughly a third of the share of the general visual factor. Backward and simultaneous masking were thus largely held together by the general visual factor rather than forming distinct sources of individual differences. Second, stimulus-specific variance tended to be larger than masking-specific variance (posterior probability = `r bf_f2(p_S_gt_M)`), in line with the clustering by stimulus reported above.
+
+### Contributions to cognitive performance
+
+Table \@ref(tab:tab-cor) shows the correlation of each visual factor with cognitive performance. Bayes factors are Savage--Dickey density ratios. We interpreted them following @Kass.Raftery.1995: $\text{BF}_{10}$ values above 3 provide positive evidence for a relation, and values above 20 provide strong evidence. Only the general visual factor was reliably related to cognitive performance, *r* = .58, 95% CI [.22, .82]", and the Bayes factor provided strong evidence for this relation, `r bf_txt(bf10[["V"]])`.
+
+```{r tab-cor, results = "asis"}
+apa_table(
+  tab_cor,
+  caption = "Correlation of each visual factor with cognitive performance.",
+  note = "Bayes factors are Savage--Dickey density ratios. $\\text{BF}_{10}$ values above 3 provide positive evidence for a relation, and values above 20 provide strong evidence.",
+  align = c("l", "c", "c"),
+  row.names = FALSE,
+  escape = FALSE
+)
+```
+
+None of the specific factors showed a comparable relation. All five credible intervals included zero, and the correlations did not share a common sign. All Bayes factors fell in the inconclusive range. Thus, the data provided no evidence that stimulus-specific or masking-specific variance contributes to cognitive performance.
+
+Taken together, stimulus content accounted for a substantial share of individual differences in masking performance, yet this stimulus-specific variance showed no evidence of a relation to cognitive performance. The relation between masking performance and cognitive performance was instead carried by the general visual factor shared by all six masking tasks.
+
+# Discussion
+
+We asked whether sensory discrimination and processing speed, as indexed by simultaneous and backward masking of the same stimuli, reflect separable sources of individual differences. Three findings emerged. First, backward and simultaneous masking were largely held together by a general visual factor, which was the largest shared source of variance in the masking tasks; variance specific to the masking procedure was small. Second, there was a clear stimulus effect: tasks that shared a stimulus correlated most strongly, clustered together, and shared stimulus-specific variance beyond the general factor. Third, despite this stimulus effect, only the general visual factor was related to cognitive performance, whereas neither stimulus-specific nor masking-specific variance showed evidence of such a relation. Thus, varying the masking procedure did not reveal distinct abilities, and varying the stimulus introduced substantial variance that was unrelated to cognitive performance.
+
+## Sensory discrimination and processing speed are largely not separable
+
+Sensory discrimination and processing speed have been studied in two largely separate literatures, each of which has been taken to reveal a distinct elementary source of cognitive ability [@Deary.1994a]. Our design held the stimulus and the mask constant and varied only whether performance was limited by the time available to encode the target (backward masking) or by the spatial overlap of target and mask (simultaneous masking). Under these conditions, the two procedures shared most of their reliable variance through a single general factor, and the variance specific to each procedure was small. If sensory discrimination and processing speed were distinct abilities, the masking factors should have been substantial, however they were not.
+
+## A stimulus effect that does not reach cognitive performance
+
+The second finding concerns the role of the stimulus. The novel finding is that this stimulus-specific variance showed no evidence of a relation to cognitive performance. 
+
+## What does the general visual factor reflect?
+
+
+## Methodological implications
+
+The present analysis combined a trial-level psychometric model with a structural equation model at the latent level. Thresholds were estimated directly from trial-level responses, so the correlations among tasks were not attenuated by trial-to-trial noise [@Rouder.Haaf.2019; @Rouder.Mehrvarz.2026], a problem that has been shown to undermine individual-difference analyses of experimental tasks [@Hedge.etal.2018]. Placing the factor model at the latent level, rather than fitting it to a matrix of estimated correlations, propagated the uncertainty of the thresholds into the variance decomposition and the regression weights. The same approach can be applied whenever abilities are measured with psychophysical thresholds.
+
+
+
+# Appendix A: Model Specification for the Hierarchical Psychometric Model
+
+**Model Specification.** Let $i = 1,\dots,I$ index individuals, $j \in \{1,2,3,4,5,6\}$ index six masking tasks, and $k = 1,\dots,K$ index trials. The data level model is given by:
+
+$$
+\begin{aligned}
+
+$$
+
+# Appendix B: Derivation of Variance Decomposition 
+\newpage
+
+# Declarations
+
+**Funding**: JNR was supported by ONR N00014-23-1-2792.
+
+**Conflict of Interest**: None.
+
+**Ethical Approval**: Something
+
+**Consent to Participate**: Something
+
+**Consent for Publication**: Something
+
+**Data Availability**: Something
+
+**Code Availability**: All data and code required to reproduce the analyses are available at <wait>.
+  
+**Author Contributions**: Something
+
+**Declaration of generative AI and AI-assisted technologies in the manuscript preparation process**:
+
+During the preparation of this work the authors used Claude and ChatGPT in order to check the grammar and spelling, as well as for verifying some mathematical calculations. After using this tool/service, the authors reviewed and edited the content as needed and took full responsibility for the content of the published article.
+
+
 
 \newpage
 
