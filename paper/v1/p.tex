@@ -334,7 +334,7 @@ where \(c_{im}\) denotes the standardized score of participant \(i\) on cognitiv
 
 where \(\boldsymbol{\mu}\) captures the mean of each task and \(\boldsymbol{\Sigma}\) captures the covariance among tasks. The covariance matrix is given a scaled inverse-Wishart (SIW) prior (Huang \& Wand, 2013) which is robust to differences in the measurement scales of the tasks and is computationally efficient to estimate (Yang \& Rouder, 2026). Full details of the model specification are provided in Appendix A.
 
-The model was implemented in Stan (Carpenter et al., 2017). We ran 4 chains, each with 2,000 tuning steps followed by 3,000 drawing steps. Convergence was assessed with the rank-normalized \(\hat{R}\) statistic (Vehtari, Gelman, Simpson, Carpenter, \& Bürkner, 2021), which was below 1.01 for all parameters.
+The model was implemented in Stan (Carpenter et al., 2017). We ran 4 chains, each with 10,000 tuning steps followed by 20,000 drawing steps. Convergence was assessed with the rank-normalized \(\hat{R}\) statistic (Vehtari, Gelman, Simpson, Carpenter, \& Bürkner, 2021), which was below 1.01 for all parameters.
 
 \section{Results}\label{results}
 
@@ -346,7 +346,7 @@ It is worth noting that the three same-stimulus pairs, in which the same stimulu
 
 \subsection{Structural decomposition of masking performance}\label{structural-decomposition-of-masking-performance}
 
-Hierarchical clustering showed the structure among the masking tasks are best described by grouping by stimulus type. The next question is whether stimulus type or masking procedure contributes to cognitive performance. These two questions are different because the covariance that determines how tasks cluster need not be the covariance that predicts cognitive performance. Tasks sharing a stimulus may cluster together because of stimulus-specific variance, while their relation to cognitive performance may instead be carried by other sources of variance, for example, variance from the masking procedure or variance from a common visual factor.
+Hierarchical clustering showed the structure among the masking tasks is best described by grouping by stimulus type. The next question is whether stimulus type or masking procedure contributes to cognitive performance. These two questions are different because the covariance that determines how tasks cluster need not be the covariance that predicts cognitive performance. Tasks sharing a stimulus may cluster together because of stimulus-specific variance, while their relation to cognitive performance may instead be carried by other sources of variance, for example, variance from the masking procedure or variance from a common visual factor.
 
 To answer this question, we retained the data level of the hierarchical psychometric model and replaced the covariance matrix \(\boldsymbol{\Sigma}\) at the latent level with a structural equation model. For the six masking tasks, the thresholds \(\theta_{ij}\) remain linked to the trial-level data through the psychometric function \(F(s_{ijk}; \theta_{ij}, \beta_j)\); what changes is how the person-level vector \(\boldsymbol{\theta}_i\) is generated. In the new latent structure, \(\boldsymbol{\theta}_i\) is expressed as a function of seven latent factors,
 
@@ -418,11 +418,11 @@ so the proportion of variance due to each source is its term divided by \(\opera
 \operatorname{Var}\!\left(\eta_i^{C}\right) = \sum_k b_k^2 + 1, \qquad
 \rho_k = \frac{b_k}{\sqrt{\operatorname{Var}\!\left(\eta_i^{C}\right)}}.
 \]
-Proof of equations are provided in Appendix B.
+Derivations are provided in Appendix B. The model was also implemented in Stan. We ran 4 chains, each with 10,000 tuning steps followed by 20,000 drawing steps. Convergence was assessed with the rank-normalized \(\hat{R}\) statistic, which was below 1.01 for all parameters.
 
 \subsubsection{Sources of variance in masking performance}\label{sources-of-variance-in-masking-performance}
 
-Table \ref{tab:tab-shares} shows how the variance of each masking task was distributed across the general visual factor, the masking factors, the stimulus factors, and task-unique variance. The general visual factor was the largest shared source of variance. It accounted for 32\% of the variance on average. The stimulus factors were the second largest shared source, accounting for 18\% of the variance on average. The masking factors accounted for the smallest share, accounting for 11\% of the variance on average. In addition, the task-unique variance, accounting for 40\% of the variance on average.
+Table \ref{tab:tab-shares} shows how the variance of each masking task was distributed across the general visual factor, the masking factors, the stimulus factors, and task-unique variance. The general visual factor was the largest shared source of variance. It accounted for 32\% of the variance on average. The stimulus factors were the second largest shared source, accounting for 18\% of the variance on average. The masking factors accounted for the smallest share, accounting for 11\% of the variance on average. In addition, the task-unique variance accounted for 40\% of the variance on average.
 
 \begin{table}[tbp]
 
@@ -450,11 +450,11 @@ Simultaneous Pi & .33 [.05, .67] & .15 [.00, .49] & .20 [.00, .54] & .31 [.11, .
 
 \end{table}
 
-The decomposition shows two results: first, masking-specific variance was small, and its credible interval extended to zero for every task. Backward and simultaneous masking therefore did not form separable sources of individual differences. Second, stimulus-specific variance was larger than masking-specific variance (posterior probability = .84), in line with the clustering by stimulus reported above.
+The decomposition shows two results: first, masking-specific variance was small, accounting for roughly a third of the share of the general visual factor. Backward and simultaneous masking were thus largely held together by the general visual factor rather than forming distinct sources of individual differences. Second, stimulus-specific variance tended to be larger than masking-specific variance (posterior probability = .84), in line with the clustering by stimulus reported above.
 
 \subsubsection{Contributions to cognitive performance}\label{contributions-to-cognitive-performance}
 
-Table \ref{tab:tab-cor} shows the correlation of each visual factor with cognitive performance. Bayes factors are Savage--Dickey density ratios. We interpreted them following Kass and Raftery (1995): \(\text{BF}_{10}\) values above 3 provide positive evidence for a relation, and values above 20 provide strong evidence. Only the general visual factor was reliably related to cognitive performance, (\emph{r} = .58), and the Bayes factor provided strong evidence for this relation, \(\text{BF}_{10} = 34.1\).
+Table \ref{tab:tab-cor} shows the correlation of each visual factor with cognitive performance. Bayes factors are Savage--Dickey density ratios. We interpreted them following Kass and Raftery (1995): \(\text{BF}_{10}\) values above 3 provide positive evidence for a relation, and values above 20 provide strong evidence. Only the general visual factor was reliably related to cognitive performance, \emph{r} = .58, 95\% CI {[}.22, .82{]}``, and the Bayes factor provided strong evidence for this relation, \(\text{BF}_{10} = 34.1\).
 
 \begin{table}[tbp]
 
@@ -488,9 +488,60 @@ Pi & .10 [-.29, .48] & 0.53\\
 
 None of the specific factors showed a comparable relation. All five credible intervals included zero, and the correlations did not share a common sign. All Bayes factors fell in the inconclusive range. Thus, the data provided no evidence that stimulus-specific or masking-specific variance contributes to cognitive performance.
 
-Taken together, stimulus content accounted for a substantial share of individual differences in masking performance, yet this stimulus-specific variance showed no relation to cognitive performance. The relation between masking performance and cognitive performance was instead carried by the general visual factor shared by all six masking tasks.
+Taken together, stimulus content accounted for a substantial share of individual differences in masking performance, yet this stimulus-specific variance showed no evidence of a relation to cognitive performance. The relation between masking performance and cognitive performance was instead carried by the general visual factor shared by all six masking tasks.
 
 \section{Discussion}\label{discussion}
+
+We asked whether sensory discrimination and processing speed, as indexed by simultaneous and backward masking of the same stimuli, reflect separable sources of individual differences. Three findings emerged. First, backward and simultaneous masking were largely held together by a general visual factor, which was the largest shared source of variance in the masking tasks; variance specific to the masking procedure was small. Second, there was a clear stimulus effect: tasks that shared a stimulus correlated most strongly, clustered together, and shared stimulus-specific variance beyond the general factor. Third, despite this stimulus effect, only the general visual factor was related to cognitive performance, whereas neither stimulus-specific nor masking-specific variance showed evidence of such a relation. Thus, varying the masking procedure did not reveal distinct abilities, and varying the stimulus introduced substantial variance that was unrelated to cognitive performance.
+
+\subsection{Sensory discrimination and processing speed are largely not separable}\label{sensory-discrimination-and-processing-speed-are-largely-not-separable}
+
+Sensory discrimination and processing speed have been studied in two largely separate literatures, each of which has been taken to reveal a distinct elementary source of cognitive ability (Deary, 1994a). Our design held the stimulus and the mask constant and varied only whether performance was limited by the time available to encode the target (backward masking) or by the spatial overlap of target and mask (simultaneous masking). Under these conditions, the two procedures shared most of their reliable variance through a single general factor, and the variance specific to each procedure was small. If sensory discrimination and processing speed were distinct abilities, the masking factors should have been substantial, however they were not.
+
+\subsection{A stimulus effect that does not reach cognitive performance}\label{a-stimulus-effect-that-does-not-reach-cognitive-performance}
+
+The second finding concerns the role of the stimulus. The novel finding is that this stimulus-specific variance showed no evidence of a relation to cognitive performance.
+
+\subsection{What does the general visual factor reflect?}\label{what-does-the-general-visual-factor-reflect}
+
+\subsection{Methodological implications}\label{methodological-implications}
+
+The present analysis combined a trial-level psychometric model with a structural equation model at the latent level. Thresholds were estimated directly from trial-level responses, so the correlations among tasks were not attenuated by trial-to-trial noise (Rouder \& Mehrvarz, 2026; \textbf{Rouder.Haaf.2019?}), a problem that has been shown to undermine individual-difference analyses of experimental tasks (\textbf{Hedge.etal.2018?}). Placing the factor model at the latent level, rather than fitting it to a matrix of estimated correlations, propagated the uncertainty of the thresholds into the variance decomposition and the regression weights. The same approach can be applied whenever abilities are measured with psychophysical thresholds.
+
+\section{Appendix A: Model Specification for the Hierarchical Psychometric Model}\label{appendix-a-model-specification-for-the-hierarchical-psychometric-model}
+
+\textbf{Model Specification.} Let \(i = 1,\dots,I\) index individuals, \(j \in \{1,2,3,4,5,6\}\) index six masking tasks, and \(k = 1,\dots,K\) index trials. The data level model is given by:
+
+\$\$
+\textbackslash begin\{aligned\}
+
+\$\$
+
+\section{Appendix B: Derivation of Variance Decomposition}\label{appendix-b-derivation-of-variance-decomposition}
+
+\newpage
+
+\section{Declarations}\label{declarations}
+
+\textbf{Funding}: JNR was supported by ONR N00014-23-1-2792.
+
+\textbf{Conflict of Interest}: None.
+
+\textbf{Ethical Approval}: Something
+
+\textbf{Consent to Participate}: Something
+
+\textbf{Consent for Publication}: Something
+
+\textbf{Data Availability}: Something
+
+\textbf{Code Availability}: All data and code required to reproduce the analyses are available at .
+
+\textbf{Author Contributions}: Something
+
+\textbf{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}:
+
+During the preparation of this work the authors used Claude and ChatGPT in order to check the grammar and spelling, as well as for verifying some mathematical calculations. After using this tool/service, the authors reviewed and edited the content as needed and took full responsibility for the content of the published article.
 
 \newpage
 
