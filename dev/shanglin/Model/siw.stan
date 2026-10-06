@@ -11,12 +11,14 @@ data {
   array[N] int<lower=1> ntrials;
   matrix[I, C] cog;
   real<lower=T - 1> nu0;
-  real<lower=0> tau;                     
+  real<lower=0> tau;
+  vector<lower=0, upper=1>[J] guess;              // chance level per task (1/9 Letter, .5 Gabor/Pi)
 }
 
 transformed data {
   matrix[T, T] S0 = diag_matrix(rep_vector(1.0, T));
   vector[T] zero_vec = rep_vector(0.0, T);
+  real eps = 1e-6;                                // keeps p away from exactly 0 or 1
 }
 
 parameters {
@@ -47,11 +49,12 @@ model {
     cog[, c] ~ normal(theta[, J + c], tau);
   }
 
-  vector[N] eta;
+  vector[N] p;
   for (n in 1:N) {
-    eta[n] = beta[task[n]] * (theta[id[n], task[n]] - s[n]);
+    real pc = eps + (1 - 2 * eps) * Phi(beta[task[n]] * (theta[id[n], task[n]] - s[n]));
+    p[n] = guess[task[n]] + (1 - guess[task[n]]) * pc;   // lower asymptote at chance
   }
-  k ~ binomial(ntrials, Phi(eta));
+  k ~ binomial(ntrials, p);
 }
 
 generated quantities {

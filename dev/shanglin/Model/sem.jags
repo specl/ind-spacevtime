@@ -1,0 +1,67 @@
+
+model{
+  ## latent factors: V, D specific factors, zeta (cognitive residual); all orthogonal
+  for (a in 1:(D+2)){
+    zero_all[a] <- 0
+    for (b in 1:(D+2)){
+      Omega[a,b] <- equals(a,b)}}
+  for (i in 1:I){
+    eta_all[i,1:(D+2)] ~ dmnorm(zero_all[1:(D+2)], Omega[1:(D+2),1:(D+2)])
+    eta_gen[i] <- eta_all[i,1]
+    for (d in 1:D){
+      eta_spec[i,d] <- eta_all[i,d+1]}
+    zeta[i] <- eta_all[i,D+2]}
+
+  ## measurement model for perception thresholds
+  for (j in 1:J){
+    lambda_gen[j] ~ dnorm(0, 1) T(0,)
+    for (d in 1:D){
+      prec[j,d] <- ifelse(free[j,d], 1, 1e8)
+      lambda_spec[j,d] ~ dnorm(0, prec[j,d]) T(0,)}
+    mu[j] ~ dnorm(0, pow(5, -2))
+    pDelta2[j] ~ dgamma(.5, .5)
+    delta2[j] <- 1 / pDelta2[j]
+    beta[j] ~ dnorm(0, pow(5, -2))}
+  for (i in 1:I){
+    for (j in 1:J){
+      center[i,j] <- mu[j] + lambda_gen[j] * eta_gen[i] + inprod(lambda_spec[j,1:D], eta_spec[i,1:D])
+      theta[i,j] ~ dnorm(center[i,j], pDelta2[j])}}
+
+  ## data level: psychometric function
+  for (n in 1:N){
+    pc[n] <- eps + (1 - 2*eps) * phi(beta[task[n]] * (theta[id[n], task[n]] - s[n]))
+    p[n]  <- guess[task[n]] + (1 - guess[task[n]]) * pc[n]
+    k[n] ~ dbin(p[n], ntrials[n])}
+
+  ## structural model: C regressed on all visual factors
+  for (f in 1:(D+1)){
+    gamma[f] ~ dnorm(0, 1)}
+  for (i in 1:I){
+    Cf[i] <- gamma[1] * eta_gen[i] + inprod(gamma[2:(D+1)], eta_spec[i,1:D]) + zeta[i]}
+
+  ## measurement model for cognitive tasks
+  for (c in 1:Cn){
+    lambda_c[c] ~ dnorm(0, 1) T(0,)
+    mu_c[c] ~ dnorm(0, pow(5, -2))
+    pDelta2_c[c] ~ dgamma(.5, .5)
+    delta2_c[c] <- 1 / pDelta2_c[c]
+    for (i in 1:I){
+      cog[i,c] ~ dnorm(mu_c[c] + lambda_c[c] * Cf[i], pDelta2_c[c])}}
+
+  ## derived quantities
+  for (j in 1:J){
+    tot[j] <- pow(lambda_gen[j], 2) + inprod(lambda_spec[j,1:D], lambda_spec[j,1:D]) + delta2[j]
+    share_gen[j] <- pow(lambda_gen[j], 2) / tot[j]
+    for (d in 1:D){
+      share_spec[j,d] <- pow(lambda_spec[j,d], 2) / tot[j]}
+    share_uni[j] <- delta2[j] / tot[j]}
+  varC <- inprod(gamma[1:(D+1)], gamma[1:(D+1)]) + 1
+  for (f in 1:(D+1)){
+    gamma_std[f] <- gamma[f] / sqrt(varC)}
+  for (j in 1:J){
+    r_gen[j] <- lambda_gen[j] * gamma[1] / sqrt(tot[j] * varC)
+    for (d in 1:D){
+      r_spec[j,d] <- lambda_spec[j,d] * gamma[d+1] / sqrt(tot[j] * varC)}
+    r_taskC[j] <- r_gen[j] + sum(r_spec[j,1:D])}
+}
+

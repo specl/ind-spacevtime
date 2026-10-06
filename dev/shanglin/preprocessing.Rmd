@@ -3,7 +3,7 @@ Merge individual scores
 ```{r}
 library(jsonlite)
 
-exclude_ids <- c("22", "31", "98")
+exclude_ids <- c("22", "31", "98",'108') # unfinished subject
 col_map <- list(
   TLetter = list(stim = "letter",      p1 = "soa1",      p2 = "soa2"),
   TGabor  = list(stim = "orientation", p1 = "soa1",      p2 = "soa2"),

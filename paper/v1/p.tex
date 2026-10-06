@@ -261,9 +261,9 @@ To assess cognitive performance, participants completed three complex span tasks
 
 \textbf{Gabor.}\(\quad\)Participants completed a two-alternative forced-choice orientation discrimination task. On each trial, a fixation cross was presented for 485 ms, followed by a centrally presented, random-phase Gabor patch (±45° orientation) embedded in white noise, which remained on the screen for another 485 ms. Participants indicated whether the grating was tilted up-left or up-right by pressing the keyboard. Task difficulty was adaptively adjusted by varying stimulus contrast.
 
-\textbf{Letter.}\(\quad\)Participants performed a forced-choice letter identification task using the keys A--L (second keyboard row). Each trial began with a 485 ms fixation cross, followed by a centrally presented target letter (one of A, S, D, F, G, H, J, K, L) displayed for 485 ms. The letter was embedded in a frequency-matched letter noise mask constructed as follows: We constructed the mask by first computing the pixelwise average of the nine possible letters and then perturbing its Fourier spectrum with complex Gaussian noise. After inverse transformation and normalization, this yielded a structured noise pattern with the same overall spatial frequency profile as the average letter image. On each trial, the target letter was linearly blended with this mask (blend coefficient \(\alpha\)), and participants identified the letter using the corresponding keyboard key. Task difficulty was adaptively adjusted by varying \(\alpha\).
+\textbf{Letter.}\(\quad\)Participants performed a forced-choice letter identification task using the keys A--L (second keyboard row). Each trial began with a 485 ms fixation cross, followed by a centrally presented target letter (one of A, S, D, F, G, H, J, K, L) displayed for 485 ms. The letter was embedded in a frequency-matched letter noise mask constructed as follows: We constructed the mask by first computing the pixelwise average of the nine possible letters and then perturbing its Fourier spectrum with complex Gaussian noise. After inverse transformation and normalization, this yielded a structured noise pattern with the same overall spatial frequency profile as the average letter image. On each trial, the target letter was linearly blended with this mask, and participants identified the letter using the corresponding keyboard key. Task difficulty was adaptively adjusted by varying the target weight in the letter--noise blend.
 
-\textbf{Pi.}\(\quad\)Participants performed a forced-choice judgment on a \(\Pi\)-shaped (Pi) target, indicating which vertical ``leg'' was longer (left vs.~right). Each trial began with a 485 ms fixation cross, followed by a centrally presented \(\Pi\) stimulus for 485 ms. The mask was composed of random oblique line segments arranged to form a \(\Pi\)-like clutter. Short line elements (randomized in length and orientation within ±10°--45°) were placed in two vertical columns aligned with the legs of the \(\Pi\) and around the crossbar region. Equal numbers of lines were drawn on each side, although their random placement could introduce local asymmetries. On each trial, the target \(\Pi\) was superimposed on this cluttered mask, and participants indicated which leg appeared longer using the keyboard. Task difficulty was adaptively controlled by varying the leg-length difference (\(\Delta L\)).
+\textbf{Pi.}\(\quad\)Participants performed a forced-choice judgment on a \(\Pi\)-shaped (Pi) target, indicating which vertical ``leg'' was longer (left vs.~right). Each trial began with a 485 ms fixation cross, followed by a centrally presented \(\Pi\) stimulus for 485 ms. The mask was composed of random oblique line segments arranged to form a \(\Pi\)-like clutter. Short line elements (randomized in length and orientation within ±10°--45°) were placed in two vertical columns aligned with the legs of the \(\Pi\) and around the crossbar region. Equal numbers of lines were drawn on each side, although their random placement could introduce local asymmetries. On each trial, the target \(\Pi\) was superimposed on this cluttered mask, and participants indicated which leg appeared longer using the keyboard. Task difficulty was adaptively controlled by varying the leg-length difference.
 
 \subsection{Processing Speed Tasks}\label{processing-speed-tasks}
 
@@ -418,7 +418,7 @@ so the proportion of variance due to each source is its term divided by \(\opera
 \operatorname{Var}\!\left(\eta_i^{C}\right) = \sum_k b_k^2 + 1, \qquad
 \rho_k = \frac{b_k}{\sqrt{\operatorname{Var}\!\left(\eta_i^{C}\right)}}.
 \]
-Derivations are provided in Appendix B. The model was also implemented in Stan. We ran 4 chains, each with 10,000 tuning steps followed by 20,000 drawing steps. Convergence was assessed with the rank-normalized \(\hat{R}\) statistic, which was below 1.01 for all parameters.
+Full details of the model specification are provided in Appendix B. Derivations for variation decomposition equations are provided in Appendix C. The model was implemented in Stan. We ran 4 chains, each with 10,000 tuning steps followed by 20,000 drawing steps. Convergence was assessed with the rank-normalized \(\hat{R}\) statistic, which was below 1.01 for all parameters.
 
 \subsubsection{Sources of variance in masking performance}\label{sources-of-variance-in-masking-performance}
 
@@ -506,19 +506,168 @@ The second finding concerns the role of the stimulus. The novel finding is that 
 
 \subsection{Methodological implications}\label{methodological-implications}
 
-The present analysis combined a trial-level psychometric model with a structural equation model at the latent level. Thresholds were estimated directly from trial-level responses, so the correlations among tasks were not attenuated by trial-to-trial noise (Rouder \& Mehrvarz, 2026; \textbf{Rouder.Haaf.2019?}), a problem that has been shown to undermine individual-difference analyses of experimental tasks (\textbf{Hedge.etal.2018?}). Placing the factor model at the latent level, rather than fitting it to a matrix of estimated correlations, propagated the uncertainty of the thresholds into the variance decomposition and the regression weights. The same approach can be applied whenever abilities are measured with psychophysical thresholds.
+The present analysis combined a trial-level psychometric model with a structural equation model at the latent level. Thresholds were estimated directly from trial-level responses, so the correlations among tasks were not attenuated by trial-to-trial noise (Rouder \& Mehrvarz, 2026). Placing the factor model at the latent level, rather than fitting it to a matrix of estimated correlations, extended the uncertainty of the thresholds into the variance decomposition and the regression weights. The same approach can be applied whenever abilities are measured with psychophysical thresholds.
 
-\section{Appendix A: Model Specification for the Hierarchical Psychometric Model}\label{appendix-a-model-specification-for-the-hierarchical-psychometric-model}
+\newpage
 
-\textbf{Model Specification.} Let \(i = 1,\dots,I\) index individuals, \(j \in \{1,2,3,4,5,6\}\) index six masking tasks, and \(k = 1,\dots,K\) index trials. The data level model is given by:
+\section{Appendix A: Hierarchical Psychometric Model With an Unstructured Covariance Matrix}\label{appendix-a-hierarchical-psychometric-model-with-an-unstructured-covariance-matrix}
 
-\$\$
-\textbackslash begin\{aligned\}
+\textbf{Model Specification.} Let \(i = 1,\dots,I\) denote individuals, \(j \in \{1,2,3,4,5,6\}\) denote six masking tasks, and \(k = 1,\dots,K\) denote trials. Let \(y_{ijk}\) denote the binary correctness outcome on the \(k\)-th trial of participant \(i\) in masking task \(j\). The data level model is then given by
+\[
+y_{ijk} \sim \text{Bernoulli}\!\left(F(s_{ijk}; \theta_{ij}, \beta_{j})\right),
+\]
+where the success probability is given by a task-specific psychometric function, modeled as a cumulative normal function of log stimulus strength with a lower asymptote at chance:
+\[
+F(s_{ijk}; \theta_{ij}, \beta_{j}) = \gamma_j + (1-\gamma_j)\,\Phi\!\left(\beta_j\,(s_{ijk}-\theta_{ij})\right).
+\]
+Here, \(\Phi(\cdot)\) denotes the standard normal cumulative distribution function, and \(\gamma_j\) is the guessing rate for task \(j\), fixed at .5 for the two-alternative Gabor and Pi tasks and at 1/9 for the nine-alternative letter tasks. The variable \(s_{ijk}\) denotes the log-transformed stimulus strength on trial \(k\) for participant \(i\) on task \(j\). In the backward masking tasks, stimulus strength was the SOA; in the simultaneous masking tasks, it was the Gabor contrast, the target weight in the letter--noise blend, and the leg-length difference of the Pi stimulus, respectively. For each masking task, the stimulus strength on each trial was log-transformed and then standardized across all trials and participants of that task. The parameter \(\theta_{ij}\) denotes the latent threshold of participant \(i\) on task \(j\), expressed on the same log scale as \(s_{ijk}\). \(\beta_j\) denotes the slope of the psychometric function for task \(j\).
 
-\$\$
+At the latent level, each participant is characterized by a vector of ten person-level parameters: the six latent thresholds from the masking tasks and the standardized scores on the four cognitive tasks,
+\[
+\boldsymbol{\theta}_i = \left(\theta_{i1}, \ldots, \theta_{i6}, c_{i1}, \ldots, c_{i4}\right)^\top,
+\]
+where \(c_{im}\) denotes the standardized score of participant \(i\) on cognitive task \(m\). These ten parameters are assumed to follow a multivariate normal distribution
+\[
+\boldsymbol{\theta}_i \sim \mathcal{N}_{10}\!\left(\boldsymbol{\mu}, \boldsymbol{\Sigma}\right).
+\]
+The cognitive scores enter the model as observed values of the last four elements of \(\boldsymbol{\theta}_i\). Specifically, the observed standardized score \(x_{im}\) of participant \(i\) on cognitive task \(m\) is modeled as
+\[
+x_{im} \sim \mathcal{N}\!\left(c_{im}, \tau^2\right), \qquad \tau = 0.01,
+\]
+so that \(c_{im}\) is constrained to be essentially equal to the observed score. In this way, the cognitive tasks contribute to the estimation of \(\boldsymbol{\Sigma}\) in the same model as the masking tasks. Before entering the model, the score on each cognitive task was standardized across participants and multiplied by \(-1\), so that, as for the thresholds, higher values indicate poorer performance.
 
-\section{Appendix B: Derivation of Variance Decomposition}\label{appendix-b-derivation-of-variance-decomposition}
+\textbf{Prior specification.} Priors are needed for the task means \(\boldsymbol{\mu}\), the slopes \(\beta_j\), and the covariance matrix \(\boldsymbol{\Sigma}\). The task means and slopes were given weakly informative normal priors,
+\[
+\mu_t \sim \mathcal{N}\!\left(0, 5^2\right), \quad t = 1, \ldots, 10, \qquad
+\beta_j \sim \mathcal{N}\!\left(0, 5^2\right), \quad j = 1, \ldots, 6,
+\]
+which are wide relative to the standardized scale of \(s_{ijk}\) and of the cognitive scores. The covariance matrix was given a scaled inverse-Wishart prior {[}(Huang \& Wand, 2013){]}. In this prior, \(\boldsymbol{\Sigma}\) is decomposed into a vector of scale parameters and an unscaled covariance matrix,
+\[
+\boldsymbol{\Sigma} = \mathbf{D}\,\boldsymbol{\Sigma}_0\,\mathbf{D}, \qquad
+\mathbf{D} = \operatorname{diag}\!\left(\sigma_1, \ldots, \sigma_{10}\right),
+\]
+with
+\[
+\boldsymbol{\Sigma}_0 \sim \text{Inverse-Wishart}\!\left(\nu_0, \mathbf{I}_{10}\right), \qquad \nu_0 = 12,
+\qquad
+\sigma_t \sim \text{Half-}t_3\!\left(0, 2.5\right), \quad t = 1, \ldots, 10.
+\]
+Equivalently, the person-level parameters are written as \(\theta_{it} = \mu_t + \sigma_t z_{it}\), with \(\mathbf{z}_i \sim \mathcal{N}_{10}(\mathbf{0}, \boldsymbol{\Sigma}_0)\). The inverse-Wishart component with \(\nu_0 = 12\) degrees of freedom and an identity scale matrix is weakly informative about the correlations, and the separate half-\(t\) priors on \(\sigma_t\) allow the standard deviation of each task to be determined by its own data rather than by the inverse-Wishart, which would otherwise couple the variances and correlations of all tasks. The correlations reported in the main text are those of \(\boldsymbol{\Sigma}\), \(\Omega_{tt'} = \Sigma_{tt'} / \sqrt{\Sigma_{tt}\Sigma_{t't'}}\), which do not depend on how \(\boldsymbol{\Sigma}\) is split into \(\mathbf{D}\) and \(\boldsymbol{\Sigma}_0\).
 
+\section{Appendix B: Hierarchical Psychometric Model With a Structural Equation Model at the Latent Level}\label{appendix-b-hierarchical-psychometric-model-with-a-structural-equation-model-at-the-latent-level}
+
+\textbf{Model specification.} The data level of this model is identical to that described in Appendix A: the trial-level outcomes \(y_{ijk}\) of the six masking tasks follow the psychometric function \(F(s_{ijk}; \theta_{ij}, \beta_j)\), with stimulus strength \(s_{ijk}\) log-transformed and standardized within each task. The two models differ only at the latent level. In Appendix A, the person-level vector \(\boldsymbol{\theta}_i\) followed a multivariate normal distribution with an unstructured covariance matrix \(\boldsymbol{\Sigma}\). Here, \(\boldsymbol{\theta}_i\) is generated by the measurement and structural models described in the main text,
+\[
+\boldsymbol{\theta}_i = \boldsymbol{\mu} + \boldsymbol{\Lambda}\,\boldsymbol{\eta}_i + \boldsymbol{\epsilon}_i,
+\qquad \boldsymbol{\epsilon}_i \sim \mathcal{N}_{10}\!\left(\mathbf{0}, \boldsymbol{\Delta}\right),
+\]
+\[
+\boldsymbol{\eta}_i = \mathbf{B}\,\boldsymbol{\eta}_i + \boldsymbol{\zeta}_i,
+\qquad \boldsymbol{\zeta}_i \sim \mathcal{N}_{7}\!\left(\mathbf{0}, \mathbf{I}_7\right),
+\]
+with \(\boldsymbol{\Lambda}\) and \(\mathbf{B}\) as given in the main text. The last four elements of \(\boldsymbol{\theta}_i\) are the observed standardized and sign-reversed cognitive scores, so that each cognitive task is modeled as \(c_{im} = \mu_{6+m} + \lambda_{6+m}^{C}\,\eta_i^{C} + \epsilon_{i,6+m}\).
+
+\textbf{Prior specification.} Priors are needed for the task means \(\boldsymbol{\mu}\), the slopes \(\beta_j\), the free factor loadings in \(\boldsymbol{\Lambda}\), the unique variances in \(\boldsymbol{\Delta}\), and the regression weights in \(\mathbf{B}\). The task means and slopes were given the same priors as in Appendix A,
+\[
+\mu_t \sim \mathcal{N}\!\left(0, 5^2\right), \quad t = 1, \ldots, 10, \qquad
+\beta_j \sim \mathcal{N}\!\left(0, 5^2\right), \quad j = 1, \ldots, 6.
+\]
+Each free loading was given a half-normal prior, which fixes the sign of each factor,
+\[
+\lambda_j^{V}, \lambda_j^{M}, \lambda_j^{S}, \lambda_m^{C} \sim \mathcal{N}^{+}\!\left(0, 1\right),
+\]
+and the loadings fixed at zero in \(\boldsymbol{\Lambda}\) were held at zero. Each unique variance was given an inverse-gamma prior through its precision,
+\[
+\delta_t^{-2} \sim \text{Gamma}\!\left(0.5, 0.5\right), \quad t = 1, \ldots, 10.
+\]
+Each of the six free regression weights in \(\mathbf{B}\) was given a standard normal prior,
+\[
+b_k \sim \mathcal{N}\!\left(0, 1\right), \quad k \in \{V, \text{Bwd}, \text{Sim}, \text{Let}, \text{Gab}, \text{Pi}\}.
+\]
+Because the regression weight of the residual \(\zeta_i^{C}\) is one, a unit change in \(b_k\) corresponds to a change in the cognitive factor equal to the standard deviation of its residual, and the prior places most of its mass on weights that correspond to correlations between \(-.70\) and \(.70\).
+
+\textbf{Bayes factors.} The Bayes factor for the hypothesis that factor \(k\) is unrelated to cognitive performance compares a model in which \(b_k\) is free to a nested model in which \(b_k = 0\), with all other parameters unchanged. Because the nested model is obtained by fixing a single parameter, the Bayes factor equals the Savage--Dickey density ratio (Wagenmakers, Lodewyckx, Kuriyal, \& Grasman, 2010),
+\[
+\text{BF}_{01} = \frac{p(b_k = 0 \mid \text{data})}{p(b_k = 0)}, \qquad \text{BF}_{10} = 1 / \text{BF}_{01},
+\]
+where the numerator is the posterior density of \(b_k\) at zero, estimated from the posterior draws with a logspline density estimator, and the denominator is the prior density at zero, \(1/\sqrt{2\pi}\).
+
+\section{Appendix C: Derivation of the Variance Decomposition}\label{appendix-c-derivation-of-the-variance-decomposition}
+
+This appendix derives the two quantities reported in the main text: the proportion of variance of each masking task due to each source, and the correlation of each visual factor with the cognitive factor. Both follow from the moments of the latent factors implied by the structural model.
+
+\textbf{Moments of the latent factors.} Rearranging the structural model gives
+\[
+\boldsymbol{\eta}_i = \left(\mathbf{I}_7 - \mathbf{B}\right)^{-1}\boldsymbol{\zeta}_i,
+\qquad
+\operatorname{Cov}(\boldsymbol{\eta}_i) = \left(\mathbf{I}_7 - \mathbf{B}\right)^{-1}\boldsymbol{\Psi}\left(\mathbf{I}_7 - \mathbf{B}\right)^{-\top}.
+\]
+Because only the last row of \(\mathbf{B}\) is nonzero, this can be written element by element. No paths lead into the six visual factors, so each equals its own residual, \(\eta_i^{k} = \zeta_i^{k}\) for \(k \in \{V, \text{Bwd}, \text{Sim}, \text{Let}, \text{Gab}, \text{Pi}\}\), and the cognitive factor is
+\[
+\eta_i^{C} = \sum_k b_k\,\eta_i^{k} + \zeta_i^{C}.
+\]
+With \(\boldsymbol{\Psi} = \mathbf{I}_7\), the moments are therefore
+\[
+\operatorname{Var}\!\left(\eta_i^{k}\right) = 1, \qquad
+\operatorname{Cov}\!\left(\eta_i^{k}, \eta_i^{l}\right) = 0 \ \ (k \neq l), \qquad
+\operatorname{Cov}\!\left(\eta_i^{k}, \eta_i^{C}\right) = b_k,
+\]
+\[
+\operatorname{Var}\!\left(\eta_i^{C}\right) = \sum_k b_k^2\,\operatorname{Var}\!\left(\eta_i^{k}\right) + \operatorname{Var}\!\left(\zeta_i^{C}\right) = \sum_k b_k^2 + 1.
+\]
+
+\textbf{Variance decomposition of the masking tasks.} Masking task \(j\) loads on the general factor, on one masking factor \(m(j)\), and on one stimulus factor \(s(j)\),
+\[
+\theta_{ij} = \mu_j + \lambda_j^{V}\eta_i^{V} + \lambda_j^{M}\eta_i^{m(j)} + \lambda_j^{S}\eta_i^{s(j)} + \epsilon_{ij}.
+\]
+Because \(\epsilon_{ij}\) is independent of the factors, its variance is
+\[
+\begin{aligned}
+\operatorname{Var}(\theta_{ij})
+={}& \left(\lambda_j^{V}\right)^2 \operatorname{Var}\!\left(\eta_i^{V}\right)
+   + \left(\lambda_j^{M}\right)^2 \operatorname{Var}\!\left(\eta_i^{m(j)}\right)
+   + \left(\lambda_j^{S}\right)^2 \operatorname{Var}\!\left(\eta_i^{s(j)}\right) \\
+ &+ 2\lambda_j^{V}\lambda_j^{M}\operatorname{Cov}\!\left(\eta_i^{V}, \eta_i^{m(j)}\right)
+   + 2\lambda_j^{V}\lambda_j^{S}\operatorname{Cov}\!\left(\eta_i^{V}, \eta_i^{s(j)}\right)
+   + 2\lambda_j^{M}\lambda_j^{S}\operatorname{Cov}\!\left(\eta_i^{m(j)}, \eta_i^{s(j)}\right)
+   + \delta_j^2 .
+\end{aligned}
+\]
+The two constraints in \(\boldsymbol{\Psi} = \mathbf{I}_7\) simplify this expression in different ways. The zero covariances among the visual factors remove the three cross-product terms, so that no variance is shared between two factors and each term can be attributed to a single source. The unit variances remove the factor variances from the remaining terms, which gives
+\[
+\operatorname{Var}(\theta_{ij}) = \left(\lambda_j^{V}\right)^2 + \left(\lambda_j^{M}\right)^2 + \left(\lambda_j^{S}\right)^2 + \delta_j^2 .
+\]
+The unit variances also give the loadings their meaning. Without a constraint on the factor variances, the contribution of a factor to task \(j\) would be \(\lambda^2\operatorname{Var}(\eta)\), and only this product, not the loading itself, would be determined by the data: multiplying a loading by a constant \(c\) and dividing the factor variance by \(c^2\) leaves the contribution unchanged. Fixing \(\operatorname{Var}(\eta_i^{k}) = 1\) removes this indeterminacy, so each squared loading is itself the variance that the factor contributes to the task, in the units of \(\theta_{ij}\). Dividing each term by the total variance therefore gives the proportion of variance due to each source,
+\[
+\pi_j^{V} = \frac{\left(\lambda_j^{V}\right)^2}{\operatorname{Var}(\theta_{ij})}, \quad
+\pi_j^{M} = \frac{\left(\lambda_j^{M}\right)^2}{\operatorname{Var}(\theta_{ij})}, \quad
+\pi_j^{S} = \frac{\left(\lambda_j^{S}\right)^2}{\operatorname{Var}(\theta_{ij})}, \quad
+\pi_j^{U} = \frac{\delta_j^2}{\operatorname{Var}(\theta_{ij})},
+\]
+which sum to one. These proportions are the values reported in Table \ref{tab:tab-shares}. Because they are ratios of variances in the same units, they do not depend on the scale of the stimulus strength.
+
+\textbf{Contribution of each visual factor to cognitive performance.} From the moments above, the correlation between visual factor \(k\) and the cognitive factor is
+\[
+\rho_k = \frac{\operatorname{Cov}\!\left(\eta_i^{k}, \eta_i^{C}\right)}{\sqrt{\operatorname{Var}\!\left(\eta_i^{k}\right)\operatorname{Var}\!\left(\eta_i^{C}\right)}}
+= \frac{b_k}{\sqrt{\sum_l b_l^2 + 1}} .
+\]
+Here, too, the unit variances matter: because \(\operatorname{Var}(\eta_i^{k}) = 1\), the regression weight \(b_k\) is itself the covariance between factor \(k\) and the cognitive factor, and \(\rho_k\) is obtained by dividing it by the standard deviation of the cognitive factor alone. Moreover, because the visual factors are orthogonal, the variance of the cognitive factor splits into one term per visual factor and a residual,
+\[
+\operatorname{Var}\!\left(\eta_i^{C}\right) = b_V^2 + b_{\text{Bwd}}^2 + b_{\text{Sim}}^2 + b_{\text{Let}}^2 + b_{\text{Gab}}^2 + b_{\text{Pi}}^2 + 1,
+\]
+so the proportion of variance in the cognitive factor due to factor \(k\) is
+\[
+\frac{b_k^2}{\operatorname{Var}\!\left(\eta_i^{C}\right)} = \rho_k^2,
+\qquad \text{and} \qquad
+R^2 = \sum_k \rho_k^2
+\]
+is the total proportion explained by the six visual factors. This additivity is what allows the relation of each visual factor to cognitive performance to be evaluated separately: if the visual factors were correlated, \(\operatorname{Var}(\eta_i^{C})\) would contain cross-product terms \(2 b_k b_l \operatorname{Cov}(\eta_i^{k}, \eta_i^{l})\) that could not be assigned to either factor.
+
+\textbf{Relation of each masking task to cognitive performance.} The same moments give the covariance between masking task \(j\) and the cognitive factor,
+\[
+\operatorname{Cov}\!\left(\theta_{ij}, \eta_i^{C}\right) = \lambda_j^{V} b_V + \lambda_j^{M} b_{m(j)} + \lambda_j^{S} b_{s(j)},
+\]
+so that the relation of each task to cognitive performance is the sum of three paths, one through each factor on which the task loads. A stimulus factor can therefore have a large loading \(\lambda_j^{S}\), and thus account for a large share of the variance of task \(j\), while contributing nothing to the relation of that task with cognitive performance if \(b_{s(j)} = 0\).
 \newpage
 
 \section{Declarations}\label{declarations}
@@ -651,6 +800,9 @@ Vickers, D., Nettelbeck, T., \& Willson, R. J. (1972). Perceptual indices of per
 
 \bibitem[\citeproctext]{ref-Vickers.Smith.1986a}
 Vickers, D., \& Smith, P. L. (1986). The rationale for the inspection time index. \emph{Personal. Individ. Differ.}, \emph{7}(5), 609--623. doi:\href{https://doi.org/10.1016/0191-8869(86)90030-9}{10.1016/0191-8869(86)90030-9}
+
+\bibitem[\citeproctext]{ref-Wagenmakers.etal.2010}
+Wagenmakers, E.-J., Lodewyckx, T., Kuriyal, H., \& Grasman, R. (2010). Bayesian hypothesis testing for psychologists: {A} tutorial on the {Savage}--{Dickey} method. \emph{Cognitive Psychology}, \emph{60}, 158--89. doi:\href{https://doi.org/10.1016/j.cogpsych.2009.12.001}{10.1016/j.cogpsych.2009.12.001}
 
 \bibitem[\citeproctext]{ref-Yang.Rouder.2026}
 Yang, S., \& Rouder, J. N. (2026). Estimating correlations across tasks in experimental psychology. \emph{Behavior Research Methods}, \emph{58}(4), 100. doi:\href{https://doi.org/10.3758/s13428-026-02990-6}{10.3758/s13428-026-02990-6}

@@ -79,7 +79,8 @@ stan_data <- list(
   ntrials = agg_df$n,
   cog     = cog,
   nu0     = n_task + 2, 
-  tau     = 0.01          # noise is very small for cognitive data so that the data will just be itself
+  tau     = 0.01,         # noise is very small for cognitive data so that the data will just be itself
+  guess   = c(1/9, 1/2, 1/2, 1/9, 1/2, 1/2)   # chance level: TLetter, TGabor, TPi, SLetter, SGabor, SPi
 )
 
 # init using MLE
@@ -111,7 +112,7 @@ init_fn <- function() {
 }
 
 # run model
-mod <- stan_model("Model/model.stan")
+mod <- stan_model("Model/siw.stan")
 fit <- sampling(mod, data = stan_data, chains = 3, cores = 3, iter = 5000, warmup = 2000, init = init_fn)
 
 # Diagnostics
@@ -125,13 +126,14 @@ Model Structure
 $$
 \begin{aligned}
 \theta_{i,\cdot} &\sim \mathcal{N}\!\big(\boldsymbol\mu,\; \Sigma\big), & i &= 1,\dots,I \\[6pt]
-y_{i,j,k} &\sim \text{Bernoulli}\big(p_{i,j,k}\big), \quad p_{i,j,k} = \Phi\Big(\beta_{j}\,\big(\theta_{i,j} - s_{i,j,k}\big)\Big), & j &=1,\dots,J,\;\; k=1,\dots,K \\[6pt]
+y_{i,j,k} &\sim \text{Bernoulli}\big(p_{i,j,k}\big), \quad p_{i,j,k} = \gamma_j + (1-\gamma_j)\,\Phi\Big(\beta_{j}\,\big(\theta_{i,j} - s_{i,j,k}\big)\Big), & j &=1,\dots,J,\;\; k=1,\dots,K \\[6pt]
 \text{cog}_{i,c} &\sim \mathcal{N}\big(\theta_{i,\,J+c},\; \tau^2\big), & c &=1,\dots,C \\[6pt]
-\mu_j &\sim \mathcal{N}(0, 5), & j &=1,\dots,T \\[6pt]
-\beta_j &\sim \mathcal{N}(0, 5), & j &=1,\dots,J \\[6pt]
+\gamma_j &= 1/9 \text{ (Letter)},\ 1/2 \text{ (Gabor, Pi)}, & j &=1,\dots,J \\[6pt]
+\mu_j &\sim \mathcal{N}(0, 5^2), & j &=1,\dots,T \\[6pt]
+\beta_j &\sim \mathcal{N}(0, 5^2), & j &=1,\dots,J \\[6pt]
 \Sigma &= D\Sigma_{\text{raw}}D, & D &= \text{diag}(\sigma_1,\dots,\sigma_T) \\[6pt]
 \sigma_j &\sim \text{Half-}t_{3}(0,\, 2.5), & j &=1,\dots,T \\[6pt]
-\Sigma &\sim \text{Inverse-Wishart}(\nu_0,\, S_0), & S_0 &= I_T
+\Sigma_{\text{raw}} &\sim \text{Inverse-Wishart}(\nu_0,\, S_0), & S_0 &= I_T
 \end{aligned}
 $$
 
@@ -163,33 +165,4 @@ corr_ordered <- corr[stim_order, stim_order]
 corrplot(corr_ordered, method = "color", mar = c(0, 0, 1, 0), tl.col = "black", tl.cex = 0.8)
 ```
 
-```{r}
-library(rstan)
-fit <- readRDS("Data/summary/trace.rds")
-perc_tasks <- c("TLetter", "TGabor", "TPi", "SLetter", "SGabor", "SPi")
-cog_tasks  <- c("OSpan", "CSpan", "Corsi", "Matrix")
-all_tasks  <- c(perc_tasks, cog_tasks)
-
-beta_summ  <- summary(fit, pars = "beta")$summary
-sigma_summ <- summary(fit, pars = "sigma_theta")$summary
-rownames(beta_summ)  <- perc_tasks
-rownames(sigma_summ) <- all_tasks
-
-cat("beta\n")
-print(round(beta_summ[, c("mean", "sd", "2.5%", "97.5%", "n_eff", "Rhat")], 3))
-cat("sigma\n")
-print(round(sigma_summ[, c("mean", "sd", "2.5%", "97.5%", "n_eff", "Rhat")], 3))
-
-beta_df  <- data.frame(task = perc_tasks, beta_summ, row.names = NULL)
-sigma_df <- data.frame(task = all_tasks, sigma_summ, row.names = NULL)
-write.csv(beta_df,  "Data/summary/beta.csv",  row.names = FALSE)
-write.csv(sigma_df, "Data/summary/sigma.csv", row.names = FALSE)
-
-beta_draws  <- rstan::extract(fit, pars = "beta")$beta
-colnames(beta_draws) <- perc_tasks
-write.csv(beta_draws, "Data/summary/beta.csv", row.names = FALSE)
-sigma_draws <- rstan::extract(fit, pars = "sigma_theta")$sigma_theta
-colnames(sigma_draws) <- all_tasks
-write.csv(sigma_draws, "Data/summary/sigma.csv", row.names = FALSE)
-```
 

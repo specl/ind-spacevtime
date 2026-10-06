@@ -1,0 +1,165 @@
+Fits the hierarchical psychometric sem model in JAGS
+```{r}
+library(R2jags)
+library(polspline)   # logspline density for Savage-Dickey Bayes factors
+
+refit    <- FALSE                          # TRUE = rerun JAGS; FALSE = load saved fit
+fit_file <- "Data/summary/sem.rds"
+perc_tasks <- c("TLetter", "TGabor", "TPi", "SLetter", "SGabor", "SPi")
+cog_tasks  <- c("OSpan", "CSpan", "Corsi", "Matrix")
+vis_names  <- c("V", "Bwd", "Sim", "Letter", "Gabor", "Pi")   # visual factors
+n_perc_task <- length(perc_tasks)
+n_cog_task  <- length(cog_tasks)
+
+# posterior mean [95% CI]
+ci <- function(x) sprintf("%.2f [%.2f, %.2f]", mean(x), quantile(x, .025), quantile(x, .975))
+```
+
+```{r}
+# Process perception data: log transform, then standardize within task
+perc_df <- read.csv("Data/summary/all_perception_raw.csv")
+perc_df$correct_num <- ifelse(perc_df$correct == "True", 1, 0)
+perc_df$x_raw <- ifelse(perc_df$staircase == 2, perc_df$param1, perc_df$param2)
+perc_df <- perc_df[perc_df$x_raw > 0, ]
+perc_df$x <- log(perc_df$x_raw)
+perc_df$x <- ave(perc_df$x, perc_df$task_name, FUN = function(v) as.numeric(scale(v)))
+
+# Exclude (subject, task) cells that are >4SD outliers or have a non-converged staircase
+clean_scores    <- read.csv("Data/summary/all_scores_clean.csv")
+clean_scores$id <- as.character(clean_scores$id)
+excluded_cells <- do.call(rbind, lapply(perc_tasks, function(t) {
+  bad_ids <- clean_scores$id[is.na(clean_scores[[t]])]
+  if (length(bad_ids) == 0) return(NULL)
+  data.frame(id = bad_ids, task_name = t, stringsAsFactors = FALSE)
+}))
+perc_df$id <- as.character(perc_df$id)
+perc_df <- subset(perc_df, !(paste(id, task_name, sep = "_") %in%
+                             paste(excluded_cells$id, excluded_cells$task_name, sep = "_")))
+
+# Map subject id and task name to indices
+ids <- sort(unique(perc_df$id))
+perc_df$id_idx   <- match(perc_df$id, ids)
+perc_df$task_idx <- match(perc_df$task_name, perc_tasks)
+n_subj <- length(ids)
+
+# Aggregate Bernoulli trials -> Binomial counts
+agg_df <- aggregate(correct_num ~ id_idx + task_idx + x, data = perc_df,
+                    FUN = function(v) c(k = sum(v), n = length(v)))
+agg_df <- data.frame(agg_df[, 1:3], k = agg_df$correct_num[, "k"], n = agg_df$correct_num[, "n"])
+
+# Cognitive scores: standardized and sign-flipped (higher = worse, as thresholds)
+cog <- read.csv("Data/summary/all_cognitive_scores.csv")
+cog$id <- as.character(cog$id)
+cog <- reshape(cog, idvar = "id", timevar = "task_name", direction = "wide")
+names(cog) <- gsub("^score\\.", "", names(cog))
+cog[, cog_tasks] <- -scale(cog[, cog_tasks])
+cog <- as.matrix(cog[match(ids, cog$id), cog_tasks])
+```
+
+
+
+```{r}
+# Guessing rate per task (set to 0 to drop the lower asymptote)
+guess <- c(TLetter = 1/9, TGabor = 1/2, TPi = 1/2, SLetter = 1/9, SGabor = 1/2, SPi = 1/2)
+
+# Specific factors each task loads on:  Bwd Sim Letter Gabor Pi
+free <- rbind(TLetter = c(1, 0, 1, 0, 0),
+              TGabor  = c(1, 0, 0, 1, 0),
+              TPi     = c(1, 0, 0, 0, 1),
+              SLetter = c(0, 1, 1, 0, 0),
+              SGabor  = c(0, 1, 0, 1, 0),
+              SPi     = c(0, 1, 0, 0, 1))
+mask_col <- c(1, 1, 1, 2, 2, 2)   # column of the masking factor in share_spec
+stim_col <- c(3, 4, 5, 3, 4, 5)   # column of the stimulus factor in share_spec
+
+jags_data <- list(
+  N = nrow(agg_df), I = n_subj, J = n_perc_task, D = ncol(free), Cn = n_cog_task,
+  id = agg_df$id_idx, task = agg_df$task_idx, s = agg_df$x,
+  k = agg_df$k, ntrials = agg_df$n,
+  guess = unname(guess[perc_tasks]), eps = 1e-6,
+  free = unname(free), cog = unname(cog)
+)
+
+# Init using per-task probit MLE
+mle_theta <- matrix(NA, n_subj, n_perc_task)
+mle_beta  <- numeric(n_perc_task)
+for (t in seq_along(perc_tasks)) {
+  sub <- subset(perc_df, task_name == perc_tasks[t])
+  sub$id <- factor(sub$id, levels = ids)
+  cf <- coef(glm(correct_num ~ 0 + id + x, data = sub, family = binomial(link = "probit")))
+  b  <- -cf["x"]
+  a  <- cf[grepl("^id", names(cf))]
+  mle_theta[match(sub("^id", "", names(a)), ids), t] <- a / b
+  mle_beta[t] <- b
+}
+for (t in seq_along(perc_tasks)) mle_theta[is.na(mle_theta[, t]), t] <- mean(mle_theta[, t], na.rm = TRUE)
+mle_theta <- apply(mle_theta, 2, function(v) pmin(pmax(v, quantile(v, .02)), quantile(v, .98)))  # trim extreme MLEs
+
+inits <- function() list(
+  mu = colMeans(mle_theta), beta = mle_beta,
+  theta = mle_theta + matrix(rnorm(length(mle_theta), 0, .02), n_subj),
+  lambda_gen = rep(.3, n_perc_task), lambda_spec = ifelse(free == 1, .3, 1e-4),
+  pDelta2 = rep(4, n_perc_task), gamma = c(.3, rnorm(ncol(free), 0, .1)),
+  lambda_c = rep(.5, n_cog_task), mu_c = rep(0, n_cog_task), pDelta2_c = rep(2, n_cog_task),
+  eta_all = matrix(rnorm(n_subj * (ncol(free) + 2), 0, .1), n_subj)
+)
+inits_clean <- function() lapply(inits(), unname)
+
+# Run model
+pars <- c("mu", "beta", "lambda_gen", "lambda_spec", "delta2", "lambda_c",
+          "gamma", "gamma_std", "share_gen", "share_spec", "share_uni")
+if (refit || !file.exists(fit_file)) {
+  fit <- jags(data = jags_data, inits = inits_clean, parameters.to.save = pars,
+              model.file = "Model/sem.jags",
+              n.chains = 3, n.iter = 30000, n.burnin = 10000, n.thin = 10)
+  saveRDS(fit, fit_file)
+} else {
+  fit <- readRDS(fit_file)
+}
+sl <- fit$BUGSoutput$sims.list
+
+# Diagnostics
+summ <- fit$BUGSoutput$summary
+key  <- grepl("^(mu|beta|lambda_gen|lambda_c|delta2|gamma|share_gen|share_uni)\\[", rownames(summ))
+cat("Max Rhat:        ", max(summ[key, "Rhat"]), "\n")
+cat("Min n_eff:       ", min(summ[key, "n.eff"]), "\n")
+cat("Posterior draws: ", nrow(sl$gamma), "\n")
+```
+
+```{r}
+# Table 1: proportion of variance of each masking task due to each source
+shV <- sl$share_gen
+shM <- sapply(1:n_perc_task, function(j) sl$share_spec[, j, mask_col[j]])
+shS <- sapply(1:n_perc_task, function(j) sl$share_spec[, j, stim_col[j]])
+shU <- sl$share_uni
+
+tab_shares <- data.frame(
+  Task     = c(perc_tasks, "Average"),
+  V        = c(apply(shV, 2, ci), ci(rowMeans(shV))),
+  Masking  = c(apply(shM, 2, ci), ci(rowMeans(shM))),
+  Stimulus = c(apply(shS, 2, ci), ci(rowMeans(shS))),
+  Unique   = c(apply(shU, 2, ci), ci(rowMeans(shU)))
+)
+print(tab_shares, row.names = FALSE)
+
+# P(average stimulus share > average masking share)
+mean(rowMeans(shS) > rowMeans(shM))
+```
+
+```{r}
+# Table 2: correlation of each visual factor with C, and Savage-Dickey BF10 (prior b_k ~ N(0, 1))
+g  <- sl$gamma;     colnames(g)  <- vis_names   # regression weights b_k
+gs <- sl$gamma_std; colnames(gs) <- vis_names   # correlations with C
+
+bf10 <- sapply(vis_names, function(f) dnorm(0, 0, 1) / dlogspline(0, logspline(g[, f])))
+
+tab_cor <- data.frame(
+  Factor = vis_names,
+  r      = apply(gs, 2, ci),
+  BF10   = round(bf10, 2)
+)
+print(tab_cor, row.names = FALSE)
+
+# Variance of C explained by V
+ci(gs[, "V"]^2)
+```

@@ -1,0 +1,140 @@
+```{r}
+corr_file  <- "Data/summary/corr.csv"    # 10 x 10 model-estimated correlation matrix (row names in 1st column)
+theta_file <- "Data/summary/theta.csv"   # 79 x 10 person-level scores
+out_A <- "Data/corr.png"
+out_B <- "Data/hcluster.png"
+
+R     <- as.matrix(read.csv(corr_file, row.names = 1, check.names = FALSE))
+theta <- read.csv(theta_file, check.names = FALSE)
+ord <- c("TLetter", "TGabor", "TPi", "SLetter", "SGabor", "SPi",
+         "OSpan", "CSpan", "Corsi", "Matrix")
+lab <- c(TLetter = "Letter", TGabor = "Gabor", TPi = "Pi",
+         SLetter = "Letter", SGabor = "Gabor", SPi = "Pi",
+         OSpan = "OSPAN", CSpan = "CSPAN", Corsi = "SSPAN", Matrix = "UCMRT")
+grp <- c(TLetter = "B", TGabor = "B", TPi = "B",
+         SLetter = "S", SGabor = "S", SPi = "S",
+         OSpan = "C", CSpan = "C", Corsi = "C", Matrix = "C")
+grp_pch  <- c(B = 15, S = 17, C = 16)            # square, triangle, circle
+grp_name <- c(B = "Backward masking", S = "Simultaneous masking", C = "Cognitive task")
+
+R <- R[ord, ord]
+Z <- scale(theta[, ord])                          # z-score each task
+n <- length(ord)
+
+## ---- Colours -------------------------------------------------------------
+INK   <- "#1f1f1d"
+MUTED <- "#6b6a63"
+HIST  <- "#4a4a46"
+PANEL <- "#f7f7f5"
+pal   <- colorRampPalette(c("#c43a39", "#e34948", "#f0efec",
+                            "#86b6ef", "#2a78d6", "#184f95"))(256)
+lim   <- 0.6                                      # colour scale runs from -lim to +lim
+r2col <- function(r) pal[round((pmin(pmax(r, -lim), lim) + lim) / (2 * lim) * 255) + 1]
+txtcol <- function(fill) {
+  rgb <- col2rgb(fill) / 255
+  if (sum(c(0.2126, 0.7152, 0.0722) * rgb) < 0.45) "white" else INK
+}
+fmt_r <- function(r) sub("^(-?)0\\.", "\\1.", sprintf("%.2f", r))
+W <- 8.4; H <- 7.2                                # inches
+ix <- function(inch) inch / W                     # inches -> figure fraction (x)
+iy <- function(inch) inch / H                     # inches -> figure fraction (y)
+
+png(out_A, width = W, height = H, units = "in", res = 300)
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0))
+plot.new()
+
+y0 <- 0.15; mat_h <- 0.80                         # bottom and height of the matrix
+cell_h <- mat_h / n
+cell_w <- cell_h * H / W                          # keep cells square
+x0 <- ix(1.05)                                    # left edge of the matrix
+gap <- 0.0025
+
+cell_fig <- function(i, j) {                      # i = row (top = 1), j = column
+  c(x0 + (j - 1) * cell_w + gap * H / W, x0 + j * cell_w - gap * H / W,
+    y0 + mat_h - i * cell_h + gap, y0 + mat_h - (i - 1) * cell_h - gap)
+}
+
+breaks <- seq(-4.5, 4.5, by = 0.5)
+for (i in seq_len(n)) for (j in seq_len(n)) {
+  par(fig = cell_fig(i, j), new = TRUE, mar = c(0, 0, 0, 0))
+  a <- ord[i]; b <- ord[j]
+  if (i == j) {                                   # diagonal: histogram
+    hist(Z[, a], breaks = breaks, col = HIST, border = "white",
+         main = "", xlab = "", ylab = "", axes = FALSE)
+    abline(h = 0, col = MUTED, lwd = 0.6)
+  } else if (i > j) {                             # lower triangle: correlation
+    plot.new(); plot.window(c(0, 1), c(0, 1), xaxs = "i", yaxs = "i")
+    fill <- r2col(R[a, b])
+    rect(0, 0, 1, 1, col = fill, border = NA)
+    text(0.5, 0.5, fmt_r(R[a, b]), col = txtcol(fill), cex = 0.8)
+  } else {                                        # upper triangle: scatter
+    plot.new(); plot.window(c(-4.2, 4.2), c(-4.2, 4.2), xaxs = "i", yaxs = "i")
+    rect(-4.2, -4.2, 4.2, 4.2, col = PANEL, border = NA)
+    points(Z[, b], Z[, a], pch = 16, cex = 0.3, col = adjustcolor(MUTED, 0.7))
+  }
+}
+
+## labels, separators, brackets, colour bar
+par(fig = c(0, 1, 0, 1), new = TRUE, mar = c(0, 0, 0, 0))
+plot.new(); plot.window(c(0, 1), c(0, 1), xaxs = "i", yaxs = "i")
+x_mid <- x0 + (seq_len(n) - 0.5) * cell_w
+y_mid <- y0 + mat_h - (seq_len(n) - 0.5) * cell_h
+x_end <- x0 + n * cell_w
+
+text(x_mid, y0 - iy(0.13), lab[ord], cex = 0.75, col = INK)            # column labels
+text(x0 - ix(0.09), y_mid, lab[ord], adj = 1, cex = 0.75, col = INK)   # row labels
+
+for (k in c(3, 6)) {                                                    # group separators
+  segments(x0 + k * cell_w, y0, x0 + k * cell_w, y0 + mat_h, col = INK, lwd = 0.9)
+  segments(x0, y0 + mat_h - k * cell_h, x_end, y0 + mat_h - k * cell_h, col = INK, lwd = 0.9)
+}
+
+blocks <- list(list(1, 3, "Backward masking"),
+               list(4, 6, "Simultaneous masking"),
+               list(7, 10, "Cognitive tasks"))
+for (bk in blocks) {
+  j1 <- bk[[1]]; j2 <- bk[[2]]
+  xa <- x0 + (j1 - 1) * cell_w + ix(0.04); xb <- x0 + j2 * cell_w - ix(0.04)   # bottom bracket
+  yb <- y0 - iy(0.40)
+  segments(xa, yb, xb, yb, lwd = 3, lend = 1, col = INK)
+  text((xa + xb) / 2, yb - iy(0.18), bk[[3]], cex = 0.85, col = INK)
+  ya <- y0 + mat_h - (j1 - 1) * cell_h - iy(0.04); yz <- y0 + mat_h - j2 * cell_h + iy(0.04)
+  xl <- x0 - ix(0.68)                                                          # left bracket
+  segments(xl, ya, xl, yz, lwd = 3, lend = 1, col = INK)
+  text(xl - ix(0.12), (ya + yz) / 2, bk[[3]], srt = 90, cex = 0.85, col = INK)
+}
+
+cb_x <- x_end + ix(0.12); cb_w <- ix(0.09)                                     # colour bar
+cb_y <- seq(y0, y0 + mat_h, length.out = length(pal) + 1)
+rect(cb_x, head(cb_y, -1), cb_x + cb_w, tail(cb_y, -1), col = pal, border = NA)
+ticks <- c(-0.6, -0.3, 0, 0.3, 0.6)
+ty <- y0 + (ticks + lim) / (2 * lim) * mat_h
+segments(cb_x + cb_w, ty, cb_x + cb_w + ix(0.04), ty, col = MUTED)
+text(cb_x + cb_w + ix(0.07), ty, sprintf("%.1f", ticks), adj = 0, cex = 0.7, col = INK)
+text(cb_x + cb_w + ix(0.45), y0 + mat_h / 2, "Correlation", srt = 90, cex = 0.8, col = INK)
+dev.off()
+```
+
+
+```{r}
+hc <- hclust(as.dist(1 - R), method = "average")
+leaves <- ord[hc$order]
+
+png(out_B, width = 8, height = 3.2, units = "in", res = 300)
+par(mar = c(3.2, 4.5, 1, 1), xpd = FALSE, yaxs = "i")
+plot(as.dendrogram(hc), leaflab = "none", ylim = c(0.40, max(hc$height) + 0.06),
+     yaxt = "n", edgePar = list(col = INK, lwd = 1.4))
+axis(2, at = seq(0.40, 0.75, by = 0.10), las = 1, cex.axis = 0.75,
+     col = MUTED, col.axis = INK, tcl = -0.3)
+mtext("Distance", side = 2, line = 3, cex = 0.85)
+par(xpd = NA)
+points(seq_len(n), rep(0.40, n), pch = grp_pch[grp[leaves]], cex = 1.3, col = INK)
+text(seq_len(n), 0.40 - 0.045, lab[leaves], cex = 0.8, col = INK)
+legend("topleft", legend = grp_name, pch = grp_pch, col = INK, bty = "n",
+       cex = 0.8, pt.cex = 1.1, inset = c(0.01, 0))
+dev.off()
+```
+
+
+
+
