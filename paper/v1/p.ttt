@@ -9,7 +9,7 @@
 
 \begin{tabular}{lcccc}
 \toprule
-Task & \multicolumn{1}{c}{Visual} & \multicolumn{1}{c}{Masking} & \multicolumn{1}{c}{Stimulus} & \multicolumn{1}{c}{Unique}\\
+Task & \multicolumn{1}{c}{General} & \multicolumn{1}{c}{Masking} & \multicolumn{1}{c}{Stimulus} & \multicolumn{1}{c}{Unique}\\
 \midrule
 Backward Letter & .19 [.01, .46] & .14 [.00, .42] & .23 [.01, .53] & .44 [.21, .71]\\
 Backward Gabor & .28 [.04, .57] & .14 [.00, .44] & .19 [.00, .52] & .39 [.16, .68]\\
@@ -32,7 +32,7 @@ Simultaneous Pi & .33 [.05, .67] & .15 [.00, .49] & .20 [.00, .54] & .31 [.11, .
 \begin{center}
 \begin{threeparttable}
 
-\caption{\label{tab:tab-cor}Correlation of each visual factor with cognitive performance.}
+\caption{\label{tab:tab-cor}Correlation of each non-cognitive factor with cognitive performance.}
 
 \begin{tabular}{lcc}
 \toprule
@@ -49,7 +49,7 @@ Pi & .10 [-.29, .48] & 0.53\\
 \end{tabular}
 
 \begin{tablenotes}[para]
-\normalsize{\textit{Note.} Bayes factors are Savage--Dickey density ratios. $\text{BF}_{10}$ values above 3 provide positive evidence for a relation, and values above 20 provide strong evidence.}
+\normalsize{\textit{Note.} $r$ is the posterior mean of the correlation $r_f$ between each non-cognitive factor and the cognitive factor, with 95\% credible interval. Bayes factors are Savage--Dickey density ratios with prior $b_f \sim \mathcal{N}(0, 1)$. $\text{BF}_{10}$ values above 3 provide positive evidence for a relation, and values above 20 provide strong evidence.}
 \end{tablenotes}
 
 \end{threeparttable}

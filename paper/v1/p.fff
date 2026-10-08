@@ -11,10 +11,10 @@
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/corr} \caption{corr plot}\label{fig:corr}
+\includegraphics[width=1\linewidth]{Figures/corr} \caption{Model-estimated scores and correlations for the six masking tasks and the four cognitive tasks. Diagonal: distributions of the standardized scores. Lower triangle: model-estimated correlations. Upper triangle: scatterplots of the standardized scores.}\label{fig:corr}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{hcluster}\label{fig:hcluster}
+\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{Hierarchical clustering of the ten tasks, based on the distance $1 - r$ between model-estimated correlations and average linkage. Symbols mark backward masking, simultaneous masking, and cognitive tasks.}\label{fig:hcluster}
 \end{figure*}
