@@ -1,6 +1,5 @@
 
 model{
-  ## latent factors: V, D specific factors, zeta (cognitive residual); all orthogonal
   for (a in 1:(D+2)){
     zero_all[a] <- 0
     for (b in 1:(D+2)){
@@ -16,11 +15,12 @@ model{
   for (j in 1:J){
     lambda_gen[j] ~ dnorm(0, 1) T(0,)
     for (d in 1:D){
-      prec[j,d] <- ifelse(free[j,d], 1, 1e8)
-      lambda_spec[j,d] ~ dnorm(0, prec[j,d]) T(0,)}
+      lam_raw[j,d] ~ dnorm(0, 1) T(0,)
+      lambda_spec[j,d] <- free[j,d] * lam_raw[j,d]}   
     mu[j] ~ dnorm(0, pow(5, -2))
-    pDelta2[j] ~ dgamma(.5, .5)
-    delta2[j] <- 1 / pDelta2[j]
+    delta[j] ~ dt(0, pow(2.5, -2), 3) T(0,)             # Half-t3(0, 2.5) on unique SD
+    delta2[j] <- pow(delta[j], 2)
+    pDelta2[j] <- 1 / delta2[j]
     beta[j] ~ dnorm(0, pow(5, -2))}
   for (i in 1:I){
     for (j in 1:J){
@@ -29,11 +29,11 @@ model{
 
   ## data level: psychometric function
   for (n in 1:N){
-    pc[n] <- eps + (1 - 2*eps) * phi(beta[task[n]] * (theta[id[n], task[n]] - s[n]))
+    pc[n] <- eps + (1 - 2*eps) * phi(beta[task[n]] * (s[n] - theta[id[n], task[n]]))
     p[n]  <- guess[task[n]] + (1 - guess[task[n]]) * pc[n]
     k[n] ~ dbin(p[n], ntrials[n])}
 
-  ## structural model: C regressed on all visual factors
+  ## structural model: C regressed on all non-cognitive factors
   for (f in 1:(D+1)){
     gamma[f] ~ dnorm(0, 1)}
   for (i in 1:I){
@@ -43,8 +43,9 @@ model{
   for (c in 1:Cn){
     lambda_c[c] ~ dnorm(0, 1) T(0,)
     mu_c[c] ~ dnorm(0, pow(5, -2))
-    pDelta2_c[c] ~ dgamma(.5, .5)
-    delta2_c[c] <- 1 / pDelta2_c[c]
+    delta_c[c] ~ dt(0, pow(2.5, -2), 3) T(0,)           
+    delta2_c[c] <- pow(delta_c[c], 2)
+    pDelta2_c[c] <- 1 / delta2_c[c]
     for (i in 1:I){
       cog[i,c] ~ dnorm(mu_c[c] + lambda_c[c] * Cf[i], pDelta2_c[c])}}
 
@@ -58,10 +59,5 @@ model{
   varC <- inprod(gamma[1:(D+1)], gamma[1:(D+1)]) + 1
   for (f in 1:(D+1)){
     gamma_std[f] <- gamma[f] / sqrt(varC)}
-  for (j in 1:J){
-    r_gen[j] <- lambda_gen[j] * gamma[1] / sqrt(tot[j] * varC)
-    for (d in 1:D){
-      r_spec[j,d] <- lambda_spec[j,d] * gamma[d+1] / sqrt(tot[j] * varC)}
-    r_taskC[j] <- r_gen[j] + sum(r_spec[j,1:D])}
 }
 

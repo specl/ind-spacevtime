@@ -91,10 +91,10 @@ for (t in seq_along(perc_tasks)) {
   sub  <- subset(perc_df, task_name == task)
   sub$id <- factor(sub$id, levels = ids)
   fit_glm <- glm(correct_num ~ 0 + id + x, data = sub, family = binomial(link = "probit"))
-  b_x  <- coef(fit_glm)["x"]; beta <- -b_x
+  beta <- coef(fit_glm)["x"]                     # p = Phi(beta * (s - theta))  ->  slope = beta
   a    <- coef(fit_glm)[grepl("^id", names(coef(fit_glm)))]
   names(a) <- sub("^id", "", names(a))
-  mle_theta[names(a), task] <- a / beta
+  mle_theta[names(a), task] <- -a / beta
   mle_beta[task] <- beta
 }
 for (t in perc_tasks) mle_theta[is.na(mle_theta[, t]), t] <- mean(mle_theta[, t], na.rm = TRUE)
@@ -113,12 +113,14 @@ init_fn <- function() {
 
 # run model
 mod <- stan_model("Model/siw.stan")
-fit <- sampling(mod, data = stan_data, chains = 3, cores = 3, iter = 5000, warmup = 2000, init = init_fn)
+fit <- sampling(mod, data = stan_data, chains = 4, cores = 4, iter = 30000, warmup = 10000, init = init_fn)  # 10,000 tuning + 20,000 drawing
 
-# Diagnostics
-summ <- summary(fit, pars = c("mu", "beta", "sigma_theta", "Omega"))$summary
-cat("Max Rhat overall: ", max(summ[, "Rhat"], na.rm = TRUE), "\n")
-cat("Min n_eff overall:", min(summ[, "n_eff"], na.rm = TRUE), "\n")
+# Diagnostics: rank-normalized Rhat and bulk ESS (Vehtari et al., 2021)
+sims <- as.array(fit, pars = c("mu", "beta", "sigma_theta", "Omega"))   # iter x chain x par
+rhat <- apply(sims, 3, rstan::Rhat)
+ess  <- apply(sims, 3, rstan::ess_bulk)
+cat("Max Rhat overall: ", max(rhat, na.rm = TRUE), "\n")
+cat("Min ESS overall:  ", min(ess, na.rm = TRUE), "\n")
 saveRDS(fit, "Data/summary/trace.rds")
 ```
 
@@ -126,14 +128,14 @@ Model Structure
 $$
 \begin{aligned}
 \theta_{i,\cdot} &\sim \mathcal{N}\!\big(\boldsymbol\mu,\; \Sigma\big), & i &= 1,\dots,I \\[6pt]
-y_{i,j,k} &\sim \text{Bernoulli}\big(p_{i,j,k}\big), \quad p_{i,j,k} = \gamma_j + (1-\gamma_j)\,\Phi\Big(\beta_{j}\,\big(\theta_{i,j} - s_{i,j,k}\big)\Big), & j &=1,\dots,J,\;\; k=1,\dots,K \\[6pt]
+y_{i,j,k} &\sim \text{Bernoulli}\big(p_{i,j,k}\big), \quad p_{i,j,k} = \gamma_j + (1-\gamma_j)\,\Phi\Big(\beta_{j}\,\big(s_{i,j,k} - \theta_{i,j}\big)\Big), & j &=1,\dots,J,\;\; k=1,\dots,K \\[6pt]
 \text{cog}_{i,c} &\sim \mathcal{N}\big(\theta_{i,\,J+c},\; \tau^2\big), & c &=1,\dots,C \\[6pt]
 \gamma_j &= 1/9 \text{ (Letter)},\ 1/2 \text{ (Gabor, Pi)}, & j &=1,\dots,J \\[6pt]
 \mu_j &\sim \mathcal{N}(0, 5^2), & j &=1,\dots,T \\[6pt]
 \beta_j &\sim \mathcal{N}(0, 5^2), & j &=1,\dots,J \\[6pt]
 \Sigma &= D\Sigma_{\text{raw}}D, & D &= \text{diag}(\sigma_1,\dots,\sigma_T) \\[6pt]
 \sigma_j &\sim \text{Half-}t_{3}(0,\, 2.5), & j &=1,\dots,T \\[6pt]
-\Sigma_{\text{raw}} &\sim \text{Inverse-Wishart}(\nu_0,\, S_0), & S_0 &= I_T
+\Sigma_{\text{raw}} &\sim \text{Inverse-Wishart}(\nu_0,\, S_0), & \nu_0 &= T + 2 = 12,\ S_0 = I_T
 \end{aligned}
 $$
 

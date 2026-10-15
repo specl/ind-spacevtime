@@ -1,6 +1,6 @@
 ```{r}
-corr_file  <- "Data/summary/corr.csv"    # 10 x 10 model-estimated correlation matrix (row names in 1st column)
-theta_file <- "Data/summary/theta.csv"   # 79 x 10 person-level scores
+corr_file  <- "Data/summary/corr.csv"    
+theta_file <- "Data/summary/theta.csv"   
 out_A <- "Data/corr.png"
 out_B <- "Data/hcluster.png"
 

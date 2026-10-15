@@ -6,7 +6,7 @@ data {
   int<lower=1> T;                                 // n_task
   array[N] int<lower=1, upper=I> id;
   array[N] int<lower=1, upper=J> task;
-  vector[N] s;                                    // x
+  vector[N] s;                                    // log stimulus strength, standardized within task
   array[N] int<lower=0> k;
   array[N] int<lower=1> ntrials;
   matrix[I, C] cog;
@@ -51,7 +51,7 @@ model {
 
   vector[N] p;
   for (n in 1:N) {
-    real pc = eps + (1 - 2 * eps) * Phi(beta[task[n]] * (theta[id[n], task[n]] - s[n]));
+    real pc = eps + (1 - 2 * eps) * Phi(beta[task[n]] * (s[n] - theta[id[n], task[n]]));
     p[n] = guess[task[n]] + (1 - guess[task[n]]) * pc;   // lower asymptote at chance
   }
   k ~ binomial(ntrials, p);

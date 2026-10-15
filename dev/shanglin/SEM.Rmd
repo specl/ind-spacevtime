@@ -1,13 +1,12 @@
 Fits the hierarchical psychometric sem model in JAGS
 ```{r}
 library(R2jags)
-library(polspline)   # logspline density for Savage-Dickey Bayes factors
+library(polspline)   #
 
-refit    <- FALSE                          # TRUE = rerun JAGS; FALSE = load saved fit
 fit_file <- "Data/summary/sem.rds"
 perc_tasks <- c("TLetter", "TGabor", "TPi", "SLetter", "SGabor", "SPi")
 cog_tasks  <- c("OSpan", "CSpan", "Corsi", "Matrix")
-vis_names  <- c("V", "Bwd", "Sim", "Letter", "Gabor", "Pi")   # visual factors
+vis_names  <- c("V", "Bwd", "Sim", "Letter", "Gabor", "Pi")   # non-cognitive factors
 n_perc_task <- length(perc_tasks)
 n_cog_task  <- length(cog_tasks)
 
@@ -87,9 +86,9 @@ for (t in seq_along(perc_tasks)) {
   sub <- subset(perc_df, task_name == perc_tasks[t])
   sub$id <- factor(sub$id, levels = ids)
   cf <- coef(glm(correct_num ~ 0 + id + x, data = sub, family = binomial(link = "probit")))
-  b  <- -cf["x"]
+  b  <- cf["x"]                                   # p = Phi(beta * (s - theta))  ->  slope = b
   a  <- cf[grepl("^id", names(cf))]
-  mle_theta[match(sub("^id", "", names(a)), ids), t] <- a / b
+  mle_theta[match(sub("^id", "", names(a)), ids), t] <- -a / b
   mle_beta[t] <- b
 }
 for (t in seq_along(perc_tasks)) mle_theta[is.na(mle_theta[, t]), t] <- mean(mle_theta[, t], na.rm = TRUE)
@@ -98,9 +97,9 @@ mle_theta <- apply(mle_theta, 2, function(v) pmin(pmax(v, quantile(v, .02)), qua
 inits <- function() list(
   mu = colMeans(mle_theta), beta = mle_beta,
   theta = mle_theta + matrix(rnorm(length(mle_theta), 0, .02), n_subj),
-  lambda_gen = rep(.3, n_perc_task), lambda_spec = ifelse(free == 1, .3, 1e-4),
-  pDelta2 = rep(4, n_perc_task), gamma = c(.3, rnorm(ncol(free), 0, .1)),
-  lambda_c = rep(.5, n_cog_task), mu_c = rep(0, n_cog_task), pDelta2_c = rep(2, n_cog_task),
+  lambda_gen = rep(.3, n_perc_task), lam_raw = matrix(.3, n_perc_task, ncol(free)),
+  delta = rep(.5, n_perc_task), gamma = c(.3, rnorm(ncol(free), 0, .1)),
+  lambda_c = rep(.5, n_cog_task), mu_c = rep(0, n_cog_task), delta_c = rep(.7, n_cog_task),
   eta_all = matrix(rnorm(n_subj * (ncol(free) + 2), 0, .1), n_subj)
 )
 inits_clean <- function() lapply(inits(), unname)
@@ -108,17 +107,14 @@ inits_clean <- function() lapply(inits(), unname)
 # Run model
 pars <- c("mu", "beta", "lambda_gen", "lambda_spec", "delta2", "lambda_c",
           "gamma", "gamma_std", "share_gen", "share_spec", "share_uni")
-if (refit || !file.exists(fit_file)) {
-  fit <- jags(data = jags_data, inits = inits_clean, parameters.to.save = pars,
+fit <- jags(data = jags_data, inits = inits_clean, parameters.to.save = pars,
               model.file = "Model/sem.jags",
-              n.chains = 3, n.iter = 30000, n.burnin = 10000, n.thin = 10)
-  saveRDS(fit, fit_file)
-} else {
-  fit <- readRDS(fit_file)
-}
+              n.chains = 4, n.iter = 30000, n.burnin = 10000, n.thin = 1)   
+saveRDS(fit, fit_file)
+
 sl <- fit$BUGSoutput$sims.list
 
-# Diagnostics
+# Diagnostics: Gelman-Rubin Rhat
 summ <- fit$BUGSoutput$summary
 key  <- grepl("^(mu|beta|lambda_gen|lambda_c|delta2|gamma|share_gen|share_uni)\\[", rownames(summ))
 cat("Max Rhat:        ", max(summ[key, "Rhat"]), "\n")
@@ -147,8 +143,8 @@ mean(rowMeans(shS) > rowMeans(shM))
 ```
 
 ```{r}
-# Table 2: correlation of each visual factor with C, and Savage-Dickey BF10 (prior b_k ~ N(0, 1))
-g  <- sl$gamma;     colnames(g)  <- vis_names   # regression weights b_k
+# Table 2: correlation of each non-cognitive factor with C, and Savage-Dickey BF10 (prior b_f ~ N(0, 1))
+g  <- sl$gamma;     colnames(g)  <- vis_names   # regression weights b_f
 gs <- sl$gamma_std; colnames(gs) <- vis_names   # correlations with C
 
 bf10 <- sapply(vis_names, function(f) dnorm(0, 0, 1) / dlogspline(0, logspline(g[, f])))
