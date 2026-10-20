@@ -6,7 +6,7 @@
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/simultaneous} \caption{Simultaneous visual masking tasks.}\label{fig:simultaneous}
+\includegraphics[width=1\linewidth]{Figures/spatial} \caption{spatial visual masking tasks.}\label{fig:spatial}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
@@ -16,5 +16,5 @@
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{Hierarchical clustering of the ten tasks, based on the distance $1 - r$ between model-estimated correlations and average linkage. Symbols mark backward masking, simultaneous masking, and cognitive tasks.}\label{fig:hcluster}
+\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{Hierarchical clustering of the ten tasks, based on the distance $1 - r$ between model-estimated correlations and average linkage. Symbols mark backward masking, spatial masking, and cognitive tasks.}\label{fig:hcluster}
 \end{figure*}
