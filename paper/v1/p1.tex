@@ -218,100 +218,83 @@ Correspondence concerning this article should be addressed to Jeffrey N. Rouder.
 \maketitle
 
 \begin{figure}
-\includegraphics[width=1\linewidth]{Figures/backward} \caption{Backward visual masking tasks.}\label{fig:backward}
+\includegraphics[width=1\linewidth]{Figures/temporal} \caption{Trial sequence of the three backward masking tasks. Rows show the Pi, Letter, and Gabor tasks. Each trial began with a fixation cross (485 ms), followed by the target. After a variable stimulus onset asynchrony (SOA), the target was replaced by a sequence of five masks (48.5 ms each): line segments for the Pi task, frequency-matched letter noise for the Letter task, and white noise for the Gabor task. Individuals then judged which leg of the Pi was longer (left or right), which of nine letters (A-L) was presented, or whether the Gabor was tilted to the left or right. The response screen remained until response. Task difficulty was adjusted by varying the SOA.}\label{fig:temporal}
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=1\linewidth]{Figures/spatial} \caption{spatial visual masking tasks.}\label{fig:spatial}
+\includegraphics[width=1\linewidth]{Figures/spatial} \caption{Trial sequence of the three spatial masking tasks. Rows show the Pi, Letter, and Gabor tasks. Each trial began with a fixation cross (485 ms), followed by the target embedded in the same mask as in the corresponding backward masking task (485 ms): line segments for the Pi task, frequency-matched letter noise for the Letter task, and white noise for the Gabor task. Individuals made the same judgments as in the backward masking tasks, and the response screen remained until response. Task difficulty was adjusted by varying the leg-length difference of the Pi, the target weight in the letter-noise blend, and the contrast of the Gabor, respectively.}\label{fig:spatial}
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=1\linewidth]{Figures/corr} \caption{Model-estimated scores and correlations for the six masking tasks and the four cognitive tasks. Diagonal: distributions of the standardized scores. Lower triangle: model-estimated correlations. Upper triangle: scatterplots of the standardized scores.}\label{fig:corr}
+\includegraphics[width=1\linewidth]{Figures/corr} \caption{Individual differences in the six masking tasks and the four cognitive tasks. Diagonal: distributions of the standardized model-estimated scores across individuals. Lower triangle: model-estimated correlations between tasks. Upper triangle: scatterplots of the standardized model-estimated scores for each pair of tasks; each point is one individual.}\label{fig:corr}
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{Hierarchical clustering of the ten tasks, based on the distance $1 - r$ between model-estimated correlations and average linkage. Symbols mark backward masking, spatial masking, and cognitive tasks.}\label{fig:hcluster}
+\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{Hierarchical clustering of the six masking tasks and the four cognitive tasks. The dendrogram was obtained with average linkage, using $1 - r$ as the distance between two tasks, where $r$ is their model-estimated correlation. Tasks that merge at a lower height are more strongly correlated.}\label{fig:hcluster}
 \end{figure}
 
 \section{Introduction}\label{introduction}
 
-One of the most striking findings in individual-differences research is that performance on simple perceptual tasks predict performance on high-level cognitive task such as working memory and fluid intelligence task (Jastrzębski, Kroczek, \& Chuderski, 2021; Robison, Campbell, Garner, Sibley, \& Coyne, 2026; Tsukahara, Harrison, Draheim, Martin, \& Engle, 2020). Perhaps the best documented link between perceptual ability and higher-order cognition comes from the inspection time (IT) task. This finding was first demonstrated by Galton (1883). The classic version of the task is shown in Figure \ref{fig:backward}. Here, individuals briefly view a simple figure and make a perceptual judgment. The brief display of the simple figure is followed by a pattern mask such that the visual information is available for a limited time. Consequently, accuracy is not at ceiling (Vickers, Nettelbeck, \& Willson, 1972). Individuals with higher accuracy on these inspection-time tasks tend to score higher on tests of intelligence (Deary \& Stough, 1996; Nettelbeck \& Lally, 1976), with correlations of about \(.3\) (Grudnik \& Kranzler, 2001; Kranzler \& Jensen, 1989).
+One of the most striking findings in individual-differences research is that performance on simple perceptual tasks predict performance on high-level cognitive task such as working memory and fluid intelligence task (Jastrzębski, Kroczek, \& Chuderski, 2021; Robison, Campbell, Garner, Sibley, \& Coyne, 2026; Tsukahara, Harrison, Draheim, Martin, \& Engle, 2020). The finding is old, perhaps first explored by Galton (1883) and Spearman (1904). Perhaps the best documented link between perceptual ability and higher-order cognition comes from the inspection time (IT) task. The classic version of the task is shown in Figure \ref{fig:temporal}A. Here, individuals briefly view a simple figure and make a perceptual judgment. The brief display of the simple figure is followed by a pattern mask such that the visual information is available for a limited time. Consequently, accuracy is not at ceiling (Vickers, Nettelbeck, \& Willson, 1972). Individuals with higher accuracy on these inspection-time tasks tend to score higher on tests of intelligence (Deary \& Stough, 1996; Nettelbeck \& Lally, 1976), with a meta-analytic correlation of about \(.3\) across 92 studies. (Grudnik \& Kranzler, 2001; Kranzler \& Jensen, 1989).
 
-Why should accurate judgement about brief displays be related to high performance in working memory and IQ tasks? The standard answer is based on \emph{processing speed}. People who do well on the IT task are good at extracting visual information quickly. They have fast visual processing speed. The claim then is that processing speed is not domain specific but is a general phenomenal that affects many cognitive processes (Jensen, 2006; Salthouse, 1996; Vernon, 1983). Individuals with fast processing speed do well in working memory and IQ tasks because it is general.
+Why should accurate judgement about brief displays be related to high performance in working memory and IQ tasks? The standard answer is based on \emph{processing speed}. People who do well on the IT task are good at extracting visual information quickly. They have fast visual processing speed. The claim then is that processing speed is not domain specific but is a general phenomenal that affects many cognitive processes (Jensen, 2006; Salthouse, 1996; Vernon, 1983). Individuals with fast processing speed do well in working memory and IQ tasks because it is general. The processing speed account of the correlation makes sense. Yet, we worry here about the claim that inspection time indexes processing speed per se. Certainly, it is plausible that individual differences in inspection time tasks reflect processing speed, but, on the other hand, they may reflect factors that do not have a temporal basis. We refer to these as spatial factors, in contrast to the temporal factor of processing speed: the ability to resolve the target clearly and to filter it from the mask. In the modern literature, perceptual abilities that are not time limited also correlate with intelligence and working memory (Deary, Bell, Bell, Campbell, \& Fazal, 2004; Mikellidou, Lambrou, Georgiou, \& Avraamides, 2023; Mosing, Pedersen, Madison, \& Ullén, 2014; Tsukahara et al., 2020). A good example of this correlation comes from Tsukahara et al. (2020) who measured how well individuals could discriminate between the loudness of tones, the pitch of tones, the length of lines, and the area of circles. These discriminate abilities correlated between 0.16 and 0.53 with progressive matrix reasoning tasks. These findings do not rule out a processing speed explanation \emph{per se} as these tasks may require speediness in maintaining representations across different fixations and attentional moments for comparison.
 
-The processing speed account of the correlation makes sense. Yet, we worry here about the claim that inspection time indexes processing speed \emph{per se}. Certainly, it is plausible that individual differences in inspection time tasks reflect processing speed, but, on the other hand, they may reflect factors that do not have a temporal basis. For example, the task also requires individuals to maintain good acuity and filtering. In the modern literature, perceptual abilities that are not time limited also correlate with intelligence and working memory (Deary, Bell, Bell, Campbell, \& Fazal, 2004; Mikellidou, Lambrou, Georgiou, \& Avraamides, 2023; Mosing, Pedersen, Madison, \& Ullén, 2014; Tsukahara et al., 2020). A good example of this correlation comes from Tsukahara et al. (2020) who measured how well individuals could discriminate between the loudness of tones, the pitch of tones, the length of lines, and the area of circles. These discriminate abilities correlated between xx and yy with progressive matrix reasoning tasks. For example, Tsukahara et al. (2020) report a correlations between xx and yy between sensory discrimination and progressive-matrix reasoning. These findings do not rule out a processing speed explanation \emph{per se} as these tasks may require speediness in maintaining representations across different fixations and attentional moments for comparison.
+In practice, it seems difficult to determine if the correlation between perception and higher-order cognition is mediated by temporal or spatial factors. The reasons for these difficulties may be seen in the recent stufy by
+Jastrzębski et al. (2021) who administered a series of IT tasks, a series of sensory discrimination tasks, and a battery of working memory and intelligence tasks to the same participants. There is both a statistical and methodological reasons for the difficulty. The statistical reason is that the correlations form an almost perfect triangle of values:the latent inspection-time factor correlated about \(.63\) with the latent sensory-discrimination factor, and each correlated substantially with working memory (r = \(0.68\) between inspection-time and working memory, and r = \(0.66\) between sensory-discrimination and working memory). Yet such a triangle tells us little about why perception relates to cognition. The methodological problem is that the stimuli in inspection time and sensory discrimination are not matched or yolked. In Jastrzębski et al. (2021), they used partly different judgments (e.g., length vs.~brightness) and partly different stimuli (e.g., lines vs.~rectangles) for two kinds of tasks, so their relation to cognition may reflect specific judgments or stimuli rather than temporal or spatial factors.
 
-Jastrzębski et al. (2021) run a series of IT tasks, a series of sensory discrimination tasks, and a number of working memory and intelligence tasks. They find almost a perfect triangle of correlations. The latent variable \emph{inspection-time} ability correlates about .65 with the latent variable blah blah blah, cant learn much.
+Our goal is to put spatial and temporal factors in contrast and ask which factor better mediates the correlation with higher-order cognition. For the purposes herein, we distinguish between \emph{fast eyes} and \emph{sharp eyes}. Individuals with fast eyes process visual information quickly; people with sharp eyes process spatial information well in the presence of visual noise. If the fast-eyes account is correct, the relation between IT and cognitive performance arises because the backward mask limits the time available to process the target. Remove this time limit, and the relation should disappear. On the other hand, if the sharp-eye account is correct, then relation reflects the ability to see under impoverished visual conditions. Improve the visual conditions, and the relations should disappear.
 
-Our goal is to put spatial and temporal performance in contrast and ask which form better correlates to higher-order cognition. For the purposes herein, we distinguish between \emph{fast eyes} and \emph{sharp eyes}. Individuals with fast eyes process visual information quickly; people with sharp eyes process spatial information well in the presence of visual noise. If the fast-eyes account is correct, the relation between IT and cognitive performance arises because the backward mask limits the time available to process the target. Remove this time limit, and the relation should disappear. On the other hand, if the sharp-eye account is correct, then relation reflects the ability to see under impoverished visual conditions. Improve the visual conditions, and the relations should disappear.
+These diverging predictions may be tested in a highly controlled environment where only the type of masking differ. In the \emph{backwards-masking} versions of the tasks, the stimuli were relatively clear and the key manipulation was the time between stimulus and a following patterned backwards mask. In the \emph{spatial-masking} versions, the stimulus was presented in stimulus-tuned noise, and the stimulus was displayed until response. In the backwards masking version, the duration of information is manipulated and individual differences rely more on processing speed (fast eyes) than acuity (sharp eyes). In the spatial masking version, the amount of noise is manipulated and individuals differences reply more on acuity than processing speed. Key in this setup is that all other aspects of the stimulus are fairly constant across backward-masking and spatial-masking versions. Thus, the experiment has the potential to discriminate between the fast-eyes and sharp-eyes hypotheses.
 
-These diverging predictions may be tested in a highly controlled environment where only the type of masking differ. In the \emph{backwards-masking} versions of the tasks, the stimuli were relatively clear and the key manipulation was the time between stimulus and a following patterned backwards mask. In the \emph{spatial-masking} versions, the stimulus was presented in stimulus-tuned noise, and the stimulus was displayed until response. In the backwards masking version, the duration of information is manipulated and individual differences rely more on processing speed (fast eyes) than acuity (sharp eyes). In the spatial masking version, the amount of noise is manipulated and individuals differences reply more on acuity than processing speed. Key in this setup is that all other aspects of the stimulus are fairly constant across backward-masking and spatial-masking versions. Thus, the experiment has the potential to discriminate between the fast-eyes and sharp-eyes hypotheses. If the limit is fast eyes, then backwards-masking versions should correlate with higher-order tasks better than spatial-masking versions do. Conversely, if the limit is sharp eyes, the reverse should hold.
-
-We construct six different visual perception tasks by crossing three stimulus types with the two mask types. The two mask types are whether the stimulus is degraded by backwards masking or by spatial masking. The three stimulus types are whether the target is a ``pi'' stimulus which is standard in imspection time tasks, a letter stimulus, or a gabor grating. The pi stimulus consists of two vertical segments connected by an upper horizontal segment, and the individual judges whether the left or right leg is longer. Letter stimuli are just these, and the individual judges which letter is presented. Gabor stimuli have an orientation that is either -45 degrees from the vertical (left tilting) or +45 degrees from the vertical (right tiling)/ Individuals judge whether the gabor orientation is left or right tilting. Figures X blah blah
+We construct six different visual perception tasks by crossing three stimulus types with the two mask types. The two mask types are whether the stimulus is degraded by backwards masking or by spatial masking. The three stimulus types are whether the target is a ``pi'' stimulus which is standard in inspection time tasks, a letter stimulus, or a gabor grating. The pi stimulus consists of two vertical segments connected by an upper horizontal segment, and the individual judges whether the left or right leg is longer. Letter stimuli are just these, and the individual judges which letter is presented. Gabor stimuli have an orientation that is either -45 degrees from the vertical (left tilting) or +45 degrees from the vertical (right tiling). Individuals judge whether the gabor orientation is left or right tilting.
 
 The expected data patters are as follows: if the fast-eyes hypothesis holds, then the three backwards-masking tasks should cluster well and the combined latent variable should correlate well with higher-order tasks. Conversely, if the sharp-eyes hypothesis holds, then the the three spatial-masking tasks should cluster well and the combined letat variable should correlate well with higher-order tasks. Yet, there are data patterns that do not accord to either hypothesis. Perhaps, there is no special concept of fast or sharp eyes. An alternative is that some people have better vision that others, and that those with better vision tend to do better on the higher-order cognitive functions. We call this the \emph{good-eyes} hypothesis.
 
-Given the large literature on the correlation between inspection time and IQ, we ran this experiment to confirm that processing speed was crucial. We fully expected the backwards-making tasks to cluster and the shared variance among them to drive the correlation between perception and higher-order cognition. We were quite wrong in these expetations. To foreshadow, we find that the distinction between spatial and backwards masking accounts for very little of the variance across individuals. A factor that accounts for more variance is stimulus type. It seems that people vary more across gabors, letters, and pi stimuli than they do across spatial and backwards masks. Moreover, it seems that what is shared across the stimulus types that drives the correlation with higher-order cognition. And this fact provides the best evidence that neither spatial and nor backwards masking are privileged in relating to higher-order cognitive functions. It seems the good-eyes hypothesis, our add on hypothesis for completeness, is best describes the data.
+Given the large literature on the correlation between inspection time and IQ, we ran this experiment to confirm that processing speed was crucial. We fully expected the backwards-making tasks to cluster and the shared variance among them to drive the correlation between perception and higher-order cognition. We were quite wrong in these expectations. To foreshadow, we find that the distinction between spatial and backwards masking accounts for very little of the variance across individuals. A factor that accounts for more variance is stimulus type. It seems that people vary more across gabors, letters, and pi stimuli than they do across spatial and backwards masks. Moreover, it seems that what is shared across the stimulus types that drives the correlation with higher-order cognition. And this fact provides the best evidence that neither spatial and nor backwards masking are privileged in relating to higher-order cognitive functions. It seems the good-eyes hypothesis, our add on hypothesis for completeness, is best describes the data.
 
-Jeff Stops Here.
+\section{Experimental Method}\label{experimental-method}
 
-There is a feature of modern inquiries that work against answering the good-eyes vs.~fast-eyes questions. To our knowledge previous researchers use different stimuli to measure processing speed and spatial acuity. Processing speed is almost always measured with a set of stimuli that we call \(\pi\) stimuli. The stimulus, shown in Figure \ref{fig:spatial}, consists of two vertical segments connected on top by a horizontal segment; taken together the stimulus is a rough approximation of the Greek letter \(\pi\). The individual judges which of the two vertical segments is longer. Spatial acuity, in contrast, may be measured as how well tones of various loudness may be discriminated or circles of various areas may be discriminated. And, although line-length discrimination is used, it is never set up in a \(\pi\)-stimulus configuration. We think this incompatibility is a mistake, and it would be best to have carefully matched spatial and temporal abilities tasks.
+The experimental battery consisted of 10 tasks than was run on 83 individuals. Six of the ten tasks are discussed above ans aerve as the perceptual part of the battery. These six are formed by crossing the type of stimulus (pi, letter, gabor) with type of masking (spatial, backwards). Of the remaining four tasks, three are span tasks to assess working memory and a fourth is a matrix reasoning task to assess fluid intelligence.sk were presented spatially.
 
-A recent study of the relationship among spatial acuity, processing speed, and high-level cognitive performance from Jastrzębski et al. (2021) illustrates this problem. They measured processing speed with choice reaction time (CRT) tasks using letters, digits, and arrows, and spatial acuity with entirely different stimuli (e.g., circles, squares, rectangles, dot arrays, and tones). They found that the two constructs were separable (r = .34--.62). Because the processing speed and acuity measures differed in both stimulus and task format, however, this separation may reflect stimulus-specific variance rather than a difference between the underlying abilities. Their own data are consistent with this concern: even within spatial acuity, the visual and auditory factors could not be merged into a single cluster (r = .59). Thus, whether processing speed and spatial acuity are truly distinct remains an open question that requires matched stimuli to resolve.
-
-To address the stimulus confound in previous studies and to ask which source of variance relates to cognition, we crossed three stimuli (a Gabor patch, a letter, and the Pi stimulus) with the two masking procedures, using an identical mask for each stimulus under backward and spatial masking. In this fully crossed design, variance associated with the masking procedure can be separated from variance associated with the stimulus (Campbell \& Fiske, 1959). If fast eyes and good eyes are distinct abilities, tasks that share a masking procedure should correlate more strongly than tasks that share a stimulus; if individual differences are organized by stimulus, the reverse should hold. The same individuals completed three complex span tasks of working memory (Conway et al., 2005; Pahor, Seitz, \& Jaeggi, 2022; Unsworth, Heitz, Schrock, \& Engle, 2005) and a matrix reasoning test of fluid intelligence (Pahor, Stavropoulos, Jaeggi, \& Seitz, 2019), which together served as our measure of cognitive performance. We estimated thresholds with a hierarchical psychometric model and decomposed their variance into a general factor, masking-specific factors, and stimulus-specific factors, which allowed us to ask which of these sources relates to cognitive performance.
-
-\section{Method}\label{method}
-
-\subsection{individuals}\label{individuals}
+\subsection{Paticipants}\label{paticipants}
 
 Eighty-three undergraduate students at the University of California, Irvine, participated in exchange for \$50 in total compensation. Four individuals withdrew before completing all sessions, leaving a final sample of 79. All individuals reported normal or corrected-to-normal vision and provided informed consent. The study was approved by the Institutional Review Board of the University of California, Irvine (Study ID: STUDY00000064).
 
 \subsection{Apparatus}\label{apparatus}
 
-individuals were tested individually in a dimly lit cubicle, seated approximately 100 cm from a 24-inch BenQ LED gaming monitor (1920 × 1080 pixels, 165 Hz refresh rate, 6.06 ms per frame). Stimuli were generated with PsychoPy3 (Peirce et al., 2019) in Python 3.8, running on a PC with Lubuntu Linux 22.04.
+Participants were tested individually in a dimly lit cubicle, seated approximately 100 cm from a 24-inch BenQ LED gaming monitor (1920 × 1080 pixels, 165 Hz refresh rate, 6.06 ms per frame). Stimuli were generated with PsychoPy3 (Peirce et al., 2019) in Python 3.8, running on a PC with Lubuntu Linux 22.04.
 
-\subsection{Tasks Overview}\label{tasks-overview}
+\subsection{Tasks}\label{tasks}
 
-To assess the sensory discrimination ability and processing speed, the experiment contained six visual masking tasks: three employing backward masking (see Figure \ref{fig:backward}) and three employing spatial masking (see Figure \ref{fig:spatial}). Both sets of tasks used the same stimulus classes (a Gabor stimulus, a letter stimulus, and a Pi stimulus) and mask classes. The critical difference was the masking procedure: in the backward masking tasks, the mask followed the stimulus after a variable stimulus--onset asynchrony (SOA), whereas in the spatial masking the stimulus and mask were presented spatially.
+\textbf{Task 1: Pi Stimuli with Temporal Masking.} Participants completed a two-alternative forced-choice length discrimination task on a \(\Pi\)-shaped (Pi) target, as shown in Figure \ref{fig:temporal}A. Each trial began with the presentation of a fixation cross, which was displayed for 485 ms. It was followed by a centrally presented \(\Pi\) stimulus in which one of the two vertical ``legs'' was longer than the other. After a variable stimulus onset asynchrony (SOA), the target was replaced by a dynamic sequence of five masks, each presented for 48.5 ms. Each mask was composed of random oblique line segments forming a \(\Pi\)-like clutter. Short line elements (randomized in length, with orientations randomized within \(\pm 10^\circ\)--\(45^\circ\)) were placed in two vertical columns aligned with the legs of the \(\Pi\) and around the crossbar region. Equal numbers of lines were drawn on each side, although their random placement could introduce local asymmetries. Participants judged whether the left or right leg was longer by pressing designated keys on the keyboard. The SOA was manipulated adaptively on a trial-by-trial basis for each participant.
 
-To assess cognitive performance, individuals completed three complex span tasks of working memory (OSPAN, CSPAN, and SSPAN) and one matrix reasoning test of fluid intelligence (UCMRT).
+\textbf{Task 2: Letter Stimuli with Temporal Masking.} Participants completed a 9-choice letter identification task as shown in Figure \ref{fig:temporal}B. The presented letters were ``A'', ``S'', ``D'', ``F'', ``G'', ``H'', ``J'', ``K'', and ``L'', that is, those that are on the second row of a standard American English QWERTY keyboard. Each trial began with the presentation of a fixation cross, which was displayed for 485 ms. It was followed by a centrally presented target letter. After a variable SOA, the target was replaced by a dynamic sequence of five masks, each presented for 48.5 ms. The masks were FFT-filtered noise with spatial frequencies matching the collection of letters (Sperling citation). Participants identified the letter by pressing the corresponding key on the keyboard. The SOA was manipulated adaptively on a trial-by-trial basis for each participant.
 
-\subsection{Sensory discrimination tasks}\label{sensory-discrimination-tasks}
+\textbf{Task 3: Gabor Stimuli with Temporal Masking.} Participants completed a two-alternative forced-choice orientation discrimination task as shown in Figure \ref{fig:temporal}C. Each trial began with the presentation of a fixation cross, which was displayed for 485 ms. It was followed by a centrally presented Gabor patch with a random phase and an orientation of \(+45^\circ\) or \(-45^\circ\) relative to vertical. The patch subtended approximately \(8.1^\circ \times 8.1^\circ\) of visual angle and had a spatial frequency of approximately 1.2 cycles per degree (i.e., one cycle spanned approximately \(0.81^\circ\)), with a Gaussian envelope of standard deviation of approximately \(1.0^\circ\). After a variable SOA, the target was replaced by a dynamic sequence of five white noise masks, each presented for 48.5 ms. Participants judged whether the grating was tilted leftward (\(-45^\circ\)) or rightward (\(+45^\circ\)) by pressing designated keys on the keyboard. The SOA was manipulated adaptively on a trial-by-trial basis for each participant.
 
-\textbf{Gabor Stimuli.}\(\quad\)individuals completed a two-alternative forced-choice orientation discrimination task. On each trial, a fixation cross was presented for 485 ms, followed by a centrally presented, random-phase Gabor patch (±45° orientation) embedded in white noise, which remained on the screen for another 485 ms. individuals indicated whether the grating was tilted up-left or up-right by pressing the keyboard. Task difficulty was adaptively adjusted by varying stimulus contrast.
+\textbf{Task 4: Pi Stimuli with Spatial Masking.} This task matched the temporal \(\Pi\)-leg discrimination task (Task 1), as shown in Figure \ref{fig:spatial}A, except that the mask was presented together with the target rather than after it. Each trial began with the presentation of a fixation cross, which was displayed for 485 ms. It was followed by the \(\Pi\) target superimposed on a \(\Pi\)-like clutter mask constructed in the same way as in Task 1, and this target-mask combination was presented for 485 ms. Participants judged whether the left or right leg was longer by pressing designated keys on the keyboard. Instead of the SOA, the leg-length difference was manipulated adaptively on a trial-by-trial basis for each participant.
 
-\textbf{Letter Stimuli.}\(\quad\)individuals performed a forced-choice letter identification task using the keys A--L (second keyboard row). Each trial began with a 485 ms fixation cross, followed by a centrally presented target letter (one of A, S, D, F, G, H, J, K, L) displayed for 485 ms. The letter was embedded in a frequency-matched letter noise mask constructed as follows: We constructed the mask by first computing the pixelwise average of the nine possible letters and then perturbing its Fourier spectrum with complex Gaussian noise. After inverse transformation and normalization, this yielded a structured noise pattern with the same overall spatial frequency profile as the average letter image. On each trial, the target letter was linearly blended with this mask, and individuals identified the letter using the corresponding keyboard key. Task difficulty was adaptively adjusted by varying the target weight in the letter--noise blend.
+\textbf{Task 5: Letter Stimuli with Spatial Masking.} This task matched the temporal letter identification task (Task 2), as shown in Figure \ref{fig:spatial}B, with the same nine letters and response keys, except that the target letter was embedded in noise rather than followed by a mask. Each trial began with the presentation of a fixation cross, which was displayed for 485 ms. It was followed by a target letter presented in FFT-filtered noise with spatial frequencies matching the collection of letters (Sperling citation), and this stimulus-noise combination was presented for 485 ms. Instead of the SOA, the contrast of letter-to-noise was manipulated adaptively on a trial-by-trial basis for each participant.
 
-\textbf{Pi Stimuli.}\(\quad\)individuals performed a forced-choice judgment on a \(\Pi\)-shaped (Pi) target, indicating which vertical ``leg'' was longer (left vs.~right). Each trial began with a 485 ms fixation cross, followed by a centrally presented \(\Pi\) stimulus for 485 ms. The mask was composed of random oblique line segments arranged to form a \(\Pi\)-like clutter. Short line elements (randomized in length and orientation within ±10°--45°) were placed in two vertical columns aligned with the legs of the \(\Pi\) and around the crossbar region. Equal numbers of lines were drawn on each side, although their random placement could introduce local asymmetries. On each trial, the target \(\Pi\) was superimposed on this cluttered mask, and individuals indicated which leg appeared longer using the keyboard. Task difficulty was adaptively controlled by varying the leg-length difference.
+\textbf{Task 6: Gabor Stimuli with Spatial Masking.} This task matched the temporal Gabor orientation discrimination task (Task 3), as shown in Figure \ref{fig:spatial}C, except that the Gabor patch was embedded in noise rather than followed by a mask. Each trial began with the presentation of a fixation cross, which was displayed for 485 ms. It was followed by a Gabor patch with the same size, spatial frequency (approximately 1.2 cycles per degree), and envelope as in Task 3, with a random phase and an orientation of \(+45^\circ\) or \(-45^\circ\) relative to vertical, presented in white noise. This stimulus-noise combination was presented for 485 ms. Participants judged whether the grating was tilted leftward (\(-45^\circ\)) or rightward (\(+45^\circ\)) by pressing designated keys on the keyboard. Instead of the SOA, the Gabor contrast was manipulated adaptively on a trial-by-trial basis for each participant.
 
-\subsection{Processing speed tasks}\label{processing-speed-tasks}
+\textbf{Task 7: OSPAN.} Participants completed an automated OSPAN task (Unsworth, Heitz, Schrock, \& Engle, 2005) combining simple math operations with working memory recall for letter sequence. Each set contained 3--7 letters, with each set size presented three times, yielding 15 memory sets in total. Before the main task, individuals completed three practice sets of size three to familiarize themselves with the procedure. In the main task, set sizes 3--7 were each presented three times in randomized order (15 sets total). Within each set, trials alternated between (i) a math operation screen (e.g., ``6 + 2 = ?''), after which the individual clicked to continue, and (ii) a proposed answer screen showing a single digit; individuals judged whether the digit correctly solved the operation by clicking true/false. A single uppercase letter was then shown for 800 ms, and the sequence continued until the set ended. At recall, individuals clicked the letters in serial order from a matrix. For each set, individuals earned points equal to the set size only if (a) all math operations were solved within the individual's mean solving time in the practice trials plus 2.5 SD, (b) no math errors occurred for that set, and (c) all letters were recalled in the correct order. Sets failing any criterion scored 0. The final OSPAN score was the sum of points across all sets.
 
-\textbf{Gabor Stimuli.}\(\quad\)The task matched the spatial Gabor-orientation discrimination task. Each trial began with a 485 ms fixation cross, followed by a centrally presented, random-phase Gabor patch (±45° orientation). After a variable SOA, the target was replaced by a dynamic sequence of five white noise masks (48.5 ms each). individuals indicated whether the grating was tilted up-left or up-right by pressing the keyboard. Task difficulty was adaptively adjusted by SOA.
+\textbf{Task 8: CSPAN.} Participants completed a CSPAN task (Conway et al., 2005) combining serial counting with working memory recall for number sequence. Each display contained a set of target items (green circles) intermixed with distractors (yellow circles). individuals counted the number of targets in each display, after which the individual clicked to continue to the next display. At recall, individuals were prompted to recall the sequence of counts (e.g., ``3--5--2'') in the exact order they were encountered. Responses were made by clicking the digits from a matrix. The procedure began with three practice sets of size 2. The main task then presented set sizes 3--7, each three times in randomized order (15 sets total). A set contributed points equal to its size only if the final recall sequence was accurate in both values and order. The final CSPAN score was the sum of points across all sets.
 
-\textbf{Letter Stimuli.}\(\quad\)The task matched the spatial letter-identification condition. Each trial began with a 485 ms fixation cross, followed by a centrally presented target letter (one of A, S, D, F, G, H, J, K, L). After a variable SOA, the target was replaced by a dynamic sequence of five frequency-matched letter noise masks (48.5 ms each). individuals identified the letter using the corresponding keyboard key. Task difficulty was adaptively adjusted by varying SOA.
+\textbf{Task 9: SSPAN.}\$ Participants completed a SSPAN task adapted from the Corsi block-tapping paradigm to assess both storage and processing aspects of spatial working memory (Pahor, Seitz, \& Jaeggi, 2022). On each trial, cartoon gophers appeared sequentially in one of 12 possible screen locations, each presented for 1,500 ms with a 500 ms inter-stimulus interval. individuals were required to reproduce the sequence by tapping the corresponding locations in the exact order. Between each gopher presentation individuals performed a secondary sorting task, dragging an item to the left or right, thereby imposing concurrent processing demands and limiting reliance on mnemonic strategies. Sequence length ranged adaptively from 2 to 10 items, increasing or decreasing in difficulty depending on accuracy. The final SSPAN score was the total successfully recalled items across all sets.
 
-\textbf{Pi Stimuli.}\(\quad\)The task matched the spatial \(\Pi\)-leg discrimination condition. Each trial began with a 485 ms fixation cross, followed by a centrally presented \(\Pi\) stimulus. After a variable SOA, the target was replaced by a dynamic sequence of five clutter masks composed of randomly oriented oblique line segments (48.5 ms each). individuals indicated which leg appeared longer using the keyboard. Task difficulty was adaptively controlled by varying SOA.
-
-\subsection{Cognitive tasks}\label{cognitive-tasks}
-
-\textbf{OSPAN.}\(\quad\)individuals completed an automated OSPAN task (Unsworth et al., 2005) combining simple math operations with working memory recall for letter sequence. Each set contained 3--7 letters, with each set size presented three times, yielding 15 memory sets in total. Before the main task, individuals completed three practice sets of size three to familiarize themselves with the procedure. In the main task, set sizes 3--7 were each presented three times in randomized order (15 sets total). Within each set, trials alternated between (i) a math operation screen (e.g., ``6 + 2 = ?''), after which the individual clicked to continue, and (ii) a proposed answer screen showing a single digit; individuals judged whether the digit correctly solved the operation by clicking true/false. A single uppercase letter was then shown for 800 ms, and the sequence continued until the set ended. At recall, individuals clicked the letters in serial order from a matrix. For each set, individuals earned points equal to the set size only if (a) all math operations were solved within the individual's mean solving time in the practice trials plus 2.5 SD, (b) no math errors occurred for that set, and (c) all letters were recalled in the correct order. Sets failing any criterion scored 0. The final OSPAN score was the sum of points across all sets.
-
-\textbf{CSPAN.}\(\quad\)individuals completed a CSPAN task (Conway et al., 2005) combining serial counting with working memory recall for number sequence. Each display contained a set of target items (green circles) intermixed with distractors (yellow circles). individuals counted the number of targets in each display, after which the individual clicked to continue to the next display. At recall, individuals were prompted to recall the sequence of counts (e.g., ``3--5--2'') in the exact order they were encountered. Responses were made by clicking the digits from a matrix. The procedure began with three practice sets of size 2. The main task then presented set sizes 3--7, each three times in randomized order (15 sets total). A set contributed points equal to its size only if the final recall sequence was accurate in both values and order. The final CSPAN score was the sum of points across all sets.
-
-\textbf{SSPAN.}\(\quad\)individuals completed a SSPAN task adapted from the Corsi block-tapping paradigm to assess both storage and processing aspects of spatial working memory (Pahor et al., 2022). On each trial, cartoon gophers appeared sequentially in one of 12 possible screen locations, each presented for 1,500 ms with a 500 ms inter-stimulus interval. individuals were required to reproduce the sequence by tapping the corresponding locations in the exact order. Between each gopher presentation individuals performed a secondary sorting task, dragging an item to the left or right, thereby imposing concurrent processing demands and limiting reliance on mnemonic strategies. Sequence length ranged adaptively from 2 to 10 items, increasing or decreasing in difficulty depending on accuracy. The final SSPAN score was the total successfully recalled items across all sets.
-
-\textbf{UCMRT.}\(\quad\)individuals completed the UCMRT (Pahor et al., 2019), a measure of fluid intelligence modeled after Raven's Progressive Matrices. Each trial presented a 3×3 matrix of abstract visual patterns with the bottom-right cell missing, and individuals selected the option that best completed the matrix from eight alternatives displayed below. UCMRT was chosen because it was especially developed for young adults with above-average performance on matrix reasoning tasks, providing a more sensitive and efficient assessment of individual differences in fluid intelligence in this population. The task consisted of 23 problems of varying difficulty, including 2 two-relation items, 3 three-relation items with a single transformation, 6 three-relation items with two transformations, 6 three-relation items with three transformations, and 6 logic items. Performance was scored as accuracy, defined by the number of correctly solved matrices.
+\textbf{Task 10: UCMRT.} Participants completed the UCMRT (Pahor, Stavropoulos, Jaeggi, \& Seitz, 2019), a measure of fluid intelligence modeled after Raven's Progressive Matrices. Each trial presented a 3×3 matrix of abstract visual patterns with the bottom-right cell missing, and individuals selected the option that best completed the matrix from eight alternatives displayed below. UCMRT was chosen because it was especially developed for young adults with above-average performance on matrix reasoning tasks, providing a more sensitive and efficient assessment of individual differences in fluid intelligence in this population. The task consisted of 23 problems of varying difficulty, including 2 two-relation items, 3 three-relation items with a single transformation, 6 three-relation items with two transformations, 6 three-relation items with three transformations, and 6 logic items. Performance was scored as accuracy, defined by the number of correctly solved matrices.
 
 \subsection{Procedure}\label{procedure}
 
-The experiment consisted of three sessions of approximately one hour each, conducted on separate days within one week. Each session comprised three blocks, with short breaks permitted between blocks. The first and third blocks were visual masking blocks, and the middle block contained the cognitive tasks for that session: OSPAN on the first day, CSPAN on the second day, SSPAN task and the UCMRT on the third day.
+The experiment consisted of three sessions of approximately one hour each, conducted on separate days within one week. Each session consisted of three phases, denoted here Phase I, Phase II, and Phase III. Phase I consisted of the six perceptual tasks (Task 1-6). Each task was shown in a single block of 50 trials. All six tasks were performed for 50 trials each, and the ordering of the tasks was random across days and participants. Phase III was the same; and across Phase I and Phase III, 100 trials per perceptual task was performed. These phases were repeated on all three sessions, yielding 300 trials per participant per perceptual task. This number is quite large compared to other individual difference studies using perceptual tasks. In these phases and blocks, the difficulty was manipulated in an adaptive fashion. Two staircases were run interleaved; one was a 2D-1U staircase with an asymptotic limit of .707; the other was a 3D/1U staircase with an asymtotic limit of .794 (Levitt, 1971). The first masking block served as practice and was excluded from analysis, leaving 250 trials per task (125 per staircase) and 1,500 masking trials per individual for analysis.
 
-Within each visual masking block, individuals completed all six visual masking tasks in random order. Each task consisted of 50 trials, on which a two-down--one-up and a three-down--one-up staircase strictly alternated, yielding 25 trials per staircase. Because the two staircases converge on different performance levels, approximately 70.7\% and 79.4\% correct, respectively (Levitt, 1971), alternating them allowed the psychometric function to be estimated more precisely. In total, each individual completed 300 trials per task (6 blocks × 50 trials). The first masking block served as practice and was excluded from analysis, leaving 250 trials per task (125 per staircase) and 1,500 masking trials per individual for analysis.
+Phase II or each session was reserved for the working memory and matrix reasoning tasks. The OSPAN task was performed in Phase II on Session 1; the CSPAN task was performed likewise on Session 2; the SSPAN and UCMRT were performed on Session 3.
 
 \subsection{Data exclusion}\label{data-exclusion}
 
-Data were screened separately for each individual and each masking task. A individual's data on a given task were excluded from further analysis if either of two criteria was met. First, the individual's raw threshold, computed as the mean stimulus level across the 250 analyzed trials, deviated by more than four standard deviations from the group mean threshold for that task. Second, the observed accuracy on either staircase deviated by more than 5 percentage points from its target accuracy (70.7\% for the two-down--one-up staircase and 79.4\% for the three-down--one-up staircase), indicating that the staircase had not converged as intended. In total, 14 task datasets from 10 individuals were excluded. These individuals' remaining tasks were retained in the analysis.
+Data were screened separately for each individual and each masking task. An individual's data on a given task were excluded from further analysis if either of two criteria was met. First, the individual's raw threshold, computed as the mean stimulus level across the 250 analyzed trials, deviated by more than four standard deviations from the group mean threshold for that task. Second, the observed accuracy on either staircase deviated by more than 5 percentage points from its target accuracy (70.7\% for the two-down--one-up staircase and 79.4\% for the three-down--one-up staircase), indicating that the staircase had not converged as intended. In total, 14 task datasets from 10 individuals were excluded. These individuals' remaining tasks were retained in the analysis.
 
 \subsection{Hierarchical psychometric model}\label{hierarchical-psychometric-model}
 
@@ -359,10 +342,10 @@ Hierarchical clustering showed that the structure among the masking tasks is bes
 To answer this question, we retained the data level of the hierarchical psychometric model and replaced the covariance matrix \(\boldsymbol{\Sigma}\) at the latent level with a structural equation model. For the six masking tasks, the thresholds \(\theta_{ij}\) remain linked to the trial-level data through the psychometric function \(F(s_{ijk}; \theta_{ij}, \beta_j)\); what changes is how the person-level vector \(\boldsymbol{\theta}_i\) is generated. In the new latent structure, \(\boldsymbol{\theta}_i\) is expressed as a function of seven latent factors,
 
 \[
-\boldsymbol{\eta}_i = \left(\eta_i^{V}, \eta_i^{\text{Bwd}}, \eta_i^{\text{Sim}}, \eta_i^{\text{Let}}, \eta_i^{\text{Gab}}, \eta_i^{\text{Pi}}, \eta_i^{C}\right)^\top,
+\boldsymbol{\eta}_i = \left(\eta_i^{(V)}, \eta_i^{(\text{Bwd})}, \eta_i^{(\text{Spa})}, \eta_i^{(\text{Let})}, \eta_i^{(\text{Gab})}, \eta_i^{(\text{Pi})}, \eta_i^{(C)}\right)^\top,
 \]
 
-where \(\eta_i^{V}\) is a general visual factor shared by all six masking tasks; \(\eta_i^{\text{Bwd}}\) and \(\eta_i^{\text{Sim}}\) are masking factors, each shared by the three tasks that use the same masking procedure; \(\eta_i^{\text{Let}}\), \(\eta_i^{\text{Gab}}\), and \(\eta_i^{\text{Pi}}\) are stimulus factors, each shared by the two tasks that use the same stimulus; and \(\eta_i^{C}\) is a cognitive factor measured by the four cognitive tasks. We refer to the six factors other than \(\eta_i^{C}\) collectively as non-cognitive factors.
+where \(\eta_i^{V}\) is a general visual factor shared by all six masking tasks; \(\eta_i^{\text{Bwd}}\) and \(\eta_i^{\text{Spa}}\) are masking factors, each shared by the three tasks that use the same masking procedure; \(\eta_i^{\text{Let}}\), \(\eta_i^{\text{Gab}}\), and \(\eta_i^{\text{Pi}}\) are stimulus factors, each shared by the two tasks that use the same stimulus; and \(\eta_i^{C}\) is a cognitive factor measured by the four cognitive tasks. We refer to the six factors other than \(\eta_i^{C}\) collectively as non-cognitive factors.
 
 The measurement model relates the ten person-level parameters to these factors,
 
@@ -377,19 +360,19 @@ where \(\boldsymbol{\Lambda}\) is a \(10 \times 7\) matrix of factor loadings an
 \[
 \boldsymbol{\Lambda} =
 \begin{pmatrix}
-\lambda_1^{V} & \lambda_1^{M} & 0 & \lambda_1^{S} & 0 & 0 & 0\\
-\lambda_2^{V} & \lambda_2^{M} & 0 & 0 & \lambda_2^{S} & 0 & 0\\
-\lambda_3^{V} & \lambda_3^{M} & 0 & 0 & 0 & \lambda_3^{S} & 0\\
-\lambda_4^{V} & 0 & \lambda_4^{M} & \lambda_4^{S} & 0 & 0 & 0\\
-\lambda_5^{V} & 0 & \lambda_5^{M} & 0 & \lambda_5^{S} & 0 & 0\\
-\lambda_6^{V} & 0 & \lambda_6^{M} & 0 & 0 & \lambda_6^{S} & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & \lambda_7^{C}\\
-0 & 0 & 0 & 0 & 0 & 0 & \lambda_8^{C}\\
-0 & 0 & 0 & 0 & 0 & 0 & \lambda_9^{C}\\
-0 & 0 & 0 & 0 & 0 & 0 & \lambda_{10}^{C}
+\lambda_1^{(V)} & \lambda_1^{(M)} & 0 & \lambda_1^{(S)} & 0 & 0 & 0\\
+\lambda_2^{(V)} & \lambda_2^{(M)} & 0 & 0 & \lambda_2^{(S)} & 0 & 0\\
+\lambda_3^{(V)} & \lambda_3^{(M)} & 0 & 0 & 0 & \lambda_3^{(S)} & 0\\
+\lambda_4^{(V)} & 0 & \lambda_4^{(M)} & \lambda_4^{(S)} & 0 & 0 & 0\\
+\lambda_5^{(V)} & 0 & \lambda_5^{(M)} & 0 & \lambda_5^{(S)} & 0 & 0\\
+\lambda_6^{(V)} & 0 & \lambda_6^{(M)} & 0 & 0 & \lambda_6^{(S)} & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & \lambda_7^{(C)}\\
+0 & 0 & 0 & 0 & 0 & 0 & \lambda_8^{(C)}\\
+0 & 0 & 0 & 0 & 0 & 0 & \lambda_9^{(C)}\\
+0 & 0 & 0 & 0 & 0 & 0 & \lambda_{10}^{(C)}
 \end{pmatrix}.
 \]
-Each masking task thus loads on the general visual factor (\(\lambda_j^{V}\)), on the factor for its masking procedure (\(\lambda_j^{M}\)), and on the factor for its stimulus (\(\lambda_j^{S}\)), and each cognitive task \(m = 1, \ldots, 4\) loads on the cognitive factor (\(\lambda_{6+m}^{C}\)). All other loadings are fixed at zero.
+Each masking task thus loads on the general visual factor (\(\lambda_j^{(V)}\)), on the factor for its masking procedure (\(\lambda_j^{(M)}\)), and on the factor for its stimulus (\(\lambda_j^{(S)}\)), and each cognitive task \(m = 1, \ldots, 4\) loads on the cognitive factor (\(\lambda_{6+m}^{(C)}\)). All other loadings are fixed at zero.
 
 The structural model specifies the relations among the factors,
 
@@ -410,21 +393,20 @@ where \(\mathbf{B}\) is a \(7 \times 7\) matrix of regression weights among the 
 0 & 0 & 0 & 0 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-b_{V} & b_{\text{Bwd}} & b_{\text{Sim}} & b_{\text{Let}} & b_{\text{Gab}} & b_{\text{Pi}} & 0
+b^{(V)} & b^{(\text{Bwd})} & b^{(\text{Spa})} & b^{(\text{Let})} & b^{(\text{Gab})} & b^{(\text{Pi})} & 0
 \end{pmatrix},
 \]
-
-so that \(\eta_i^{C} = b_{V}\eta_i^{V} + b_{\text{Bwd}}\eta_i^{\text{Bwd}} + b_{\text{Sim}}\eta_i^{\text{Sim}} + b_{\text{Let}}\eta_i^{\text{Let}} + b_{\text{Gab}}\eta_i^{\text{Gab}} + b_{\text{Pi}}\eta_i^{\text{Pi}} + \zeta_i^{C}\). Setting \(\boldsymbol{\Psi} = \mathbf{I}_7\) fixes the variances of the six non-cognitive factors and of the residual \(\zeta_i^{C}\) to one and makes the six non-cognitive factors mutually orthogonal. Because the non-cognitive factors are orthogonal and have unit variance, this structure separates the two questions raised above. First, the variance of each masking task decomposes additively,
+so that \(\eta_i^{(C)} = b^{(V)}\eta_i^{(V)} + b^{(\text{Bwd})}\eta_i^{(\text{Bwd})} + b^{(\text{Spa})}\eta_i^{(\text{Spa})} + b^{(\text{Let})}\eta_i^{(\text{Let})} + b^{(\text{Gab})}\eta_i^{(\text{Gab})} + b^{(\text{Pi})}\eta_i^{(\text{Pi})} + \zeta_i^{(C)}\). Setting \(\boldsymbol{\Psi} = \mathbf{I}_7\) fixes the variances of the six non-cognitive factors and of the residual \(\zeta_i^{(C)}\) to one and makes the six non-cognitive factors mutually orthogonal. Because the non-cognitive factors are orthogonal and have unit variance, this structure separates the two questions raised above. First, the variance of each masking task decomposes additively,
 
 \[
-\operatorname{Var}(\theta_{ij}) = \left(\lambda_j^{V}\right)^2 + \left(\lambda_j^{M}\right)^2 + \left(\lambda_j^{S}\right)^2 + \delta_j^2,
+\operatorname{Var}(\theta_{ij}) = \left(\lambda_j^{(V)}\right)^2 + \left(\lambda_j^{(M)}\right)^2 + \left(\lambda_j^{(S)}\right)^2 + \delta_j^2,
 \]
 
-so the proportion of variance due to each source is its term divided by \(\operatorname{Var}(\theta_{ij})\). Second, the relation of each non-cognitive factor \(f \in \{V, \text{Bwd}, \text{Sim}, \text{Let}, \text{Gab}, \text{Pi}\}\) to cognitive performance is captured by its regression weight \(b_f\), and the corresponding correlation \(r_f\) is
+so the proportion of variance due to each source is its term divided by \(\operatorname{Var}(\theta_{ij})\). Second, the relation of each non-cognitive factor \(f \in \{V, \text{Bwd}, \text{Spa}, \text{Let}, \text{Gab}, \text{Pi}\}\) to cognitive performance is captured by its regression weight \(b^{(f)}\), and the corresponding correlation \(r^{(f)}\) is
 
 \[
-\operatorname{Var}\!\left(\eta_i^{C}\right) = \sum_f b_f^2 + 1, \qquad
-r_f = \frac{b_f}{\sqrt{\operatorname{Var}\!\left(\eta_i^{C}\right)}}.
+\operatorname{Var}\!\left(\eta_i^{(C)}\right) = \sum_{f'} \left(b^{(f')}\right)^2 + 1, \qquad
+r^{(f)} = \frac{b^{(f)}}{\sqrt{\operatorname{Var}\!\left(\eta_i^{(C)}\right)}}.
 \]
 Full details of the model specification are provided in Appendix B. Derivations of the variance decomposition are provided in Appendix C.
 
@@ -557,66 +539,67 @@ The cognitive scores enter the model as observed values of the last four element
 \qquad \boldsymbol{\zeta}_i \sim \mathcal{N}_{7}\!\left(\mathbf{0}, \mathbf{I}_7\right),
 \end{aligned}
 \]
-with \(\boldsymbol{\Lambda}\) and \(\mathbf{B}\) as given in the main text. The latent vector \(\boldsymbol{\eta}_i\) contains the cognitive factor and six non-cognitive factors, namely the general visual factor, the two masking factors, and the three stimulus factors. Unlike in Appendix A, the cognitive scores are not tied to the last four elements of \(\boldsymbol{\theta}_i\) through a small \(\tau\). Instead, these elements are the observed standardized scores themselves, and each is modeled through the measurement model as \(c_{im} = \mu_{6+m} + \lambda_{6+m}^{C}\,\eta_i^{C} + \epsilon_{i,6+m}\), so that the variance of each cognitive task that is not shared with the cognitive factor is captured by its unique variance \(\delta_{6+m}^2\).
+with \(\boldsymbol{\Lambda}\) and \(\mathbf{B}\) as given in the main text. The latent vector \(\boldsymbol{\eta}_i\) contains the cognitive factor and six non-cognitive factors, namely the general visual factor, the two masking factors, and the three stimulus factors. Unlike in Appendix A, the cognitive scores are not tied to the last four elements of \(\boldsymbol{\theta}_i\) through a small \(\tau\). Instead, these elements are the observed standardized scores themselves, and each is modeled through the measurement model as \(c_{im} = \mu_{6+m} + \lambda_{6+m}^{(C)}\,\eta_i^{(C)} + \epsilon_{i,6+m}\), so that the variance of each cognitive task that is not shared with the cognitive factor is captured by its unique variance \(\delta_{6+m}^2\).
 
-\textbf{Prior specification.} Priors are needed for the task means \(\boldsymbol{\mu}\), the slopes \(\beta_j\), the free factor loadings in \(\boldsymbol{\Lambda}\), the unique variances in \(\boldsymbol{\Delta}\), and the regression weights in \(\mathbf{B}\). The task means and slopes were given the same priors as in Appendix A. Each free loading was given a half-normal prior to fix the sign of each factor, \(\lambda_j^{V}, \lambda_j^{M}, \lambda_j^{S}, \lambda_{6+m}^{C} \sim \mathcal{N}^{+}(0, 1)\); all other elements of \(\boldsymbol{\Lambda}\) were fixed at zero. Each unique standard deviation was given a half-\(t\) prior, \(\delta_t \sim \text{Half-}t_3(0, 2.5)\). Each of the six free regression weights in \(\mathbf{B}\) was given a standard normal prior, \(b_f \sim \mathcal{N}(0, 1)\).
+\textbf{Prior specification.} Priors are needed for the task means \(\boldsymbol{\mu}\), the slopes \(\beta_j\), the free factor loadings in \(\boldsymbol{\Lambda}\), the unique variances in \(\boldsymbol{\Delta}\), and the regression weights in \(\mathbf{B}\). The task means and slopes were given the same priors as in Appendix A. Each free loading was given a half-normal prior to fix the sign of each factor, \(\lambda_j^{(V)}, \lambda_j^{(M)}, \lambda_j^{(S)}, \lambda_{6+m}^{(C)} \sim \mathcal{N}^{+}(0, 1)\); all other elements of \(\boldsymbol{\Lambda}\) were fixed at zero. Each unique standard deviation was given a half-\(t\) prior, \(\delta_t \sim \text{Half-}t_3(0, 2.5)\). Each of the six free regression weights in \(\mathbf{B}\) was given a standard normal prior, \(b^{(f)} \sim \mathcal{N}(0, 1)\).
 
-\textbf{Bayes factors.} The Bayes factor for the hypothesis that non-cognitive factor \(f\) is unrelated to cognitive performance compares a model in which \(b_f\) is free to a nested model in which \(b_f = 0\), with all other parameters unchanged. Because the nested model is obtained by fixing a single parameter, the Bayes factor equals the Savage--Dickey density ratio (Wagenmakers, Lodewyckx, Kuriyal, \& Grasman, 2010),
+\textbf{Bayes factors.} The Bayes factor for the hypothesis that non-cognitive factor \(f\) is unrelated to cognitive performance compares a model in which \(b^{(f)}\) is free to a nested model in which \(b^{(f)} = 0\), with all other parameters unchanged. Because the nested model is obtained by fixing a single parameter, the Bayes factor equals the Savage--Dickey density ratio (Wagenmakers, Lodewyckx, Kuriyal, \& Grasman, 2010),
 \[
-\text{BF}_{10} = \frac{p(b_f = 0)}{p(b_f = 0 \mid \text{data})},
+\text{BF}_{10} = \frac{p(b^{(f)} = 0)}{p(b^{(f)} = 0 \mid \text{data})},
 \]
-where the numerator is the prior density at zero, \(1/\sqrt{2\pi}\), and the denominator is the posterior density of \(b_f\) at zero, estimated from the posterior draws with a logspline density estimator.
+where the numerator is the prior density at zero, \(1/\sqrt{2\pi}\), and the denominator is the posterior density of \(b^{(f)}\) at zero, estimated from the posterior draws with a logspline density estimator.
 
 \textbf{Model Fitting.} The model was implemented in JAGS (Plummer, 2003). We ran 4 chains, each with 10,000 tuning steps followed by 20,000 drawing steps. Convergence was assessed with the Gelman--Rubin \(\hat{R}\) statistic (Gelman \& Rubin, 1992), which was below 1.01 for all parameters.
 
 \section{Appendix C: Derivation of the Variance Decomposition}\label{appendix-c-derivation-of-the-variance-decomposition}
 
-This appendix derives the two quantities reported in the main text: the proportion of variance of each masking task due to each source, and the correlation of each non-cognitive factor with the cognitive factor. Here and below, the index \(f\) runs over the six non-cognitive factors, namely the general visual factor, the two masking factors, and the three stimulus factors, \(f \in \{V, \text{Bwd}, \text{Sim}, \text{Let}, \text{Gab}, \text{Pi}\}\). Both quantities follow from the structural equation model specified in Appendix B. As a reminder, the structural model is given by
+This appendix derives the two quantities reported in the main text: the proportion of variance of each masking task due to each source, and the correlation of each non-cognitive factor with the cognitive factor. Here and below, the index \(f\) runs over the six non-cognitive factors, namely the general visual factor, the two masking factors, and the three stimulus factors, \(f \in \{V, \text{Bwd}, \text{Spa}, \text{Let}, \text{Gab}, \text{Pi}\}\). Both quantities follow from the structural equation model specified in Appendix B. As a reminder, the structural model is given by
 \[
 \boldsymbol{\eta}_i = \mathbf{B}\,\boldsymbol{\eta}_i + \boldsymbol{\zeta}_i, \qquad \boldsymbol{\zeta}_i \sim \mathcal{N}_{7}\!\left(\mathbf{0}, \mathbf{I}_7\right).
 \]
-In the structural model, the cognitive factor is the only factor that receives paths from other factors. Each non-cognitive factor is therefore equal to its own residual, \(\eta_i^{f} = \zeta_i^{f}\), whereas the cognitive factor is a weighted sum of the non-cognitive factors plus its own residual, \(\eta_i^{C} = \sum_f b_f\,\eta_i^{f} + \zeta_i^{C}\).
+In the structural model, the cognitive factor is the only factor that receives paths from other factors. Each non-cognitive factor is therefore equal to its own residual, \(\eta_i^{(f)} = \zeta_i^{(f)}\), whereas the cognitive factor is a weighted sum of the non-cognitive factors plus its own residual, \(\eta_i^{(C)} = \sum_f b^{(f)}\,\eta_i^{(f)} + \zeta_i^{(C)}\).
 
 The variance and covariance are therefore
 \[
 \begin{aligned}
-\operatorname{Var}\!\left(\eta_i^{f}\right) &= 1, \qquad
-\operatorname{Cov}\!\left(\eta_i^{f}, \eta_i^{f'}\right) = 0 \ \ (f \neq f'), \qquad
-\operatorname{Cov}\!\left(\eta_i^{f}, \eta_i^{C}\right) = b_f, \\
-\operatorname{Var}\!\left(\eta_i^{C}\right) &= \sum_f b_f^2\,\operatorname{Var}\!\left(\eta_i^{f}\right) + \operatorname{Var}\!\left(\zeta_i^{C}\right) = \sum_f b_f^2 + 1.
+\operatorname{Var}\!\left(\eta_i^{(f)}\right) &= 1, \qquad
+\operatorname{Cov}\!\left(\eta_i^{(f)}, \eta_i^{(f')}\right) = 0 \ \ (f \neq f'), \qquad
+\operatorname{Cov}\!\left(\eta_i^{(f)}, \eta_i^{(C)}\right) = b^{(f)}, \\
+\operatorname{Var}\!\left(\eta_i^{(C)}\right) &= \sum_{f'} \left(b^{(f')}\right)^2\,\operatorname{Var}\!\left(\eta_i^{(f')}\right) + \operatorname{Var}\!\left(\zeta_i^{(C)}\right) = \sum_{f'} \left(b^{(f')}\right)^2 + 1.
 \end{aligned}
 \]
 
-\textbf{Variance decomposition of the masking tasks.} Each masking task \(j\) loads on the general visual factor and on two specific factors: the factor for its masking procedure, denoted \(\operatorname{mask}(j) \in \{\text{Bwd}, \text{Sim}\}\), and the factor for its stimulus, denoted \(\operatorname{stim}(j) \in \{\text{Let}, \text{Gab}, \text{Pi}\}\); for example, \(\operatorname{mask}(j) = \text{Bwd}\) and \(\operatorname{stim}(j) = \text{Let}\) for the backward Letter task. The corresponding loadings are \(\lambda_j^{V}\), \(\lambda_j^{M}\), and \(\lambda_j^{S}\), so that
+\textbf{Variance decomposition of the masking tasks.} Each masking task \(j\) loads on the general visual factor and on two specific factors: the factor for its masking procedure, denoted \(\operatorname{mask}(j) \in \{\text{Bwd}, \text{Spa}\}\), and the factor for its stimulus, denoted \(\operatorname{stim}(j) \in \{\text{Let}, \text{Gab}, \text{Pi}\}\); for example, \(\operatorname{mask}(j) = \text{Bwd}\) and \(\operatorname{stim}(j) = \text{Let}\) for the backward Letter task. The corresponding loadings are \(\lambda_j^{(V)}\), \(\lambda_j^{(M)}\), and \(\lambda_j^{(S)}\), so that
 \[
-\theta_{ij} = \mu_j + \lambda_j^{V}\eta_i^{V} + \lambda_j^{M}\eta_i^{\operatorname{mask}(j)} + \lambda_j^{S}\eta_i^{\operatorname{stim}(j)} + \epsilon_{ij}.
+\theta_{ij} = \mu_j + \lambda_j^{(V)}\eta_i^{(V)} + \lambda_j^{(M)}\eta_i^{(\operatorname{mask}(j))} + \lambda_j^{(S)}\eta_i^{(\operatorname{stim}(j))} + \epsilon_{ij}.
 \]
 Because the unique term \(\epsilon_{ij}\) is independent of the factors, the variance of \(\theta_{ij}\) is
 \[
 \begin{aligned}
 \operatorname{Var}(\theta_{ij})
-={}& \left(\lambda_j^{V}\right)^2 \operatorname{Var}\!\left(\eta_i^{V}\right)
-   + \left(\lambda_j^{M}\right)^2 \operatorname{Var}\!\left(\eta_i^{\operatorname{mask}(j)}\right)
-   + \left(\lambda_j^{S}\right)^2 \operatorname{Var}\!\left(\eta_i^{\operatorname{stim}(j)}\right) \\
- &+ 2\lambda_j^{V}\lambda_j^{M}\operatorname{Cov}\!\left(\eta_i^{V}, \eta_i^{\operatorname{mask}(j)}\right)
-   + 2\lambda_j^{V}\lambda_j^{S}\operatorname{Cov}\!\left(\eta_i^{V}, \eta_i^{\operatorname{stim}(j)}\right)
-   + 2\lambda_j^{M}\lambda_j^{S}\operatorname{Cov}\!\left(\eta_i^{\operatorname{mask}(j)}, \eta_i^{\operatorname{stim}(j)}\right)
+={}& \left(\lambda_j^{(V)}\right)^2 \operatorname{Var}\!\left(\eta_i^{(V)}\right)
+   + \left(\lambda_j^{(M)}\right)^2 \operatorname{Var}\!\left(\eta_i^{(\operatorname{mask}(j))}\right)
+   + \left(\lambda_j^{(S)}\right)^2 \operatorname{Var}\!\left(\eta_i^{(\operatorname{stim}(j))}\right) \\
+ &+ 2\lambda_j^{(V)}\lambda_j^{(M)}\operatorname{Cov}\!\left(\eta_i^{(V)}, \eta_i^{(\operatorname{mask}(j))}\right)
+   + 2\lambda_j^{(V)}\lambda_j^{(S)}\operatorname{Cov}\!\left(\eta_i^{(V)}, \eta_i^{(\operatorname{stim}(j))}\right)
+   + 2\lambda_j^{(M)}\lambda_j^{(S)}\operatorname{Cov}\!\left(\eta_i^{(\operatorname{mask}(j))}, \eta_i^{(\operatorname{stim}(j))}\right)
    + \delta_j^2 .
 \end{aligned}
 \]
 Given that the covariance among non-cognitive factors is 0, and the variance of each non-cognitive factor is fixed to 1, the above equation can be simplified as
 \[
-\operatorname{Var}(\theta_{ij}) = \left(\lambda_j^{V}\right)^2 + \left(\lambda_j^{M}\right)^2 + \left(\lambda_j^{S}\right)^2 + \delta_j^2 .
+\operatorname{Var}(\theta_{ij}) = \left(\lambda_j^{(V)}\right)^2 + \left(\lambda_j^{(M)}\right)^2 + \left(\lambda_j^{(S)}\right)^2 + \delta_j^2 .
 \]
 
 Dividing each term by the total variance therefore gives the proportion of variance due to each source.
 
-\textbf{Contribution of each non-cognitive factor to cognitive performance.} Given \(\operatorname{Var}(\eta_i^{C}) = \sum_f b_f^2 + 1\) and \(\operatorname{Cov}(\eta_i^{f}, \eta_i^{C}) = b_f\), the correlation between non-cognitive factor \(f\) and the cognitive factor is
+\textbf{Contribution of each non-cognitive factor to cognitive performance.} Given \(\operatorname{Var}(\eta_i^{(C)}) = \sum_{f'} \left(b^{(f')}\right)^2 + 1\) and \(\operatorname{Cov}(\eta_i^{(f)}, \eta_i^{(C)}) = b^{(f)}\), the correlation between non-cognitive factor \(f\) and the cognitive factor is
 \[
-r_f = \frac{\operatorname{Cov}\!\left(\eta_i^{f}, \eta_i^{C}\right)}{\sqrt{\operatorname{Var}\!\left(\eta_i^{f}\right)\operatorname{Var}\!\left(\eta_i^{C}\right)}}
-= \frac{b_f}{\sqrt{\sum_{f'} b_{f'}^2 + 1}} ,
+r^{(f)} = \frac{\operatorname{Cov}\!\left(\eta_i^{(f)}, \eta_i^{(C)}\right)}{\sqrt{\operatorname{Var}\!\left(\eta_i^{(f)}\right)\operatorname{Var}\!\left(\eta_i^{(C)}\right)}}
+= \frac{b^{(f)}}{\sqrt{\sum_{f'} \left(b^{(f')}\right)^2 + 1}} ,
 \]
 which was computed for each posterior draw; Table \ref{tab:tab-cor} reports its posterior mean and 95\% credible interval.
+
 \newpage
 
 \section{Declarations}\label{declarations}
@@ -641,12 +624,6 @@ which was computed for each posterior draw; Table \ref{tab:tab-cor} reports its 
 
 During the preparation of this work the authors used Claude and ChatGPT in order to check the grammar and spelling, as well as for verifying some mathematical calculations. After using this tool/service, the authors reviewed and edited the content as needed and took full responsibility for the content of the published article.
 
-\section{Raw material}\label{raw-material}
-
-This finding was first demonstrated by Galton (1883). For Victorian scholars working at the height of Western colonialism, the finding made complete sense as intelligence was conceptualized as a unidimensional quantity (Gould, 1981). For Galton, the founder of statistical treatment of eugenics, individuals varied on a single dimension, intelligence, that encompasses all mental abilities. Hence, the correlation between low-level perceptual abilities and high-level cognition is fully expected.
-
-The modern view of intelligence, developed after the horrors of World War II, is that intelligence is multifaceted. The emphasis is on understanding a diversity of human abilities, capabilities, and intelligences (Carroll, 1993; Schneider \& McGrew, 2018; Sternberg, 1985). Here primary mental abilities are treated as multiple and measured separately. People are not described by a single ability but by a profile of abilities. Modern views of cognition fit well within this multifacted view of intelligence. Cognition is viewed as information processing, and key questions are how information is represented and operated upon (Jackendoff, 1987; Marr, 1982; Neisser, 1967). The building blocks of cognition are information channels (Pollack, 1952; Shannon, 1948), filters (Broadbent, 1958), small memory systems that have limited domains, capacities, and time scales (Atkinson \& Shiffrin, 1968; Miller, 1956; Sperling, 1960), and mechanical processes such as accumulation, integration, gating, differencing, and racing (Townsend \& Ashby, 1983). More recent building blocks include multiple reasoning systems (Kahneman, 2011), distributed representations (McClelland \& Rumelhart, 1981), and feedback projections in processing (Bar, 2009; Parr, Mirza, Cagnan, \& Friston, 2019). The link from these mechanisms to individual variation is straightforward---individuals have different abilities because there is variability in the efficiency and usage of these mechanisms. It is within this this more modern context that the link between low-level perceptual performance and high-level cognitive performance is striking. If mental abilities are mediated by multiple representations, processes, and mechanisms, why the link?
-
 \newpage
 
 \section*{Reference}\label{reference}
@@ -654,23 +631,8 @@ The modern view of intelligence, developed after the horrors of World War II, is
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
-\bibitem[\citeproctext]{ref-Atkinson.Shiffrin.1968}
-Atkinson, R. C., \& Shiffrin, R. N. (1968). Human {Memory}: {A} proposed system system and its control processes. In K. W. Spence \& J. T. Spence (Eds.), \emph{The psychology of learning and motivation: {Advances} in research and theory. {Vol}. 2} (pp. 89--195). New York: Academic Press.
-
-\bibitem[\citeproctext]{ref-Bar.2009}
-Bar, M. (2009). The proactive brain: Memory for predictions. \emph{Philosophical Transactions of the Royal Society B: Biological Sciences}, \emph{364}(1521), 1235--1243. doi:\href{https://doi.org/10.1098/rstb.2008.0310}{10.1098/rstb.2008.0310}
-
-\bibitem[\citeproctext]{ref-Broadbent.1958}
-Broadbent, D. E. (1958). \emph{Perception and communication}. New York: Oxford University Press.
-
-\bibitem[\citeproctext]{ref-Campbell.Fiske.1959a}
-Campbell, D. T., \& Fiske, D. W. (1959). Convergent and discriminant validation by the multitrait-multimethod matrix. \emph{Psychol. Bull.}, \emph{56}(2), 81--105. Retrieved from \url{https://www.ncbi.nlm.nih.gov/pubmed/13634291}
-
 \bibitem[\citeproctext]{ref-Carpenter.etal.2017}
 Carpenter, B., Gelman, A., Hoffman, M. D., Lee, D., Goodrich, B., Bettencourt, M., \ldots{} Riddell, A. (2017). Stan: {A} probabilistic programming language. \emph{Journal of Statistical Software}, \emph{76}.
-
-\bibitem[\citeproctext]{ref-Carroll.1993}
-Carroll, J. B. (1993). \emph{Human cognitive abilities: {A} survey of factor-analytic studies}. Cambridge University Press.
 
 \bibitem[\citeproctext]{ref-Conway.etal.2005}
 Conway, A. R., Kane, M. J., Bunting, M. F., Hambrick, D. Z., Wilhelm, O., \& Engle, R. W. (2005). Working memory span tasks: {A} methodological review and user's guide. \emph{Psychonomic Bulletin \& Review}, \emph{12}, 769--786.
@@ -690,26 +652,17 @@ Galton, F. (1883). \emph{Inquiries into human faculty and its development} (pp. 
 \bibitem[\citeproctext]{ref-Gelman.Rubin.1992}
 Gelman, A., \& Rubin, D. B. (1992). Inference from iterative simulation using multiple sequences (with discussion). \emph{Statistical Science}, \emph{7}, 457--511.
 
-\bibitem[\citeproctext]{ref-Gould.1981}
-Gould, S. J. (1981). \emph{The mismeasure of man}. New York: W. W. Norton \& Company.
-
 \bibitem[\citeproctext]{ref-Grudnik.Kranzler.2001}
 Grudnik, J. L., \& Kranzler, J. H. (2001). Meta-analysis of the relationship between intelligence and inspection time. \emph{Intelligence}, \emph{29}(6), 523--535.
 
 \bibitem[\citeproctext]{ref-Huang.Wand.2013a}
 Huang, A., \& Wand, M. P. (2013). Simple {Marginally Noninformative Prior Distributions} for {Covariance Matrices}. \emph{Bayesian Anal.}, \emph{8}(2), 439--452. doi:\href{https://doi.org/10.1214/13-BA815}{10.1214/13-BA815}
 
-\bibitem[\citeproctext]{ref-Jackendoff.1987}
-Jackendoff, R. (1987). \emph{Consciousness and the {Computational Mind}}. Cambridge, MA: MIT Press.
-
 \bibitem[\citeproctext]{ref-Jastrzebski.etal.2021}
 Jastrzębski, J., Kroczek, B., \& Chuderski, A. (2021). Galton and {Spearman} revisited: {Can} single general discrimination ability drive performance on diverse sensorimotor tasks and explain intelligence? \emph{Journal of Experimental Psychology: General}, \emph{150}(7), 1279--1302. doi:\href{https://doi.org/10.1037/xge0001005}{10.1037/xge0001005}
 
 \bibitem[\citeproctext]{ref-Jensen.2006}
 Jensen, A. R. (2006). \emph{Clocking the mind: {Mental} chronometry and individual differences}. Elsevier.
-
-\bibitem[\citeproctext]{ref-Kahneman.2011}
-Kahneman, D. (2011). \emph{Thinking, {Fast} and {Slow}}. MacMillan.
 
 \bibitem[\citeproctext]{ref-Kass.Raftery.1995}
 Kass, R. E., \& Raftery, A. E. (1995). Bayes factors. \emph{Journal of the American Statistical Association}, \emph{90}, 773--795. Retrieved from \url{http://amstat.tandfonline.com/doi/abs/10.1080/01621459.1995.10476572}
@@ -720,23 +673,11 @@ Kranzler, J. H., \& Jensen, A. R. (1989). Inspection time and intelligence: {A} 
 \bibitem[\citeproctext]{ref-Levitt.1971}
 Levitt, H. (1971). Transformed {Up}‐{Down Methods} in {Psychoacoustics}. \emph{The Journal of the Acoustical Society of America}, \emph{49}, 467--477. doi:\href{https://doi.org/10.1121/1.1912375}{10.1121/1.1912375}
 
-\bibitem[\citeproctext]{ref-Marr.1982}
-Marr, D. (1982). \emph{Vision: {A} computational investigation into the human representation and processing of visual information}. San Francisco: {Freeman and Company}.
-
-\bibitem[\citeproctext]{ref-McClelland.Rumelhart.1981}
-McClelland, J. L., \& Rumelhart, D. E. (1981). An interactive activation model of context effects in letter perception: {I}. {An} account of basic findings. \emph{Psychological Review}, \emph{88}, 375--407.
-
 \bibitem[\citeproctext]{ref-Mikellidou.etal.2023}
 Mikellidou, K., Lambrou, N., Georgiou, E., \& Avraamides, M. (2023). Visual orientation discrimination skills are tightly linked with specific aspects of human intelligence. \emph{PLOS ONE}, \emph{18}(10), e0289590. doi:\href{https://doi.org/10.1371/journal.pone.0289590}{10.1371/journal.pone.0289590}
 
-\bibitem[\citeproctext]{ref-Miller.1956}
-Miller, G. A. (1956). The magical number seven plus or minus two: {Some} limits on our capacity for processing information. \emph{Psychological Review}, \emph{63}, 81--97.
-
 \bibitem[\citeproctext]{ref-Mosing.etal.2014}
 Mosing, M. A., Pedersen, N. L., Madison, G., \& Ullén, F. (2014). Genetic {Pleiotropy Explains Associations} between {Musical Auditory Discrimination} and {Intelligence}. \emph{PLOS ONE}, \emph{9}(11), e113874. doi:\href{https://doi.org/10.1371/journal.pone.0113874}{10.1371/journal.pone.0113874}
-
-\bibitem[\citeproctext]{ref-Neisser.1967}
-Neisser. (1967). \emph{Cognitive {Psychology}} (Classic Edition.). Psychology Press/Meredith Publishing Company.
 
 \bibitem[\citeproctext]{ref-Nettelbeck.Lally.1976a}
 Nettelbeck, T., \& Lally, M. (1976). {INSPECTION TIME AND MEASURED INTELLIGENCE}. \emph{Br. J. Psychol.}, \emph{67}(1), 17--22. doi:\href{https://doi.org/10.1111/j.2044-8295.1976.tb01493.x}{10.1111/j.2044-8295.1976.tb01493.x}
@@ -747,17 +688,11 @@ Pahor, A., Seitz, A. R., \& Jaeggi, S. M. (2022). Near transfer to an unrelated 
 \bibitem[\citeproctext]{ref-Pahor.etal.2019}
 Pahor, A., Stavropoulos, T., Jaeggi, S. M., \& Seitz, A. R. (2019). Validation of a matrix reasoning task for mobile devices. \emph{Behav. Res. Methods}, \emph{51}(5), 2256--2267. doi:\href{https://doi.org/10.3758/s13428-018-1152-2}{10.3758/s13428-018-1152-2}
 
-\bibitem[\citeproctext]{ref-Parr.etal.2019}
-Parr, T., Mirza, M. B., Cagnan, H., \& Friston, K. J. (2019). Dynamic causal modelling of active vision. \emph{Journal of Neuroscience}, \emph{39}(32), 6265--6275. Retrieved from \url{https://www.jneurosci.org/content/39/32/6265.abstract}
-
 \bibitem[\citeproctext]{ref-Peirce.etal.2019}
 Peirce, J., Gray, J. R., Simpson, S., MacAskill, M., Höchenberger, R., Sogo, H., \ldots{} Lindeløv, J. K. (2019). {PsychoPy2}: {Experiments} in behavior made easy. \emph{Behavior Research Methods}, \emph{51}(1), 195--203. doi:\href{https://doi.org/10.3758/s13428-018-01193-y}{10.3758/s13428-018-01193-y}
 
 \bibitem[\citeproctext]{ref-Plummer.2003}
 Plummer, M. (2003). {JAGS}: {A Program} for {Analysis} of {Bayesian Graphical Models Using Gibbs Sampling}. In \emph{Proceedings of the 3rd {International Workshop} on {Distributed Statistical Computing}}.
-
-\bibitem[\citeproctext]{ref-Pollack.1952}
-Pollack, I. (1952). The information of elementary {Auditory Displays}. \emph{The Journal of the Accoustical Society of America}, \emph{24}, 745--749.
 
 \bibitem[\citeproctext]{ref-Robison.etal.2026a}
 Robison, M. K., Campbell, S., Garner, L. D., Sibley, C., \& Coyne, J. (2026). A comprehensive psychometrics of cognitive ability measures: {Reliability}, practice effects, and the stability of latent factor structures across retesting. \emph{Behavior Research Methods}, \emph{58}(2), 56. doi:\href{https://doi.org/10.3758/s13428-025-02897-8}{10.3758/s13428-025-02897-8}
@@ -768,20 +703,8 @@ Rouder, J. N., \& Mehrvarz, M. (2026). Random-effects psychophysics for studying
 \bibitem[\citeproctext]{ref-Salthouse.1996}
 Salthouse, T. A. (1996). The processing speed theory of adult age differences in cognition. \emph{Psychological Review}, \emph{103}, 403--428.
 
-\bibitem[\citeproctext]{ref-Schneider.McGrew.2018}
-Schneider, W. J., \& McGrew, K. S. (2018). The {Cattell}--{Horn}--{Carroll} theory of cognitive abilities. In \emph{Contemporary intellectual assessment: {Theories}, tests, and issues, 4th ed} (pp. 73--163). New York, NY, US: The Guilford Press.
-
-\bibitem[\citeproctext]{ref-Shannon.1948}
-Shannon, C. E. (1948). A methematical theory of communication. \emph{The Bell System Technical Journal}, \emph{27}, 379--423.
-
-\bibitem[\citeproctext]{ref-Sperling.1960}
-Sperling, G. (1960). The information available in brief visual presentations. \emph{Psychological Monographs}, \emph{74}, (Whole No. 498).
-
-\bibitem[\citeproctext]{ref-Sternberg.1985}
-Sternberg, R. J. (1985). \emph{Beyond {IQ}: {A} triarchic theory of human intelligence}. CUP Archive. Retrieved from \url{https://books.google.com/books?hl=en&lr=&id=jmM7AAAAIAAJ&oi=fnd&pg=PR11&dq=triarchic+theory+of+intelligence&ots=atsCaftvnG&sig=LwXgPE2H2GIImzbTU09QPHeUzi0}
-
-\bibitem[\citeproctext]{ref-Townsend.Ashby.1983}
-Townsend, J. T., \& Ashby, F. G. (1983). \emph{Stochastic modeling of elementary psychological processes}. London: Cambridge.
+\bibitem[\citeproctext]{ref-Spearman.1904}
+Spearman, C. (1904). '{General} intelligence,' objectively determined and measured. \emph{The American Journal of Psychology}, \emph{15}(2), 201--293. doi:\href{https://doi.org/10.2307/1412107}{10.2307/1412107}
 
 \bibitem[\citeproctext]{ref-Tsukahara.etal.2020}
 Tsukahara, J. S., Harrison, T. L., Draheim, C., Martin, J. D., \& Engle, R. W. (2020). Attention control: {The} missing link between sensory discrimination and intelligence. \emph{Attention, Perception, \& Psychophysics}, \emph{82}(7), 3445--3478. doi:\href{https://doi.org/10.3758/s13414-020-02044-9}{10.3758/s13414-020-02044-9}

@@ -1,20 +1,20 @@
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/backward} \caption{Backward visual masking tasks.}\label{fig:backward}
+\includegraphics[width=1\linewidth]{Figures/temporal} \caption{Trial sequence of the three backward masking tasks. Rows show the Pi, Letter, and Gabor tasks. Each trial began with a fixation cross (485 ms), followed by the target. After a variable stimulus onset asynchrony (SOA), the target was replaced by a sequence of five masks (48.5 ms each): line segments for the Pi task, frequency-matched letter noise for the Letter task, and white noise for the Gabor task. Individuals then judged which leg of the Pi was longer (left or right), which of nine letters (A-L) was presented, or whether the Gabor was tilted to the left or right. The response screen remained until response. Task difficulty was adjusted by varying the SOA.}\label{fig:temporal}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/spatial} \caption{spatial visual masking tasks.}\label{fig:spatial}
+\includegraphics[width=1\linewidth]{Figures/spatial} \caption{Trial sequence of the three spatial masking tasks. Rows show the Pi, Letter, and Gabor tasks. Each trial began with a fixation cross (485 ms), followed by the target embedded in the same mask as in the corresponding backward masking task (485 ms): line segments for the Pi task, frequency-matched letter noise for the Letter task, and white noise for the Gabor task. Individuals made the same judgments as in the backward masking tasks, and the response screen remained until response. Task difficulty was adjusted by varying the leg-length difference of the Pi, the target weight in the letter-noise blend, and the contrast of the Gabor, respectively.}\label{fig:spatial}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/corr} \caption{Model-estimated scores and correlations for the six masking tasks and the four cognitive tasks. Diagonal: distributions of the standardized scores. Lower triangle: model-estimated correlations. Upper triangle: scatterplots of the standardized scores.}\label{fig:corr}
+\includegraphics[width=1\linewidth]{Figures/corr} \caption{Individual differences in the six masking tasks and the four cognitive tasks. Diagonal: distributions of the standardized model-estimated scores across individuals. Lower triangle: model-estimated correlations between tasks. Upper triangle: scatterplots of the standardized model-estimated scores for each pair of tasks; each point is one individual.}\label{fig:corr}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{Hierarchical clustering of the ten tasks, based on the distance $1 - r$ between model-estimated correlations and average linkage. Symbols mark backward masking, spatial masking, and cognitive tasks.}\label{fig:hcluster}
+\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{Hierarchical clustering of the six masking tasks and the four cognitive tasks. The dendrogram was obtained with average linkage, using $1 - r$ as the distance between two tasks, where $r$ is their model-estimated correlation. Tasks that merge at a lower height are more strongly correlated.}\label{fig:hcluster}
 \end{figure*}
