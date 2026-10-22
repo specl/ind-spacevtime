@@ -11,7 +11,7 @@
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/corr} \caption{Individual differences in the six masking tasks and the four cognitive tasks. Diagonal: distributions of the standardized model-estimated scores across individuals. Lower triangle: model-estimated correlations between tasks. Upper triangle: scatterplots of the standardized model-estimated scores for each pair of tasks; each point is one individual.}\label{fig:corr}
+\includegraphics[width=1\linewidth]{Figures/corr} \caption{Individual differences in the six masking tasks and the four cognitive tasks. Diagonal: distributions of the standardized model-estimated scores across individuals. Lower triangle: model-estimated correlations between tasks. Upper triangle: scatterplots of the standardized model-estimated scores for each pair of tasks; each point is one individual. Thresholds and cognitive scores are oriented so that higher values indicate poorer performance; positive correlations therefore indicate that better performance on one task goes with better performance on the other.}\label{fig:corr}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
