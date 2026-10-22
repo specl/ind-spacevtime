@@ -132,7 +132,23 @@ Data were screened separately for each individual and each masking task. An indi
 
 # Analysis Method
 
-## Hierarchical psychometric model
+Blah blah two types of analysis.
+
+
+## Summary Scores, Correlations, and High-Leverage Points
+
+The first step in analysis is constructing a single scores that summarizes performance in each task per individual.  For the three backwards masking tasks, the main independent variable is the stimulus duration which was adaptively manipuated in staircase fashion.  To construct these summary scores, the mean duration across the the 250 analyzed trials was computed and denoted $S_{ij}$ where $i$ denotes individuals, $i=1,\ldots,79$, and $j=1,\ldots,6$.  For the four coginitve tasks, Tasks 7-10, the scoring method is standard to the task and described above.  We denote these $S_{ij}$ as well, with $j=7,\ldots,10$.  
+
+The main target of the summary-score analysis are the correlations between tasks and across individuals.  The main concern in data quality is that some scores exert unreasonably high leverage on these correlations.  Figure X shows two scatters of individual scores in a task.  Both have an outlying individual.  In XA, this individual does not change the correlational appreciable; in XB it does.  We decided the best approach was to discard all outlying individuals in a task regardless of the effect on correlation if the individuals' score was more than 4 standard deviations above the mean.  In total, data from 14 task-by-individual combinations (out of a total of 790 combinations) were discarded.   The raw data without any exclusions is provided at xxxx.  The code to perform the exclusions is provided at yyyy.  Readers can confirm for themselves that the 4 SD criteria is appropriate; they can also explore the effects of other criteria, which, while affecting the value of specific correlations, do not affect the conclusions herein.
+
+To interpret the pattern of these surface correlations vis-a-vis the hypotheses, we used the default nonmetric clustering algorithm in R.  The results are shown in Figure Y.  In this representation, tasks that are more similar are presented together lower in the hierarchy.  In all cases, the lower level of the most similar perceptual tasks are arrange by stimulus type---gabor grating, letters, and pi stimuli---and not by mask type.  For example, backwards masking in the Gabor stimuli are quite disimilar than backwards masking in the pi stimuli.  Perhaps the only unexpected finding then is that the pi stimuli are quite disimilar to the other perceptual tasks even though the only difference is the type of stimulus.  As it turns out, when a more complete accounting of the data through hierarhical modeling is performed next, this unexpected finding does not hold.
+
+
+## Hierarchical psychometric modeling
+
+Correlations are attenuated, the error reflects only that due to ppl and not trials.
+
+The hierarchical model we propose consists of a data level, which 
 
 Individual thresholds on the masking tasks and the correlations among them were estimated with a hierarchical psychometric model [@Rouder.Mehrvarz.2026]. The model estimates individual thresholds and their correlations simultaneously from trial-level data, thereby accounting for trial-to-trial noise and avoiding the attenuation of correlations caused by measurement error.
 
