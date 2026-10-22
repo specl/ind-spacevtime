@@ -144,10 +144,10 @@ $$
 where the success probability is given by a task-specific psychometric function, modeled as a cumulative normal function of log stimulus strength with a lower asymptote at chance:
 
 $$
-F(s_{ijk}; \theta_{ij}, \beta_{j}) = b_j + (1-b_j)\,\Phi\!\left(\beta_j\,(s_{ijk}-\theta_{ij})\right).
+F(s_{ijk}; \theta_{ij}, \beta_{j}) = \Phi\!\left(\beta_j\,(s_{ijk}-\theta_{ij})\right).
 $$
 
-Here, $\Phi(\cdot)$ denotes the standard normal cumulative distribution function, and $b_j$ is the guessing rate for task $j$, fixed at .5 for the two-alternative Gabor and Pi tasks and at 1/9 for the nine-alternative Letter tasks. The variable $s_{ijk}$ denotes the stimulus strength on trial $k$ for individual $i$ on task $j$, log-transformed and then standardized within each task. In the backward masking tasks, stimulus strength was the SOA; in the spatial masking tasks, it was the Gabor contrast, the target weight in the letter–noise blend, and the leg-length difference of the Pi stimulus, respectively. The parameter $\theta_{ij}$ denotes the latent threshold of individual $i$ on task $j$, expressed on the same scale as $s_{ijk}$, and $\beta_j$ denotes the slope of the psychometric function for task $j$.
+Here, $\Phi(\cdot)$ denotes the standard normal cumulative distribution function. The variable $s_{ijk}$ denotes the stimulus strength on trial $k$ for individual $i$ on task $j$, log-transformed and then standardized within each task. In the backward masking tasks, stimulus strength was the SOA; in the spatial masking tasks, it was the Gabor contrast, the target weight in the letter–noise blend, and the leg-length difference of the Pi stimulus, respectively. The parameter $\theta_{ij}$ denotes the latent threshold of individual $i$ on task $j$, and $\beta_j$ denotes the slope of the psychometric function for task $j$.
 
 At the latent level, each individual is characterized by a vector of ten person-level parameters: the six latent thresholds from the masking tasks and the standardized scores on the four cognitive tasks,
 
@@ -155,14 +155,13 @@ $$
 \boldsymbol{\theta}_i = \left(\theta_{i1}, \ldots, \theta_{i6}, c_{i1}, \ldots, c_{i4}\right)^\top,
 $$
 
-where $c_{im}$ denotes the standardized score of individual $i$ on cognitive task $m$. The cognitive scores were sign-reversed so that, as for the thresholds, higher values indicate poorer performance. These ten parameters are assumed to follow a multivariate normal distribution,
+where $c_{im}$ denotes the standardized score of individual $i$ on cognitive task $m$, $m \in \{1,2,3,4\}$. The cognitive scores were sign-reversed so that, as for the thresholds, higher values indicate poorer performance. These ten parameters are assumed to follow a multivariate normal distribution,
 
 $$
 \boldsymbol{\theta}_i \sim \mathcal{N}_{10}\!\left(\boldsymbol{\mu}, \boldsymbol{\Sigma}\right),
 $$
 
-where $\boldsymbol{\mu}$ captures the mean of each task and $\boldsymbol{\Sigma}$ captures the covariance among tasks. The covariance matrix is given a scaled inverse-Wishart (SIW) prior [@Huang.Wand.2013a] which is robust to differences in the measurement scales of the tasks and is computationally efficient to estimate [@Yang.Rouder.2026]. Throughout, model-estimated scores and correlations refer to posterior means of $\theta_{ij}$ and of the correlations implied by $\boldsymbol{\Sigma}$. Full details of the model specification are provided in Appendix A.
-
+where $\boldsymbol{\mu}$ captures the mean threshold of each task and $\boldsymbol{\Sigma}$ captures the covariance among tasks. The covariance matrix is given a scaled inverse-Wishart (SIW) prior [@Huang.Wand.2013a] which is robust to differences in the measurement scales of the tasks and is computationally efficient to estimate [@Yang.Rouder.2026]. Throughout, model-estimated scores and correlations refer to posterior means of $\theta_{ij}$ and of the correlations implied by $\boldsymbol{\Sigma}$. Full details of the model specification are provided in Appendix A.
 
 ## Structural decomposition
 
@@ -350,7 +349,7 @@ We had expected to confirm the fast-eyes hypothesis. Given the large literature 
 
 ## Why backward masking may not index processing speed alone
 
-The relation between inspection time and intelligence has long been attributed to processing speed. Because the backward mask limits how long the target is available, accuracy is thought to depend on how quickly the target is taken in. Our results suggest that this attribution is too narrow. When the stimulus and mask were held constant, the backward and spatial versions of each task produced largely the same individual differences. In hindsight, this is not surprising. To do well on a backward masking task, an observer must take in the target quickly, but must also see it clearly enough to make the judgment before the mask arrives. Good performance therefore requires both fast eyes and sharp eyes, and backward masking tasks do not measure processing speed alone. 
+The relation between inspection time and intelligence has long been attributed to processing speed. Because the backward mask limits how long the target is available, accuracy is thought to depend on how quickly the target is taken in. Our results suggest that this attribution is too narrow. When the stimulus and mask were held constant, the backward and spatial versions of each task produced largely the same individual differences. On reflection, this result is too  surprising: to do well on a backward masking task, an observer must take in the target quickly, but must also see it clearly enough to make the judgment before the mask arrives. Good performance therefore requires both fast eyes and sharp eyes, and backward masking tasks do not measure processing speed alone. 
 
 
 ## A stimulus effect that does not reach cognition
