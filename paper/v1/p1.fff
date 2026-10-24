@@ -11,10 +11,20 @@
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/corr} \caption{Individual differences in the six masking tasks and the four cognitive tasks. Diagonal: distributions of the standardized model-estimated scores across individuals. Lower triangle: model-estimated correlations between tasks. Upper triangle: scatterplots of the standardized model-estimated scores for each pair of tasks; each point is one individual. Thresholds and cognitive scores are oriented so that higher values indicate poorer performance; positive correlations therefore indicate that better performance on one task goes with better performance on the other.}\label{fig:corr}
+\includegraphics[width=1\linewidth]{Figures/corr_raw} \caption{Individual differences in the six masking tasks and the four cognitive tasks. Diagonal: distributions of the standardized summary scores across individuals. Lower triangle: correlations between tasks. Upper triangle: scatterplots of the standardized model-estimated scores for each pair of tasks; each point is one individual. Thresholds and cognitive scores are oriented so that higher values indicate poorer performance; positive correlations therefore indicate that better performance on one task goes with better performance on the other.}\label{fig:corrRaw}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{Hierarchical clustering of the six masking tasks and the four cognitive tasks. The dendrogram was obtained with average linkage, using $1 - r$ as the distance between two tasks, where $r$ is their model-estimated correlation. Tasks that merge at a lower height are more strongly correlated.}\label{fig:hcluster}
+\includegraphics[width=1\linewidth]{Figures/hcluster_raw} \caption{Hierarchical clustering of the six masking tasks and the four cognitive tasks. The dendrogram was obtained with average linkage, using $1 - r$ as the distance between two tasks, where $r$ is their model-estimated correlation. Tasks that merge at a lower height are more strongly correlated.}\label{fig:hclusterRaw}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\includegraphics[width=1\linewidth]{Figures/corr_sem} \caption{Something}\label{fig:corrSem}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\includegraphics[width=1\linewidth]{Figures/hcluster_sem} \caption{Something}\label{fig:hclusterSem}
 \end{figure*}

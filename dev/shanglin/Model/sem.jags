@@ -16,7 +16,7 @@ model{
     lambda_gen[j] ~ dnorm(0, 1) T(0,)
     for (d in 1:D){
       lam_raw[j,d] ~ dnorm(0, 1) T(0,)
-      lambda_spec[j,d] <- free[j,d] * lam_raw[j,d]}   
+      lambda_spec[j,d] <- free[j,d] * lam_raw[j,d]}
     mu[j] ~ dnorm(0, pow(5, -2))
     delta[j] ~ dt(0, pow(2.5, -2), 3) T(0,)             # Half-t3(0, 2.5) on unique SD
     delta2[j] <- pow(delta[j], 2)
@@ -27,10 +27,9 @@ model{
       center[i,j] <- mu[j] + lambda_gen[j] * eta_gen[i] + inprod(lambda_spec[j,1:D], eta_spec[i,1:D])
       theta[i,j] ~ dnorm(center[i,j], pDelta2[j])}}
 
-  ## data level: psychometric function
+  ## data level: cumulative normal psychometric function (no guessing rate)
   for (n in 1:N){
-    pc[n] <- eps + (1 - 2*eps) * phi(beta[task[n]] * (s[n] - theta[id[n], task[n]]))
-    p[n]  <- guess[task[n]] + (1 - guess[task[n]]) * pc[n]
+    p[n] <- eps + (1 - 2*eps) * phi(beta[task[n]] * (s[n] - theta[id[n], task[n]]))
     k[n] ~ dbin(p[n], ntrials[n])}
 
   ## structural model: C regressed on all non-cognitive factors
@@ -43,13 +42,13 @@ model{
   for (c in 1:Cn){
     lambda_c[c] ~ dnorm(0, 1) T(0,)
     mu_c[c] ~ dnorm(0, pow(5, -2))
-    delta_c[c] ~ dt(0, pow(2.5, -2), 3) T(0,)           
+    delta_c[c] ~ dt(0, pow(2.5, -2), 3) T(0,)
     delta2_c[c] <- pow(delta_c[c], 2)
     pDelta2_c[c] <- 1 / delta2_c[c]
     for (i in 1:I){
       cog[i,c] ~ dnorm(mu_c[c] + lambda_c[c] * Cf[i], pDelta2_c[c])}}
 
-  ## derived quantities
+  ## derived quantities: variance shares
   for (j in 1:J){
     tot[j] <- pow(lambda_gen[j], 2) + inprod(lambda_spec[j,1:D], lambda_spec[j,1:D]) + delta2[j]
     share_gen[j] <- pow(lambda_gen[j], 2) / tot[j]
@@ -59,5 +58,17 @@ model{
   varC <- inprod(gamma[1:(D+1)], gamma[1:(D+1)]) + 1
   for (f in 1:(D+1)){
     gamma_std[f] <- gamma[f] / sqrt(varC)}
-}
 
+  ## derived quantities: model-implied covariance of the J + Cn person-level variables
+  for (j in 1:J){
+    covTC[j] <- lambda_gen[j] * gamma[1] + inprod(lambda_spec[j,1:D], gamma[2:(D+1)])   # Cov(theta_j, C)
+    for (jj in 1:J){
+      Sigma[j,jj] <- lambda_gen[j] * lambda_gen[jj] + inprod(lambda_spec[j,1:D], lambda_spec[jj,1:D]) +
+                     equals(j,jj) * delta2[j]}
+    for (c in 1:Cn){
+      Sigma[j,J+c] <- covTC[j] * lambda_c[c]
+      Sigma[J+c,j] <- covTC[j] * lambda_c[c]}}
+  for (c in 1:Cn){
+    for (cc in 1:Cn){
+      Sigma[J+c,J+cc] <- lambda_c[c] * lambda_c[cc] * varC + equals(c,cc) * delta2_c[c]}}
+}

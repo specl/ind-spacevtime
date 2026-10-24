@@ -3,10 +3,12 @@ Fits the hierarchical psychometric sem model in JAGS
 library(R2jags)
 library(polspline)   #
 
-fit_file <- "Data/summary/sem.rds"
+fit_file   <- "Data/summary/sem.rds"
+sigma_file <- "Data/summary/sem_sigma.rds"        # posterior draws of the 10 x 10 covariance matrix
+theta_file <- "Data/summary/sem_theta.csv"        # posterior mean threshold per person and task
 perc_tasks <- c("TLetter", "TGabor", "TPi", "SLetter", "SGabor", "SPi")
 cog_tasks  <- c("OSpan", "CSpan", "Corsi", "Matrix")
-vis_names  <- c("V", "Bwd", "Sim", "Letter", "Gabor", "Pi")   # non-cognitive factors
+vis_names  <- c("V", "Bwd", "Spa", "Letter", "Gabor", "Pi")   # non-cognitive factors
 n_perc_task <- length(perc_tasks)
 n_cog_task  <- length(cog_tasks)
 
@@ -23,7 +25,7 @@ perc_df <- perc_df[perc_df$x_raw > 0, ]
 perc_df$x <- log(perc_df$x_raw)
 perc_df$x <- ave(perc_df$x, perc_df$task_name, FUN = function(v) as.numeric(scale(v)))
 
-# Exclude (subject, task) cells that are >4SD outliers or have a non-converged staircase
+# Exclude (subject, task) cells flagged as NA in the cleaned scores (4 SD criterion)
 clean_scores    <- read.csv("Data/summary/all_scores_clean.csv")
 clean_scores$id <- as.character(clean_scores$id)
 excluded_cells <- do.call(rbind, lapply(perc_tasks, function(t) {
@@ -58,10 +60,7 @@ cog <- as.matrix(cog[match(ids, cog$id), cog_tasks])
 
 
 ```{r}
-# Guessing rate per task (set to 0 to drop the lower asymptote)
-guess <- c(TLetter = 1/9, TGabor = 1/2, TPi = 1/2, SLetter = 1/9, SGabor = 1/2, SPi = 1/2)
-
-# Specific factors each task loads on:  Bwd Sim Letter Gabor Pi
+# Specific factors each task loads on:  Bwd Spa Letter Gabor Pi
 free <- rbind(TLetter = c(1, 0, 1, 0, 0),
               TGabor  = c(1, 0, 0, 1, 0),
               TPi     = c(1, 0, 0, 0, 1),
@@ -75,7 +74,7 @@ jags_data <- list(
   N = nrow(agg_df), I = n_subj, J = n_perc_task, D = ncol(free), Cn = n_cog_task,
   id = agg_df$id_idx, task = agg_df$task_idx, s = agg_df$x,
   k = agg_df$k, ntrials = agg_df$n,
-  guess = unname(guess[perc_tasks]), eps = 1e-6,
+  eps = 1e-6,
   free = unname(free), cog = unname(cog)
 )
 
@@ -105,8 +104,9 @@ inits <- function() list(
 inits_clean <- function() lapply(inits(), unname)
 
 # Run model
-pars <- c("mu", "beta", "lambda_gen", "lambda_spec", "delta2", "lambda_c",
-          "gamma", "gamma_std", "share_gen", "share_spec", "share_uni")
+pars <- c("mu", "beta", "lambda_gen", "lambda_spec", "delta2", "lambda_c", "delta2_c",
+          "gamma", "gamma_std", "share_gen", "share_spec", "share_uni",
+          "Sigma", "theta")
 fit <- jags(data = jags_data, inits = inits_clean, parameters.to.save = pars,
               model.file = "Model/sem.jags",
               n.chains = 4, n.iter = 30000, n.burnin = 10000, n.thin = 1)   
@@ -120,6 +120,25 @@ key  <- grepl("^(mu|beta|lambda_gen|lambda_c|delta2|gamma|share_gen|share_uni)\\
 cat("Max Rhat:        ", max(summ[key, "Rhat"]), "\n")
 cat("Min n_eff:       ", min(summ[key, "n.eff"]), "\n")
 cat("Posterior draws: ", nrow(sl$gamma), "\n")
+
+# ---- save covariance matrix and individual thresholds ----------------------
+all_tasks <- c(perc_tasks, cog_tasks)
+Sigma <- sl$Sigma                                  # draws x 10 x 10
+dimnames(Sigma) <- list(NULL, all_tasks, all_tasks)
+saveRDS(Sigma, sigma_file)
+Sigma_mean <- apply(Sigma, c(2, 3), mean)
+R_mean     <- apply(Sigma, 1, cov2cor)             # posterior mean of the correlation matrix
+R_mean     <- matrix(rowMeans(R_mean), length(all_tasks), dimnames = list(all_tasks, all_tasks))
+write.csv(round(Sigma_mean, 4), "Data/summary/sem_sigma_mean.csv")
+write.csv(round(R_mean, 4),     "Data/summary/sem_corr_mean.csv")
+
+theta_mean <- apply(sl$theta, c(2, 3), mean)       # persons x tasks
+theta_sd   <- apply(sl$theta, c(2, 3), sd)
+dimnames(theta_mean) <- dimnames(theta_sd) <- list(ids, perc_tasks)
+excl <- paste(excluded_cells$id, excluded_cells$task_name)   # excluded cells were imputed: set to NA
+for (t in perc_tasks) theta_mean[paste(ids, t) %in% excl, t] <- NA
+write.csv(data.frame(id = ids, theta_mean, check.names = FALSE), theta_file, row.names = FALSE)
+write.csv(data.frame(id = ids, theta_sd,   check.names = FALSE), "Data/summary/sem_theta_sd.csv", row.names = FALSE)
 ```
 
 ```{r}

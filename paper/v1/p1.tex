@@ -226,11 +226,19 @@ Correspondence concerning this article should be addressed to Jeffrey N. Rouder.
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=1\linewidth]{Figures/corr} \caption{Individual differences in the six masking tasks and the four cognitive tasks. Diagonal: distributions of the standardized model-estimated scores across individuals. Lower triangle: model-estimated correlations between tasks. Upper triangle: scatterplots of the standardized model-estimated scores for each pair of tasks; each point is one individual. Thresholds and cognitive scores are oriented so that higher values indicate poorer performance; positive correlations therefore indicate that better performance on one task goes with better performance on the other.}\label{fig:corr}
+\includegraphics[width=1\linewidth]{Figures/corr_raw} \caption{Individual differences in the six masking tasks and the four cognitive tasks. Diagonal: distributions of the standardized summary scores across individuals. Lower triangle: correlations between tasks. Upper triangle: scatterplots of the standardized model-estimated scores for each pair of tasks; each point is one individual. Thresholds and cognitive scores are oriented so that higher values indicate poorer performance; positive correlations therefore indicate that better performance on one task goes with better performance on the other.}\label{fig:corrRaw}
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{Hierarchical clustering of the six masking tasks and the four cognitive tasks. The dendrogram was obtained with average linkage, using $1 - r$ as the distance between two tasks, where $r$ is their model-estimated correlation. Tasks that merge at a lower height are more strongly correlated.}\label{fig:hcluster}
+\includegraphics[width=1\linewidth]{Figures/hcluster_raw} \caption{Hierarchical clustering of the six masking tasks and the four cognitive tasks. The dendrogram was obtained with average linkage, using $1 - r$ as the distance between two tasks, where $r$ is their model-estimated correlation. Tasks that merge at a lower height are more strongly correlated.}\label{fig:hclusterRaw}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=1\linewidth]{Figures/corr_sem} \caption{Something}\label{fig:corrSem}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=1\linewidth]{Figures/hcluster_sem} \caption{Something}\label{fig:hclusterSem}
 \end{figure}
 
 \section{Introduction}\label{introduction}
@@ -298,7 +306,21 @@ Data were screened separately for each individual and each masking task. An indi
 
 \section{Analysis Method}\label{analysis-method}
 
-\subsection{Hierarchical psychometric model}\label{hierarchical-psychometric-model}
+Blah blah two types of analysis.
+
+\subsection{Summary Scores, Correlations, and High-Leverage Points}\label{summary-scores-correlations-and-high-leverage-points}
+
+The first step in analysis is constructing a single scores that summarizes performance in each task per individual. For the three backwards masking tasks, the main independent variable is the stimulus duration which was adaptively manipuated in staircase fashion. To construct these summary scores, the mean duration across the the 250 analyzed trials was computed and denoted \(S_{ij}\) where \(i\) denotes individuals, \(i=1,\ldots,79\), and \(j=1,\ldots,6\). For the four coginitve tasks, Tasks 7-10, the scoring method is standard to the task and described above. We denote these \(S_{ij}\) as well, with \(j=7,\ldots,10\).
+
+The main target of the summary-score analysis are the correlations between tasks and across individuals. The main concern in data quality is that some scores exert unreasonably high leverage on these correlations. Figure X shows two scatters of individual scores in a task. Both have an outlying individual. In XA, this individual does not change the correlational appreciable; in XB it does. We decided the best approach was to discard all outlying individuals in a task regardless of the effect on correlation if the individuals' score was more than 4 standard deviations above the mean. In total, data from 14 task-by-individual combinations (out of a total of 790 combinations) were discarded. The raw data without any exclusions is provided at xxxx. The code to perform the exclusions is provided at yyyy. Readers can confirm for themselves that the 4 SD criteria is appropriate; they can also explore the effects of other criteria, which, while affecting the value of specific correlations, do not affect the conclusions herein.
+
+To interpret the pattern of these surface correlations vis-a-vis the hypotheses, we used the default nonmetric clustering algorithm in R. The results are shown in Figure Y. In this representation, tasks that are more similar are presented together lower in the hierarchy. In all cases, the lower level of the most similar perceptual tasks are arrange by stimulus type---gabor grating, letters, and pi stimuli---and not by mask type. For example, backwards masking in the Gabor stimuli are quite disimilar than backwards masking in the pi stimuli. Perhaps the only unexpected finding then is that the pi stimuli are quite disimilar to the other perceptual tasks even though the only difference is the type of stimulus. As it turns out, when a more complete accounting of the data through hierarhical modeling is performed next, this unexpected finding does not hold.
+
+\subsection{Hierarchical psychometric modeling}\label{hierarchical-psychometric-modeling}
+
+Correlations are attenuated, the error reflects only that due to ppl and not trials.
+
+The hierarchical model we propose consists of a data level, which
 
 Individual thresholds on the masking tasks and the correlations among them were estimated with a hierarchical psychometric model (Rouder \& Mehrvarz, 2026). The model estimates individual thresholds and their correlations simultaneously from trial-level data, thereby accounting for trial-to-trial noise and avoiding the attenuation of correlations caused by measurement error.
 
@@ -401,9 +423,9 @@ Both models were estimated with Markov chain Monte Carlo sampling; software, pri
 
 \subsection{Individual differences and their correlational structure}\label{individual-differences-and-their-correlational-structure}
 
-Figure \ref{fig:corr} summarizes the model-estimated scores for the six masking tasks and the four cognitive tasks. All scores were standardized before plotting. The distributions on the diagonal were unimodal and roughly symmetric, with substantial spread across individuals. Thus, all ten tasks captured meaningful individual differences. The lower triangle of Figure \ref{fig:corr} shows the model-estimated correlations among the ten tasks. All 45 correlations were positive with a single exception between the backward Letter task and SSPAN (\emph{r} = -.02). The mean correlation was .39 among the six masking tasks, .35 among the four cognitive tasks, and .26 between the masking tasks and the cognitive tasks.
+Figure \ref{fig:corrRaw} summarizes the model-estimated scores for the six masking tasks and the four cognitive tasks. All scores were standardized before plotting. The distributions on the diagonal were unimodal and roughly symmetric, with substantial spread across individuals. Thus, all ten tasks captured meaningful individual differences. The lower triangle of Figure \ref{fig:corrRaw} shows the model-estimated correlations among the ten tasks. All 45 correlations were positive with a single exception between the backward Letter task and SSPAN (\emph{r} = -.02). The mean correlation was .39 among the six masking tasks, .35 among the four cognitive tasks, and .26 between the masking tasks and the cognitive tasks.
 
-It is worth noting that the three same-stimulus pairs, in which the same stimulus was tested under backward and spatial masking, showed the three highest correlations among the masking tasks (mean \emph{r} = .52). By comparison, the mean correlation was .40 between tasks that shared a masking procedure but differed in stimulus, and .31 between tasks that differed in both. Therefore, stimulus type plays a substantial role in individual differences in masking performance. These comparisons, however, rely on groupings that we defined in advance. To examine whether the same structure emerges without such groupings, we applied hierarchical clustering to the model-estimated correlations. Hierarchical clustering is an unsupervised method that groups tasks by their similarity without imposing any a priori structure; we defined the distance between two tasks as \(1 - r\). At each step, the two clusters with the smallest average distance between their members were merged (see Figure \ref{fig:hcluster}). The first three merges each joined the backward and spatial versions of the same stimulus, and only after these pairs had formed did they combine with one another. In contrast, neither the three backward masking tasks nor the three spatial masking tasks formed a cluster of their own. The four cognitive tasks formed a separate cluster that joined the masking tasks only at the final step. Thus, individual differences in masking performance were organized primarily by stimulus rather than by masking procedure.
+It is worth noting that the three same-stimulus pairs, in which the same stimulus was tested under backward and spatial masking, showed the three highest correlations among the masking tasks (mean \emph{r} = .52). By comparison, the mean correlation was .40 between tasks that shared a masking procedure but differed in stimulus, and .31 between tasks that differed in both. Therefore, stimulus type plays a substantial role in individual differences in masking performance. These comparisons, however, rely on groupings that we defined in advance. To examine whether the same structure emerges without such groupings, we applied hierarchical clustering to the model-estimated correlations. Hierarchical clustering is an unsupervised method that groups tasks by their similarity without imposing any a priori structure; we defined the distance between two tasks as \(1 - r\). At each step, the two clusters with the smallest average distance between their members were merged (see Figure \ref{fig:hclusterRaw}). The first three merges each joined the backward and spatial versions of the same stimulus, and only after these pairs had formed did they combine with one another. In contrast, neither the three backward masking tasks nor the three spatial masking tasks formed a cluster of their own. The four cognitive tasks formed a separate cluster that joined the masking tasks only at the final step. Thus, individual differences in masking performance were organized primarily by stimulus rather than by masking procedure.
 
 \subsection{Structural decomposition of masking performance}\label{structural-decomposition-of-masking-performance}
 
@@ -424,13 +446,13 @@ Table \ref{tab:tab-shares} shows how the variance of each masking task was distr
 \toprule
 Task & \multicolumn{1}{c}{General} & \multicolumn{1}{c}{Masking} & \multicolumn{1}{c}{Stimulus} & \multicolumn{1}{c}{Unique}\\
 \midrule
-Backward Letter & .19 [.01, .46] & .14 [.00, .42] & .23 [.01, .53] & .44 [.21, .71]\\
-Backward Gabor & .28 [.04, .57] & .14 [.00, .44] & .19 [.00, .52] & .39 [.16, .68]\\
-Backward Pi & .38 [.11, .66] & .05 [.00, .22] & .18 [.00, .50] & .39 [.18, .65]\\
-Spatial Letter & .34 [.09, .60] & .10 [.00, .34] & .16 [.00, .40] & .41 [.21, .66]\\
-Spatial Gabor & .41 [.14, .65] & .06 [.00, .23] & .09 [.00, .29] & .45 [.27, .66]\\
-Spatial Pi & .33 [.05, .67] & .15 [.00, .49] & .20 [.00, .54] & .31 [.11, .60]\\
-\textbf{Average} & \textbf{.32 [.20, .45]} & \textbf{.11 [.03, .20]} & \textbf{.18 [.08, .29]} & \textbf{.40 [.30, .51]}\\
+Backward Letter & .17 [.01, .45] & .25 [.01, .67] & .39 [.05, .76] & .19 [.00, .58]\\
+Backward Gabor & .29 [.04, .62] & .22 [.00, .65] & .20 [.00, .63] & .30 [.00, .66]\\
+Backward Pi & .30 [.06, .62] & .03 [.00, .16] & .44 [.06, .83] & .22 [.00, .54]\\
+Spatial Letter & .35 [.08, .71] & .18 [.00, .56] & .28 [.02, .66] & .19 [.00, .52]\\
+Spatial Gabor & .47 [.11, .87] & .10 [.00, .47] & .20 [.00, .63] & .23 [.00, .57]\\
+Spatial Pi & .34 [.05, .78] & .15 [.00, .47] & .34 [.03, .69] & .17 [.00, .46]\\
+\textbf{Average} & \textbf{.32 [.20, .45]} & \textbf{.16 [.07, .26]} & \textbf{.31 [.20, .42]} & \textbf{.22 [.12, .32]}\\
 \bottomrule
 \end{tabular}
 
@@ -456,12 +478,12 @@ Table \ref{tab:tab-cor} shows the correlation of each non-cognitive factor with 
 \toprule
 Factor & \multicolumn{1}{c}{$r$} & \multicolumn{1}{c}{$\text{BF}_{10}$}\\
 \midrule
-General visual factor & .58 [.22, .82] & \textbf{34.1}\\
-Backward masking & -.06 [-.46, .38] & 0.50\\
-Spatial masking & .21 [-.25, .61] & 0.79\\
-Letter & -.22 [-.55, .20] & 0.86\\
-Gabor & .31 [-.16, .68] & 1.47\\
-Pi & .10 [-.29, .48] & 0.53\\
+General visual factor & .56 [.15, .84] & \textbf{12.5}\\
+Backward masking & -.03 [-.44, .39] & 0.43\\
+Spatial masking & .19 [-.29, .61] & 0.70\\
+Letter & -.15 [-.50, .24] & 0.53\\
+Gabor & .27 [-.23, .67] & 0.95\\
+Pi & .16 [-.20, .50] & 0.57\\
 \bottomrule
 \addlinespace
 \end{tabular}
