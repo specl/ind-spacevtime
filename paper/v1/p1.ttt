@@ -19,7 +19,12 @@ Spatial Gabor & .47 [.11, .87] & .10 [.00, .47] & .20 [.00, .63] & .23 [.00, .57
 Spatial Pi & .34 [.05, .78] & .15 [.00, .47] & .34 [.03, .69] & .17 [.00, .46]\\
 \textbf{Average} & \textbf{.32 [.20, .45]} & \textbf{.16 [.07, .26]} & \textbf{.31 [.20, .42]} & \textbf{.22 [.12, .32]}\\
 \bottomrule
+\addlinespace
 \end{tabular}
+
+\begin{tablenotes}[para]
+\normalsize{\textit{Note.} Values are posterior means with 95\% credible intervals.}
+\end{tablenotes}
 
 \end{threeparttable}
 \end{center}

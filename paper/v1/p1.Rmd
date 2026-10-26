@@ -58,21 +58,18 @@ knitr::include_graphics("Figures/temporal.png")
 knitr::include_graphics("Figures/spatial.png")
 ```
 
-```{r corrRaw, echo = FALSE, fig.cap = "Individual differences in the six masking tasks and the four cognitive tasks. Diagonal: distributions of the standardized summary scores across individuals. Lower triangle: correlations between tasks. Upper triangle: scatterplots of the standardized model-estimated scores for each pair of tasks; each point is one individual. Thresholds and cognitive scores are oriented so that higher values indicate poorer performance; positive correlations therefore indicate that better performance on one task goes with better performance on the other.", out.width = "100%"}
-knitr::include_graphics("Figures/corr_raw.png")
+```{r leverage, echo = FALSE, fig.cap = "Something", out.width = "100%"}
+knitr::include_graphics("Figures/leverage.png")
 ```
 
-```{r hclusterRaw, echo = FALSE, fig.cap = "Hierarchical clustering of the six masking tasks and the four cognitive tasks. The dendrogram was obtained with average linkage, using $1 - r$ as the distance between two tasks, where $r$ is their model-estimated correlation. Tasks that merge at a lower height are more strongly correlated.", out.width = "100%"}
-knitr::include_graphics("Figures/hcluster_raw.png")
+```{r corr, echo = FALSE, fig.align = "center", out.width = "65%", fig.cap = "Individual differences in the six masking tasks and the four cognitive tasks. A: Summary scores. B: Estimates from the hierarchical model. Diagonal: distributions of the standardized scores across individuals. Lower triangle: correlations between tasks; in B, these are posterior means of the correlations implied by the model. Upper triangle: scatterplots of the standardized scores for each pair of tasks; each point is one individual. Thresholds and cognitive scores are oriented so that higher values indicate poorer performance; positive correlations therefore indicate that better performance on one task goes with better performance on the other."}
+knitr::include_graphics("Figures/corr.png")
 ```
 
-```{r corrSem, echo = FALSE, fig.cap = "Something", out.width = "100%"}
-knitr::include_graphics("Figures/corr_sem.png")
+```{r hcluster, echo = FALSE, fig.cap = "Hierarchical clustering of the six masking tasks and the four cognitive tasks. The dendrogram was obtained with average linkage, using $1 - r$ as the distance between two tasks, where $r$ is their model-estimated correlation. Tasks that merge at a lower height are more strongly correlated.", out.width = "100%"}
+knitr::include_graphics("Figures/hcluster.png")
 ```
 
-```{r hclusterSem, echo = FALSE, fig.cap = "Something", out.width = "100%"}
-knitr::include_graphics("Figures/hcluster_sem.png")
-```
 
 # Introduction
 
@@ -133,75 +130,41 @@ The experiment consisted of three sessions of approximately one hour each, condu
 
 Phase II of each session was reserved for the working memory and matrix reasoning tasks.  The OSPAN task was performed in Phase II on Session 1; the CSPAN task was performed likewise on Session 2; the SSPAN and UCMRT were performed on Session 3.
 
-## Data exclusion
-
-Data were screened separately for each individual and each masking task. An individual's data on a given task were excluded from further analysis if either of two criteria was met. First, the individual's raw threshold, computed as the mean stimulus level across the 250 analyzed trials, deviated by more than four standard deviations from the group mean threshold for that task. Second, the observed accuracy on either staircase deviated by more than 5 percentage points from its target accuracy (70.7% for the two-down–one-up staircase and 79.4% for the three-down–one-up staircase), indicating that the staircase had not converged as intended. In total, 14 task datasets from 10 individuals were excluded. These individuals' remaining tasks were retained in the analysis.
-
-
-
 # Analysis Method
 
-Blah blah two types of analysis.
-
+We analyzed the data in two ways. The first is a conventional analysis of summary scores. For each individual and task, we computed a single score, screened these scores for outliers, and examined the correlations among tasks. This analysis is simple and transparent, and it lets readers see the data directly. Its limitation is that each summary score contains trial-to-trial noise, which attenuates the correlations between tasks. The second analysis addresses this limitation with hierarchical psychometric modeling. Here, thresholds and their correlations are estimated directly from trial-level data, so that trial-to-trial noise is accounted for and the correlations are not attenuated. We then extend this model with a structural decomposition that separates the general, masking-specific, and stimulus-specific sources of individual differences and relates each to cognitive performance.
 
 ## Summary Scores, Correlations, and High-Leverage Points
 
-The first step in analysis is constructing a single scores that summarizes performance in each task per individual.  For the three backwards masking tasks, the main independent variable is the stimulus duration which was adaptively manipuated in staircase fashion.  To construct these summary scores, the mean duration across the the 250 analyzed trials was computed and denoted $S_{ij}$ where $i$ denotes individuals, $i=1,\ldots,79$, and $j=1,\ldots,6$.  For the four coginitve tasks, Tasks 7-10, the scoring method is standard to the task and described above.  We denote these $S_{ij}$ as well, with $j=7,\ldots,10$.  
+The first step in the analysis is constructing a single score that summarizes performance on each task for each individual. For the three backward masking tasks, the main independent variable is the stimulus onset asynchrony between the target and the mask, which was manipulated adaptively in staircase fashion. For the three spatial masking tasks, the main independent variables are the leg-length difference of the Pi stimulus, the target weight in the letter–noise blend, and the contrast of the Gabor patch, each of which was likewise manipulated adaptively. To construct these summary scores, the mean duration across the the last 150 analyzed trials was computed. For the four cognitive tasks, Tasks 7-10, the scoring method is standard to the task and described above.
 
-The main target of the summary-score analysis are the correlations between tasks and across individuals.  The main concern in data quality is that some scores exert unreasonably high leverage on these correlations.  Figure X shows two scatters of individual scores in a task.  Both have an outlying individual.  In XA, this individual does not change the correlational appreciable; in XB it does.  We decided the best approach was to discard all outlying individuals in a task regardless of the effect on correlation if the individuals' score was more than 4 standard deviations above the mean.  In total, data from 14 task-by-individual combinations (out of a total of 790 combinations) were discarded.   The raw data without any exclusions is provided at xxxx.  The code to perform the exclusions is provided at yyyy.  Readers can confirm for themselves that the 4 SD criteria is appropriate; they can also explore the effects of other criteria, which, while affecting the value of specific correlations, do not affect the conclusions herein.
+The main target of the summary-score analysis is the correlations between tasks across individuals. The main concern in data quality is that some scores exert unreasonably high leverage on these correlations. Figure @ref(fig:leverage) shows two scatterplots of individual scores, each plotting one task against another. Both include the same outlying individual. In Figure \@ref(fig:leverage)A, this individual does not change the correlation appreciably; in Figure \@ref(fig:leverage)B, the individual does. We decided the best approach was to discard any score on a task that was more than 4 standard deviations from the task mean, regardless of its effect on the correlations. In total, data from 2 task-by-individual combinations (out of a total of 790 combinations) were discarded. Both belonged to the outlying individual shown in Figure @ref(fig:leverage), namely their backward Gabor and spatial Gabor scores. Readers can confirm for themselves that the 4 SD criterion is appropriate; they can also explore the effects of other criteria, which, while affecting the values of specific correlations, do not affect the main conclusions herein.
 
-To interpret the pattern of these surface correlations vis-a-vis the hypotheses, we used the default nonmetric clustering algorithm in R.  The results are shown in Figure Y.  In this representation, tasks that are more similar are presented together lower in the hierarchy.  In all cases, the lower level of the most similar perceptual tasks are arrange by stimulus type---gabor grating, letters, and pi stimuli---and not by mask type.  For example, backwards masking in the Gabor stimuli are quite disimilar than backwards masking in the pi stimuli.  Perhaps the only unexpected finding then is that the pi stimuli are quite disimilar to the other perceptual tasks even though the only difference is the type of stimulus.  As it turns out, when a more complete accounting of the data through hierarhical modeling is performed next, this unexpected finding does not hold.
-
+To interpret the pattern of these surface correlations vis-a-vis the hypotheses, We used hierarchical clustering with average linkage [@Sokal.Michener.1958], as implemented in the hclust function in R, with $1 - r$ as the distance between two tasks. The results are shown in Figure \@ref(fig:hcluster)A.  In this representation, tasks that are more similar are presented together lower in the hierarchy.  In all cases, the lower level of the most similar perceptual tasks are arrange by stimulus type---gabor grating, letters, and pi stimuli---and not by mask type.  For example, backwards masking in the Gabor stimuli are quite disimilar than backwards masking in the pi stimuli.  Perhaps the only unexpected finding then is that the pi stimuli is disimilar to the other perceptual tasks even though the only difference is the type of stimulus.  As it turns out, when a more complete accounting of the data through hierarhical modeling is performed next, this unexpected finding does not hold.
 
 ## Hierarchical psychometric modeling
 
-Correlations are attenuated, the error reflects only that due to ppl and not trials.
+Correlations among summary scores are attenuated, because each score contains trial-to-trial noise in addition to an individual’s true ability [@Spearman.1904; @Rouder.Haaf.2019]. To address the limitation, we estimated individual thresholds and their correlations simultaneously from trial-level data with a hierarchical psychometric model [@Rouder.Mehrvarz.2026]. Because the model accounts for trial-to-trial noise, the estimated correlations are not attenuated by measurement error, and their uncertainty reflects both sources of variability.
 
-The hierarchical model we propose consists of a data level, which 
+The model has three levels. At the data level, the trial-by-trial responses on each masking task are linked to an individual threshold through a psychometric function. At the measurement level, the individual thresholds and the cognitive scores are expressed as functions of latent factors: a general visual factor, masking factors, stimulus factors, and a cognitive factor. At the structural level, the cognitive factor is regressed on the non-cognitive factors, which specifies how each source of individual differences in masking performance relates to cognitive performance. We describe each level in turn.
 
-Individual thresholds on the masking tasks and the correlations among them were estimated with a hierarchical psychometric model [@Rouder.Mehrvarz.2026]. The model estimates individual thresholds and their correlations simultaneously from trial-level data, thereby accounting for trial-to-trial noise and avoiding the attenuation of correlations caused by measurement error.
-
-Let $i = 1,\dots,I$ denote individuals, $j \in \{1,2,3,4,5,6\}$ denote six masking tasks, and $k = 1,\dots,K$ denote trials. Let $y_{ijk}$ denote the binary correctness outcome on the $k$-th trial of individual $i$ in masking task $j$. We assume
+**Data level.** Let $i = 1,\dots,I$ denote individuals, $j \in \{1,2,3,4,5,6\}$ denote six masking tasks, and $k = 1,\dots,K$ denote trials. Let $y_{ijk}$ denote the binary correctness outcome on the $k$-th trial of individual $i$ in masking task $j$. We assume
 $$
-y_{ijk} \sim \text{Bernoulli}\!\left(F(s_{ijk}; \theta_{ij}, \beta_{j})\right),
+y_{ijk} \sim \text{Bernoulli}\!\left(\Phi\!\left(\beta_j\,(s_{ijk}-\theta_{ij})\right)\right),
 $$
+where $\Phi(\cdot)$ denotes the standard normal cumulative distribution function. The variable $s_{ijk}$ denotes the stimulus strength on trial $k$ for individual $i$ on task $j$, log-transformed and then standardized within each task. In the backward masking tasks, stimulus strength was the SOA; in the spatial masking tasks, it was the Gabor contrast, the target weight in the letter–noise blend, and the leg-length difference of the Pi stimulus, respectively. The parameter $\theta_{ij}$ denotes the latent threshold of individual $i$ on task $j$, expressed on the same scale as $s_{ijk}$, and $\beta_j$ denotes the slope of the psychometric function for task $j$.
 
-where the success probability is given by a task-specific psychometric function, modeled as a cumulative normal function of log stimulus strength with a lower asymptote at chance:
-
-$$
-F(s_{ijk}; \theta_{ij}, \beta_{j}) = b_j + (1-b_j)\,\Phi\!\left(\beta_j\,(s_{ijk}-\theta_{ij})\right).
-$$
-
-Here, $\Phi(\cdot)$ denotes the standard normal cumulative distribution function, and $b_j$ is the guessing rate for task $j$, fixed at .5 for the two-alternative Gabor and Pi tasks and at 1/9 for the nine-alternative Letter tasks. The variable $s_{ijk}$ denotes the stimulus strength on trial $k$ for individual $i$ on task $j$, log-transformed and then standardized within each task. In the backward masking tasks, stimulus strength was the SOA; in the spatial masking tasks, it was the Gabor contrast, the target weight in the letter–noise blend, and the leg-length difference of the Pi stimulus, respectively. The parameter $\theta_{ij}$ denotes the latent threshold of individual $i$ on task $j$, expressed on the same scale as $s_{ijk}$, and $\beta_j$ denotes the slope of the psychometric function for task $j$.
-
-At the latent level, each individual is characterized by a vector of ten person-level parameters: the six latent thresholds from the masking tasks and the standardized scores on the four cognitive tasks,
-
+**Measurement level.** Each individual is characterized by a vector of ten individual-level parameters: the six latent thresholds from the masking tasks and the standardized scores on the four cognitive tasks,
 $$
 \boldsymbol{\theta}_i = \left(\theta_{i1}, \ldots, \theta_{i6}, c_{i1}, \ldots, c_{i4}\right)^\top,
 $$
-
-where $c_{im}$ denotes the standardized score of individual $i$ on cognitive task $m$. The cognitive scores were sign-reversed so that, as for the thresholds, higher values indicate poorer performance. These ten parameters are assumed to follow a multivariate normal distribution,
-
-$$
-\boldsymbol{\theta}_i \sim \mathcal{N}_{10}\!\left(\boldsymbol{\mu}, \boldsymbol{\Sigma}\right),
-$$
-
-where $\boldsymbol{\mu}$ captures the mean of each task and $\boldsymbol{\Sigma}$ captures the covariance among tasks. The covariance matrix is given a scaled inverse-Wishart (SIW) prior [@Huang.Wand.2013a] which is robust to differences in the measurement scales of the tasks and is computationally efficient to estimate [@Yang.Rouder.2026]. Throughout, model-estimated scores and correlations refer to posterior means of $\theta_{ij}$ and of the correlations implied by $\boldsymbol{\Sigma}$. Full details of the model specification are provided in Appendix A.
-
-
-## Structural decomposition
-
-To decompose individual differences in masking performance and relate each source to cognitive performance, we retained the data level of the hierarchical psychometric model and replaced the unstructured covariance matrix at the latent level with a covariance structure specified by a structural equation model. For the six masking tasks, the thresholds $\theta_{ij}$ remain linked to the trial-level data through the psychometric function $F(s_{ijk}; \theta_{ij}, \beta_j)$; what changes is how the individual-level vector $\boldsymbol{\theta}_i$ is generated. In the new latent structure, $\boldsymbol{\theta}_i$ is expressed as a function of seven latent factors, $\boldsymbol{\eta}_i = \left(\eta_i^{(V)}, \eta_i^{(\text{Bwd})}, \eta_i^{(\text{Spa})}, \eta_i^{(\text{Let})}, \eta_i^{(\text{Gab})}, \eta_i^{(\text{Pi})}, \eta_i^{(C)}\right)^\top$, where $\eta_i^{(V)}$ is a general visual factor shared by all six masking tasks; $\eta_i^{(\text{Bwd})}$ and $\eta_i^{(\text{Spa})}$ are masking factors, each shared by the three tasks that use the same masking procedure; $\eta_i^{(\text{Let})}$, $\eta_i^{(\text{Gab})}$, and $\eta_i^{(\text{Pi})}$ are stimulus factors, each shared by the two tasks that use the same stimulus; and $\eta_i^{(C)}$ is a cognitive factor measured by the four cognitive tasks. We refer to the six factors other than $\eta_i^{(C)}$ collectively as non-cognitive factors.
-
-The measurement model relates the ten individual-level parameters to these factors,
+where $c_{im}$ denotes the standardized score of individual $i$ on cognitive task $m$. The cognitive scores were sign-reversed so that, as for the thresholds, higher values indicate poorer performance. These ten parameters are expressed as functions of seven latent factors, $\boldsymbol{\eta}_i = \left(\eta_i^{(V)}, \eta_i^{(\text{Bwd})}, \eta_i^{(\text{Spa})}, \eta_i^{(\text{Let})}, \eta_i^{(\text{Gab})}, \eta_i^{(\text{Pi})}, \eta_i^{(C)}\right)^\top$, where $\eta_i^{(V)}$ is a general visual factor shared by all six masking tasks; $\eta_i^{(\text{Bwd})}$ and $\eta_i^{(\text{Spa})}$ are masking factors, each shared by the three tasks that use the same masking procedure; $\eta_i^{(\text{Let})}$, $\eta_i^{(\text{Gab})}$, and $\eta_i^{(\text{Pi})}$ are stimulus factors, each shared by the two tasks that use the same stimulus; and $\eta_i^{(C)}$ is a cognitive factor measured by the four cognitive tasks. We refer to the six factors other than $\eta_i^{(C)}$ collectively as non-cognitive factors. The measurement model is
 $$
 \boldsymbol{\theta}_i = \boldsymbol{\mu} + \boldsymbol{\Lambda}\,\boldsymbol{\eta}_i + \boldsymbol{\epsilon}_i, \qquad
 \boldsymbol{\epsilon}_i \sim \mathcal{N}_{10}\!\left(\mathbf{0}, \boldsymbol{\Delta}\right), \qquad
 \boldsymbol{\Delta} = \operatorname{diag}\!\left(\delta_1^2, \ldots, \delta_{10}^2\right),
 $$
-
-where $\boldsymbol{\Lambda}$ is a $10 \times 7$ matrix of factor loadings and $\delta_t^2$ is the variance unique to task $t$, $t = 1, \ldots, 10$. With the rows of $\boldsymbol{\Lambda}$ ordered as in $\boldsymbol{\theta}_i$ (backward Letter, Gabor, and Pi; spatial Letter, Gabor, and Pi; OSPAN, CSPAN, SSPAN, and UCMRT) and the columns ordered as in $\boldsymbol{\eta}_i$,
-
+where $\boldsymbol{\mu}$ captures the mean of each task, $\boldsymbol{\Lambda}$ is a $10 \times 7$ matrix of factor loadings, and $\delta_t^2$ is the variance unique to task $t$, $t = 1, \ldots, 10$. With the rows of $\boldsymbol{\Lambda}$ ordered as in $\boldsymbol{\theta}_i$ (backward Letter, Gabor, and Pi; spatial Letter, Gabor, and Pi; OSPAN, CSPAN, SSPAN, and UCMRT) and the columns ordered as in $\boldsymbol{\eta}_i$,
 $$
 \boldsymbol{\Lambda} =
 \begin{pmatrix}
@@ -219,14 +182,13 @@ $$
 $$
 Each masking task thus loads on the general visual factor ($\lambda_j^{(V)}$), on the factor for its masking procedure ($\lambda_j^{(M)}$), and on the factor for its stimulus ($\lambda_j^{(S)}$), and each cognitive task $m = 1, \ldots, 4$ loads on the cognitive factor ($\lambda_{6+m}^{(C)}$). All other loadings are fixed at zero.
 
-The structural model then specifies the relations among the factors,
+**Structural level.** The structural model specifies the relations among the factors,
 $$
 \boldsymbol{\eta}_i = \mathbf{B}\,\boldsymbol{\eta}_i + \boldsymbol{\zeta}_i, \qquad
 \boldsymbol{\zeta}_i \sim \mathcal{N}_{7}\!\left(\mathbf{0}, \boldsymbol{\Psi}\right), \qquad
 \boldsymbol{\Psi} = \mathbf{I}_7,
 $$
 where $\mathbf{B}$ is a $7 \times 7$ matrix of regression weights among the factors. The cognitive factor is regressed on all six non-cognitive factors:
-
 $$
 \mathbf{B} =
 \begin{pmatrix}
@@ -239,19 +201,22 @@ $$
 b^{(V)} & b^{(\text{Bwd})} & b^{(\text{Spa})} & b^{(\text{Let})} & b^{(\text{Gab})} & b^{(\text{Pi})} & 0
 \end{pmatrix},
 $$
-so that $\eta_i^{(C)} = b^{(V)}\eta_i^{(V)} + b^{(\text{Bwd})}\eta_i^{(\text{Bwd})} + b^{(\text{Spa})}\eta_i^{(\text{Spa})} + b^{(\text{Let})}\eta_i^{(\text{Let})} + b^{(\text{Gab})}\eta_i^{(\text{Gab})} + b^{(\text{Pi})}\eta_i^{(\text{Pi})} + \zeta_i^{(C)}$. Setting $\boldsymbol{\Psi} = \mathbf{I}_7$ fixes the variances of the six non-cognitive factors and of the residual $\zeta_i^{(C)}$ to one and makes the six non-cognitive factors mutually orthogonal. Because the non-cognitive factors are orthogonal and have unit variance, this structure separates two questions: how much of the variance of each masking task is due to each source, and which sources relate to cognitive performance. First, the variance of each masking task decomposes additively,
+so that $\eta_i^{(C)} = b^{(V)}\eta_i^{(V)} + b^{(\text{Bwd})}\eta_i^{(\text{Bwd})} + b^{(\text{Spa})}\eta_i^{(\text{Spa})} + b^{(\text{Let})}\eta_i^{(\text{Let})} + b^{(\text{Gab})}\eta_i^{(\text{Gab})} + b^{(\text{Pi})}\eta_i^{(\text{Pi})} + \zeta_i^{(C)}$. Setting $\boldsymbol{\Psi} = \mathbf{I}_7$ fixes the variances of the six non-cognitive factors and of the residual $\zeta_i^{(C)}$ to one and makes the six non-cognitive factors mutually orthogonal.
 
+**Derived quantities.** Together, the measurement and structural levels imply the covariance matrix of $\boldsymbol{\theta}_i$,
+$$
+\boldsymbol{\Sigma} = \boldsymbol{\Lambda}\left(\mathbf{I}_7 - \mathbf{B}\right)^{-1}\left(\mathbf{I}_7 - \mathbf{B}\right)^{-\top}\boldsymbol{\Lambda}^\top + \boldsymbol{\Delta},
+$$
+which we computed for each posterior draw. Throughout, model-estimated scores and correlations refer to posterior means of $\theta_{ij}$ and of the correlations implied by $\boldsymbol{\Sigma}$. Because the non-cognitive factors are orthogonal and have unit variance, the model also separates two questions: how much of the variance of each masking task is due to each source, and which sources relate to cognitive performance. First, the variance of each masking task decomposes additively,
 $$
 \operatorname{Var}(\theta_{ij}) = \left(\lambda_j^{(V)}\right)^2 + \left(\lambda_j^{(M)}\right)^2 + \left(\lambda_j^{(S)}\right)^2 + \delta_j^2,
 $$
-
 so the proportion of variance due to each source is its term divided by $\operatorname{Var}(\theta_{ij})$. Second, the relation of each non-cognitive factor $f \in \{V, \text{Bwd}, \text{Spa}, \text{Let}, \text{Gab}, \text{Pi}\}$ to cognitive performance is captured by its regression weight $b^{(f)}$, and the corresponding correlation $r^{(f)}$ is
-
 $$
 \operatorname{Var}\!\left(\eta_i^{(C)}\right) = \sum_{f'} \left(b^{(f')}\right)^2 + 1, \qquad
 r^{(f)} = \frac{b^{(f)}}{\sqrt{\operatorname{Var}\!\left(\eta_i^{(C)}\right)}}.
 $$
-In these terms, the fast-eyes hypothesis predicts that the relation to cognitive performance is carried by $b^{(\text{Bwd})}$, the sharp-eyes hypothesis predicts that the relation to cognitive performance is carried by $b^{(\text{Spa})}$, and the good-eyes hypothesis predicts that the relation to cognitive performance is carried by $b^{(V)}$. Full details of the model specification are provided in Appendix B. Derivations of the variance decomposition are provided in Appendix C.
+In these terms, the fast-eyes hypothesis predicts that the relation to cognitive performance is carried by $b^{(\text{Bwd})}$, the sharp-eyes hypothesis predicts that it is carried by $b^{(\text{Spa})}$, and the good-eyes hypothesis predicts that it is carried by $b^{(V)}$. Full details of the model specification are provided in Appendix A, and derivations of the variance decomposition in Appendix B.
 
 ## Inference
 
@@ -261,14 +226,13 @@ Both models were estimated with Markov chain Monte Carlo sampling; software, pri
 
 ## Individual differences and their correlational structure
 
-Figure \@ref(fig:corrRaw) summarizes the model-estimated scores for the six masking tasks and the four cognitive tasks. All scores were standardized before plotting. The distributions on the diagonal were unimodal and roughly symmetric, with substantial spread across individuals. Thus, all ten tasks captured meaningful individual differences. The lower triangle of Figure \@ref(fig:corrRaw) shows the model-estimated correlations among the ten tasks. All 45 correlations were positive with a single exception between the backward Letter task and SSPAN (*r* = -.02). The mean correlation was .39 among the six masking tasks, .35 among the four cognitive tasks, and .26 between the masking tasks and the cognitive tasks.
+Figure \@ref(fig:corr)B summarizes the model-estimated scores for the six masking tasks and the four cognitive tasks. All scores were standardized before plotting. The distributions on the diagonal were unimodal and roughly symmetric, with substantial spread across individuals. Thus, all ten tasks captured meaningful individual differences. The lower triangle of Figure \@ref(fig:corr)B shows the model-estimated correlations among the ten tasks. All 46 correlations were positive. The mean correlation was xx among the six masking tasks, xx among the four cognitive tasks, and xx between the masking tasks and the cognitive tasks.
 
-It is worth noting that the three same-stimulus pairs, in which the same stimulus was tested under backward and spatial masking, showed the three highest correlations among the masking tasks (mean *r* = .52). By comparison, the mean correlation was .40 between tasks that shared a masking procedure but differed in stimulus, and .31 between tasks that differed in both. Therefore, stimulus type plays a substantial role in individual differences in masking performance. These comparisons, however, rely on groupings that we defined in advance. To examine whether the same structure emerges without such groupings, we applied hierarchical clustering to the model-estimated correlations. Hierarchical clustering is an unsupervised method that groups tasks by their similarity without imposing any a priori structure; we defined the distance between two tasks as $1 - r$. At each step, the two clusters with the smallest average distance between their members were merged (see Figure \@ref(fig:hclusterRaw)). The first three merges each joined the backward and spatial versions of the same stimulus, and only after these pairs had formed did they combine with one another. In contrast, neither the three backward masking tasks nor the three spatial masking tasks formed a cluster of their own. The four cognitive tasks formed a separate cluster that joined the masking tasks only at the final step. Thus, individual differences in masking performance were organized primarily by stimulus rather than by masking procedure.
+Hierarchical clustering result is shown in Figure \@ref(fig:hcluster)B. The first three merges each joined the backward and spatial versions of the same stimulus, and only after these pairs had formed did they combine with one another. In contrast, neither the three backward masking tasks nor the three spatial masking tasks formed a cluster of their own. The four cognitive tasks formed a separate cluster that joined the masking tasks only at the final step. Thus, individual differences in masking performance were organized primarily by stimulus rather than by masking procedure.
 
 ## Structural decomposition of masking performance
 
-Hierarchical clustering showed that the structure among the masking tasks is best described by grouping by stimulus type. The next question is whether stimulus type or masking procedure contributes to cognitive performance. These two questions are different because the covariance that determines how tasks cluster need not be the covariance that predicts cognitive performance. Tasks sharing a stimulus may cluster together because of stimulus-specific variance, while their relation to cognitive performance may instead be carried by other sources of variance, for example, variance from the masking procedure or variance from a general visual factor. We addressed this question with the structural decomposition described in the Analysis Method.
-
+The hierarchical clustering showed that individual differences among the masking tasks are organized by stimulus type. The next question is which source of variance relates to cognitive performance. The two questions are distinct: tasks sharing a stimulus may cluster together because of stimulus-specific variance, while their relation to cognitive performance may be carried by masking-specific variance or by the general visual factor. We answer this question with the variance decomposition and the regression weights of the structural model described in the Analysis Method.
 
 ```{r bifactor-post, include = FALSE}
 library(R2jags)
@@ -278,10 +242,10 @@ library(polspline)
 fit <- readRDS("Data/sem.rds")
 sl  <- fit$BUGSoutput$sims.list
 tasks <- c("Backward Letter", "Backward Gabor", "Backward Pi",
-              "Spatial Letter", "Spatial Gabor", "Spatial Pi")
-vis   <- c("V", "Bwd", "Spa", "Letter", "Gabor", "Pi")
+           "Spatial Letter", "Spatial Gabor", "Spatial Pi")
+vis     <- c("V", "Bwd", "Spa", "Letter", "Gabor", "Pi")
 vis_lab <- c("General visual factor", "Backward masking", "Spatial masking",
-                "Letter", "Gabor", "Pi")
+             "Letter", "Gabor", "Pi")
 
 # which specific factor each task loads on (order: Bwd, Spa, Letter, Gabor, Pi)
 mask_col <- c(1, 1, 1, 2, 2, 2)
@@ -310,19 +274,20 @@ tab_shares <- data.frame(
 p_S_gt_M <- mean(avgS > avgM)
 
 # ---- correlations with cognitive performance and Savage-Dickey Bayes factors ----
-bf_g  <- sl$gamma;     colnames(bf_g)  <- vis    # regression weights b_f, prior N(0, 1)
-bf_gs <- sl$gamma_std; colnames(bf_gs) <- vis    # correlations with C
+bf_g  <- sl$gamma;     colnames(bf_g)  <- vis    # regression weights b^(f), prior N(0, 1)
+bf_gs <- sl$gamma_std; colnames(bf_gs) <- vis    # correlations r^(f) with C
 sd_bf01 <- function(x) dlogspline(0, logspline(x)) / dnorm(0, 0, 1)
 bf01    <- sapply(vis, function(f) sd_bf01(bf_g[, f]))
 
-bf10    <- 1 / bf01                                   # all Bayes factors reported as BF10
+bf10     <- 1 / bf01                             # all Bayes factors reported as BF10
 bf10_fmt <- function(x) ifelse(x >= 10, sprintf("%.1f", x), sprintf("%.2f", x))
-bf_txt  <- function(b10) sprintf("$\\text{BF}_{10} = %s$", bf10_fmt(b10))
-r_ci   <- function(f) sprintf("*r* = %s, 95%% credible interval [%s, %s]", f2(mean(bf_gs[, f])),
-                              f2(quantile(bf_gs[, f], .025)), f2(quantile(bf_gs[, f], .975)))
+bf_txt   <- function(b10) sprintf("$\\text{BF}_{10} = %s$", bf10_fmt(b10))
+r_ci     <- function(f) sprintf("*r* = %s, 95%% credible interval [%s, %s]", f2(mean(bf_gs[, f])),
+                                f2(quantile(bf_gs[, f], .025)), f2(quantile(bf_gs[, f], .975)))
+bf_range <- function(fs) sprintf("%s to %s", bf10_fmt(min(bf10[fs])), bf10_fmt(max(bf10[fs])))
 
 bf10_col <- bf10_fmt(unname(bf10))
-bf10_col[1] <- bold(bf10_col[1])                   # general visual factor in bold
+bf10_col[1] <- bold(bf10_col[1])                 # general visual factor in bold
 tab_cor <- data.frame(
   Factor = vis_lab,
   r      = unname(apply(bf_gs, 2, ci)),
@@ -334,23 +299,23 @@ names(tab_cor) <- c("Factor", "$r$", "$\\text{BF}_{10}$")
 
 ### Sources of variance in masking performance
 
-Table \@ref(tab:tab-shares) shows how the variance of each masking task was distributed across the general visual factor, the masking factors, the stimulus factors, and task-unique variance. The general visual factor was the largest shared source of variance. It accounted for $.32$ of the variance on average. The stimulus factors were the second largest shared source, accounting for $.18$ of the variance on average. The masking factors accounted for the smallest share, $.11$ of the variance on average. The remaining $.40$ of the variance was unique to each task.
+Table \@ref(tab:tab-shares) shows how the variance of each masking task was distributed across the general visual factor, the masking factors, the stimulus factors, and task-unique variance. The general visual factor was the largest shared source of variance, accounting for `r pct(avgV)` of the variance on average. The stimulus factors were the second largest shared source, accounting for `r pct(avgS)` on average. The masking factors accounted for the smallest share, `r pct(avgM)` on average. The remaining `r pct(avgU)` was unique to each task.
 
 ```{r tab-shares, results = "asis"}
 apa_table(
   tab_shares,
   caption = "Proportion of variance of each masking task due to each source.",
-  note = NULL,
+  note = "Values are posterior means with 95\\% credible intervals.",
   align = c("l", "c", "c", "c", "c"),
   escape = FALSE
 )
 ```
 
-The decomposition shows two results: first, masking-specific variance was small, accounting for roughly a third of the share of the general visual factor. Backward and spatial masking were thus largely held together by the general visual factor rather than forming distinct sources of individual differences. Second, stimulus-specific variance tended to be larger than masking-specific variance (posterior probability = $.84$), in line with the clustering by stimulus reported above.
+The decomposition shows two results. First, masking-specific variance was small relative to the general visual factor. Backward and spatial masking were thus largely held together by the general visual factor rather than forming distinct sources of individual differences. Second, stimulus-specific variance tended to be larger than masking-specific variance (posterior probability = `r f2(p_S_gt_M)`), in line with the clustering by stimulus reported above.
 
 ### Contributions to cognitive performance
 
-Table \@ref(tab:tab-cor) shows the correlation of each non-cognitive factor with cognitive performance. Only the general visual factor was reliably related to cognitive performance, *r* = .58, 95% credible interval [.22, .82], and the Bayes factor provided strong evidence for this relation, $\text{BF}_{10} = 34.1$.
+Table \@ref(tab:tab-cor) shows the correlation of each non-cognitive factor with cognitive performance. Under the fast-eyes hypothesis, the backward masking factor should carry this relation; under the sharp-eyes hypothesis, the spatial masking factor should; and under the good-eyes hypothesis, the general visual factor should. Only the general visual factor was reliably related to cognitive performance, `r r_ci("V")`, and the Bayes factor provided strong evidence for this relation, `r bf_txt(bf10[["V"]])`.
 
 ```{r tab-cor, results = "asis"}
 apa_table(
@@ -363,9 +328,9 @@ apa_table(
 )
 ```
 
-None of the specific factors showed a comparable relation. All five credible intervals included zero, and the correlations did not share a common sign. All Bayes factors fell in the inconclusive range. Thus, the data provided no evidence that stimulus-specific or masking-specific variance contributes to cognitive performance.
+None of the specific factors showed a comparable relation. Neither the backward nor the spatial masking factor was reliably related to cognitive performance, and neither were the stimulus factors; all five Bayes factors fell in the inconclusive range ($\text{BF}_{10}$ = `r bf_range(vis[-1])`). Thus, the data provided no evidence that masking-specific or stimulus-specific variance contributes to cognitive performance.
 
-Taken together, stimulus content accounted for a substantial share of individual differences in masking performance, yet this stimulus-specific variance showed no evidence of a relation to cognitive performance. The relation between masking performance and cognitive performance was instead carried by the general visual factor shared by all six masking tasks.
+Taken together, stimulus content accounted for a substantial share of individual differences in masking performance, yet this stimulus-specific variance showed no evidence of a relation to cognitive performance. The relation between masking performance and cognitive performance was instead carried by the general visual factor shared by all six masking tasks, as predicted by the good-eyes hypothesis.
 
 # Discussion
 
@@ -396,45 +361,15 @@ The present analysis combined a trial-level psychometric model with a structural
 
 \newpage
  
-# Appendix A: Hierarchical Psychometric Model With an Unstructured Covariance Matrix
+# Appendix A: Hierarchical Psychometric Model
 
-**Model Specification.** Let $i = 1,\dots,I$ denote individuals, $j \in \{1,2,3,4,5,6\}$ denote six masking tasks, and $k = 1,\dots,K$ denote trials. Let $y_{ijk}$ denote the binary correctness outcome on the $k$-th trial of individual $i$ in masking task $j$. The data level model is then given by
+**Model specification.** Let $i = 1,\dots,I$ denote individuals, $j \in \{1,2,3,4,5,6\}$ denote six masking tasks, and $k = 1,\dots,K$ denote trials. Let $y_{ijk}$ denote the binary correctness outcome on the $k$-th trial of individual $i$ in masking task $j$. The data level is given by
 $$
-y_{ijk} \sim \text{Bernoulli}\!\left(F(s_{ijk}; \theta_{ij}, \beta_{j})\right),
+y_{ijk} \sim \text{Bernoulli}\!\left(\Phi\!\left(\beta_j\,(s_{ijk}-\theta_{ij})\right)\right),
 $$
-where the success probability is given by a task-specific psychometric function, modeled as a cumulative normal function of log stimulus strength with a lower asymptote at chance:
-$$
-F(s_{ijk}; \theta_{ij}, \beta_{j}) = b_j + (1-b_j)\,\Phi\!\left(\beta_j\,(s_{ijk}-\theta_{ij})\right).
-$$
-Here, $\Phi(\cdot)$ denotes the standard normal cumulative distribution function, and $b_j$ is the guessing rate for task $j$, fixed at .5 for the two-alternative Gabor and Pi tasks and at 1/9 for the nine-alternative Letter tasks. The variable $s_{ijk}$ denotes the stimulus strength on trial $k$ for individual $i$ on task $j$, which was log-transformed and then standardized across all trials and individuals of task $j$. Standardization places the six masking tasks on a common scale, so that the same priors can be used for all tasks; because it is a linear transformation within each task, it does not affect the correlations among tasks. The parameter $\theta_{ij}$ denotes the latent threshold of individual $i$ on task $j$, expressed on the same scale as $s_{ijk}$. $\beta_j$ denotes the slope of the psychometric function for task $j$.
+where $\Phi(\cdot)$ denotes the standard normal cumulative distribution function. The variable $s_{ijk}$ denotes the stimulus strength on trial $k$ for individual $i$ on task $j$, which was log-transformed and then standardized across all trials and individuals of task $j$. Standardization places the six masking tasks on a common scale, so that the same priors can be used for all tasks; because it is a linear transformation within each task, it does not affect the correlations among tasks. The parameter $\theta_{ij}$ denotes the latent threshold of individual $i$ on task $j$, expressed on the same scale as $s_{ijk}$, and $\beta_j$ denotes the slope of the psychometric function for task $j$.
 
-At the latent level, each individual is characterized by a vector of ten person-level parameters: the six latent thresholds from the masking tasks and the standardized scores on the four cognitive tasks,
-$$
-\boldsymbol{\theta}_i = \left(\theta_{i1}, \ldots, \theta_{i6}, c_{i1}, \ldots, c_{i4}\right)^\top,
-$$
-where $c_{im}$ denotes the standardized score of individual $i$ on cognitive task $m$. These ten parameters are assumed to follow a multivariate normal distribution
-$$
-\boldsymbol{\theta}_i \sim \mathcal{N}_{10}\!\left(\boldsymbol{\mu}, \boldsymbol{\Sigma}\right).
-$$
-The cognitive scores enter the model as observed values of the last four elements of $\boldsymbol{\theta}_i$. Specifically, the observed standardized score $x_{im}$ of individual $i$ on cognitive task $m$ is modeled as
-$x_{im} \sim \mathcal{N}(c_{im}, \tau^2)$ with $\tau = 0.01$, so that $c_{im}$ is constrained to be essentially equal to the observed score. As in the main text, the observed scores were standardized and sign-reversed so that higher values indicate poorer performance. Task datasets excluded under the criteria in the Method section contributed no trials to the likelihood; the corresponding thresholds were treated as missing and inferred from the latent distribution.
-
-**Prior specification.** Priors are needed for the task means $\boldsymbol{\mu}$, the slopes $\beta_j$, and the covariance matrix $\boldsymbol{\Sigma}$. The task means and slopes were given weakly informative normal priors, which are wide relative to the standardized scale of $s_{ijk}$ and of the cognitive scores. The covariance matrix was given a scaled inverse-Wishart prior [@Huang.Wand.2013a], in which $\boldsymbol{\Sigma}$ is decomposed into a diagonal matrix of scale parameters and an unscaled covariance matrix:
-\begin{equation*}
-\begin{aligned}
-\mu_t &\sim \mathcal{N}(0, 5^2), && t = 1, \ldots, 10, \\
-\beta_j &\sim \mathcal{N}(0, 5^2), && j = 1, \ldots, 6, \\
-\boldsymbol{\Sigma} &= \mathbf{D}\,\boldsymbol{\Sigma}_0\,\mathbf{D}, && \mathbf{D} = \operatorname{diag}(\sigma_1, \ldots, \sigma_{10}), \\
-\boldsymbol{\Sigma}_0 &\sim \text{Inverse-Wishart}(\nu_0, \mathbf{I}_{10}), && \nu_0 = 12, \\
-\sigma_t &\sim \text{Half-}t_3(0, 2.5), && t = 1, \ldots, 10.
-\end{aligned}
-\end{equation*}
-
-**Model Fitting.** The model was implemented in Stan [@Carpenter.etal.2017]. We ran 4 chains, each with 10,000 tuning steps followed by 20,000 drawing steps. Convergence was assessed with the rank-normalized $\hat{R}$ statistic [@Vehtari.etal.2021], which was below 1.01 for all parameters.
-
-# Appendix B: Hierarchical Psychometric Model With Structural Equation Modeling
-
-**Model specification.** The data level of this model is identical to that described in Appendix A: the trial-level outcomes $y_{ijk}$ of the six masking tasks follow the psychometric function $F(s_{ijk}; \theta_{ij}, \beta_j)$. The two models differ only at the latent level. In Appendix A, the person-level vector $\boldsymbol{\theta}_i$ followed a multivariate normal distribution with an unstructured covariance matrix $\boldsymbol{\Sigma}$. Here, $\boldsymbol{\theta}_i$ is generated by the measurement and structural models described in the main text,
+At the latent level, each individual is characterized by a vector of ten individual-level parameters, $\boldsymbol{\theta}_i = \left(\theta_{i1}, \ldots, \theta_{i6}, c_{i1}, \ldots, c_{i4}\right)^\top$, where $c_{im}$ is the observed score of individual $i$ on cognitive task $m$, standardized and sign-reversed so that higher values indicate poorer performance. This vector is generated by the measurement and structural models described in the main text,
 \begin{equation*}
 \begin{aligned}
 \boldsymbol{\theta}_i &= \boldsymbol{\mu} + \boldsymbol{\Lambda}\,\boldsymbol{\eta}_i + \boldsymbol{\epsilon}_i, \qquad
@@ -444,9 +379,9 @@ $x_{im} \sim \mathcal{N}(c_{im}, \tau^2)$ with $\tau = 0.01$, so that $c_{im}$ i
 \qquad \boldsymbol{\zeta}_i \sim \mathcal{N}_{7}\!\left(\mathbf{0}, \mathbf{I}_7\right),
 \end{aligned}
 \end{equation*}
-with $\boldsymbol{\Lambda}$ and $\mathbf{B}$ as given in the main text. The latent vector $\boldsymbol{\eta}_i$ contains the cognitive factor and six non-cognitive factors, namely the general visual factor, the two masking factors, and the three stimulus factors. Unlike in Appendix A, the cognitive scores are not tied to the last four elements of $\boldsymbol{\theta}_i$ through a small $\tau$. Instead, these elements are the observed standardized scores themselves, and each is modeled through the measurement model as $c_{im} = \mu_{6+m} + \lambda_{6+m}^{(C)}\,\eta_i^{(C)} + \epsilon_{i,6+m}$, so that the variance of each cognitive task that is not shared with the cognitive factor is captured by its unique variance $\delta_{6+m}^2$. Excluded task datasets were handled as in Appendix A.
+with $\boldsymbol{\Lambda}$ and $\mathbf{B}$ as given in the main text. The latent vector $\boldsymbol{\eta}_i$ contains the cognitive factor and six non-cognitive factors, namely the general visual factor, the two masking factors, and the three stimulus factors. The thresholds $\theta_{ij}$ are latent and informed by the trial-level data, whereas the cognitive scores enter as observed values. Each cognitive score is therefore modeled through the measurement model as $c_{im} = \mu_{6+m} + \lambda_{6+m}^{(C)}\,\eta_i^{(C)} + \epsilon_{i,6+m}$, so that the variance of each cognitive task that is not shared with the cognitive factor is captured by its unique variance $\delta_{6+m}^2$. Task datasets excluded under the criteria in the Method section contributed no trials to the likelihood; the corresponding thresholds were treated as missing and inferred from the latent structure.
 
-**Prior specification.** Priors are needed for the task means $\boldsymbol{\mu}$, the slopes $\beta_j$, the free factor loadings in $\boldsymbol{\Lambda}$, the unique standard deviations in $\boldsymbol{\Delta}$, and the regression weights in $\mathbf{B}$. The task means and slopes were given the same priors as in Appendix A. The free loadings were given half-normal priors, which fix the sign of each factor; all other elements of $\boldsymbol{\Lambda}$ were fixed at zero. The unique standard deviations were given half-$t$ priors, and the six free regression weights in $\mathbf{B}$ were given standard normal priors:
+**Prior specification.** Priors are needed for the task means $\boldsymbol{\mu}$, the slopes $\beta_j$, the free factor loadings in $\boldsymbol{\Lambda}$, the unique standard deviations in $\boldsymbol{\Delta}$, and the regression weights in $\mathbf{B}$. The task means and slopes were given weakly informative normal priors, which are wide relative to the standardized scale of $s_{ijk}$ and of the cognitive scores. The free loadings were given half-normal priors, which fix the sign of each factor; all other elements of $\boldsymbol{\Lambda}$ were fixed at zero. The unique standard deviations were given half-$t$ priors, and the six free regression weights in $\mathbf{B}$ were given standard normal priors:
 \begin{equation*}
 \begin{aligned}
 \mu_t &\sim \mathcal{N}(0, 5^2), && t = 1, \ldots, 10, \\
@@ -458,15 +393,18 @@ b^{(f)} &\sim \mathcal{N}(0, 1), && f \in \{V, \text{Bwd}, \text{Spa}, \text{Let
 \end{aligned}
 \end{equation*}
 
+**Implied covariance.** The covariance matrix of $\boldsymbol{\theta}_i$ is not a free parameter but is implied by the loadings, the regression weights, and the unique variances,
+$$
+\boldsymbol{\Sigma} = \boldsymbol{\Lambda}\left(\mathbf{I}_7 - \mathbf{B}\right)^{-1}\left(\mathbf{I}_7 - \mathbf{B}\right)^{-\top}\boldsymbol{\Lambda}^\top + \boldsymbol{\Delta}.
+$$
+We computed $\boldsymbol{\Sigma}$ and the corresponding correlation matrix for each posterior draw; the model-estimated correlations reported in the main text are their posterior means.
+
 **Bayes factors.** The Bayes factor for the hypothesis that non-cognitive factor $f$ is unrelated to cognitive performance compares a model in which $b^{(f)}$ is free to a nested model in which $b^{(f)} = 0$, with all other parameters unchanged. Because the nested model is obtained by fixing a single parameter, the Bayes factor equals the Savage–Dickey density ratio [@Wagenmakers.etal.2010],
 $$
 \text{BF}_{10} = \frac{p(b^{(f)} = 0)}{p(b^{(f)} = 0 \mid \text{data})},
 $$
-where the numerator is the prior density at zero, $1/\sqrt{2\pi}$, and the denominator is the posterior density of $b^{(f)}$ at zero, estimated from the posterior draws with a logspline density estimator.
 
-**Model Fitting.** The model was implemented in JAGS [@Plummer.2003]. We ran 4 chains, each with 10,000 tuning steps followed by 20,000 drawing steps. Convergence was assessed with the Gelman–Rubin $\hat{R}$ statistic [@Gelman.Rubin.1992], which was below 1.01 for all parameters.
-
-# Appendix C: Derivation of the Variance Decomposition
+# Appendix B: Derivation of the Variance Decomposition
 
 This appendix derives the two quantities reported in the main text: the proportion of variance of each masking task due to each source, and the correlation of each non-cognitive factor with the cognitive factor. Here and below, the index $f$ runs over the six non-cognitive factors, namely the general visual factor, the two masking factors, and the three stimulus factors, $f \in \{V, \text{Bwd}, \text{Spa}, \text{Let}, \text{Gab}, \text{Pi}\}$. Both quantities follow from the structural equation model specified in Appendix B. As a reminder, the structural model is given by
 $$
