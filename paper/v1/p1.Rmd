@@ -358,7 +358,6 @@ These possibilities are not mutually exclusive, and our design was not built to 
 
 The present analysis combined a trial-level psychometric model with a structural equation model at the latent level. Thresholds were estimated directly from trial-level responses, so the correlations among tasks were not attenuated by trial-to-trial noise [@Rouder.Mehrvarz.2026]. We used the two latent structures for different purposes. The unstructured covariance matrix provided the correlations and the clustering, which therefore did not depend on any assumed factor structure. The structural equation model provided the variance decomposition and the regression weights, and placing it at the latent level propagated the uncertainty of the thresholds into these estimates. The same approach can be applied whenever abilities are measured with psychophysical thresholds and the question is how their variance is organized.
 
-
 \newpage
  
 # Appendix A: Hierarchical Psychometric Model
