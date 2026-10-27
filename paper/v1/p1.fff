@@ -17,14 +17,14 @@
 \ifnextchar[{\eatarg}{}
 
 
-{\centering \includegraphics[width=0.65\linewidth]{Figures/corr}
+{\centering \includegraphics[width=1\linewidth]{Figures/sem}
 
 }
 
-\caption{Individual differences in the six masking tasks and the four cognitive tasks. A: Summary scores. B: Estimates from the hierarchical model. Diagonal: distributions of the standardized scores across individuals. Lower triangle: correlations between tasks; in B, these are posterior means of the correlations implied by the model. Upper triangle: scatterplots of the standardized scores for each pair of tasks; each point is one individual. Thresholds and cognitive scores are oriented so that higher values indicate poorer performance; positive correlations therefore indicate that better performance on one task goes with better performance on the other.}\label{fig:corr}
+\caption{Something}\label{fig:sem}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/hcluster} \caption{Hierarchical clustering of the six masking tasks and the four cognitive tasks. The dendrogram was obtained with average linkage, using $1 - r$ as the distance between two tasks, where $r$ is their model-estimated correlation. Tasks that merge at a lower height are more strongly correlated.}\label{fig:hcluster}
+\includegraphics[width=1\linewidth]{Figures/summary} \caption{Something}\label{fig:summary}
 \end{figure*}
