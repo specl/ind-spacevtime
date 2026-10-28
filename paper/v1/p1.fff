@@ -1,17 +1,22 @@
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/temporal} \caption{Trial sequence of the three backward masking tasks. Rows show the Pi, Letter, and Gabor tasks. Each trial began with a fixation cross (485 ms), followed by the target. After a variable stimulus onset asynchrony (SOA), the target was replaced by a sequence of five masks (48.5 ms each): line segments for the Pi task, frequency-matched letter noise for the Letter task, and white noise for the Gabor task. Individuals then judged which leg of the Pi was longer (left or right), which of nine letters (A-L) was presented, or whether the Gabor was tilted to the left or right. The response screen remained until response. Task difficulty was adjusted by varying the SOA.}\label{fig:temporal}
+\includegraphics[width=1\linewidth]{Figures/temporal} \caption{Trial sequence of the three temporal masking tasks. Rows show the Pi, Letter, and Gabor tasks. Each trial began with a fixation cross (485 ms), followed by the target. After a variable stimulus onset asynchrony (SOA), the target was replaced by a sequence of five masks (48.5 ms each): line segments for the Pi task, frequency-matched letter noise for the Letter task, and white noise for the Gabor task. Individuals then judged which leg of the Pi was longer (left or right), which of nine letters (A-L) was presented, or whether the Gabor was tilted to the left or right. The response screen remained until response. Task difficulty was adjusted by varying the SOA.}\label{fig:temporal}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/spatial} \caption{Trial sequence of the three spatial masking tasks. Rows show the Pi, Letter, and Gabor tasks. Each trial began with a fixation cross (485 ms), followed by the target embedded in the same mask as in the corresponding backward masking task (485 ms): line segments for the Pi task, frequency-matched letter noise for the Letter task, and white noise for the Gabor task. Individuals made the same judgments as in the backward masking tasks, and the response screen remained until response. Task difficulty was adjusted by varying the leg-length difference of the Pi, the target weight in the letter-noise blend, and the contrast of the Gabor, respectively.}\label{fig:spatial}
+\includegraphics[width=1\linewidth]{Figures/spatial} \caption{Trial sequence of the three spatial masking tasks. Rows show the Pi, Letter, and Gabor tasks. Each trial began with a fixation cross (485 ms), followed by the target embedded in the same mask as in the corresponding temporal masking task (485 ms): line segments for the Pi task, frequency-matched letter noise for the Letter task, and white noise for the Gabor task. Individuals made the same judgments as in the temporal masking tasks, and the response screen remained until response. Task difficulty was adjusted by varying the leg-length difference of the Pi, the target weight in the letter-noise blend, and the contrast of the Gabor, respectively.}\label{fig:spatial}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
 \includegraphics[width=1\linewidth]{Figures/leverage} \caption{Something}\label{fig:leverage}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\includegraphics[width=1\linewidth]{Figures/summary} \caption{Something}\label{fig:summary}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
@@ -22,9 +27,4 @@
 }
 
 \caption{Something}\label{fig:sem}
-\end{figure*}
-\begin{figure*}[hbt]
-\ifnextchar[{\eatarg}{}
-
-\includegraphics[width=1\linewidth]{Figures/summary} \caption{Something}\label{fig:summary}
 \end{figure*}

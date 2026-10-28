@@ -11,12 +11,12 @@
 \toprule
 Task & \multicolumn{1}{c}{General} & \multicolumn{1}{c}{Masking} & \multicolumn{1}{c}{Stimulus} & \multicolumn{1}{c}{Unique}\\
 \midrule
-Backward Letter & .17 [.01, .45] & .25 [.01, .67] & .39 [.05, .76] & .19 [.00, .58]\\
-Backward Gabor & .29 [.04, .62] & .22 [.00, .65] & .20 [.00, .63] & .30 [.00, .66]\\
-Backward Pi & .30 [.06, .62] & .03 [.00, .16] & .44 [.06, .83] & .22 [.00, .54]\\
+Temporal Pi & .30 [.06, .62] & .03 [.00, .16] & .44 [.06, .83] & .22 [.00, .54]\\
+Temporal Letter & .17 [.01, .45] & .25 [.01, .67] & .39 [.05, .76] & .19 [.00, .58]\\
+Temporal Gabor & .29 [.04, .62] & .22 [.00, .65] & .20 [.00, .63] & .30 [.00, .66]\\
+Spatial Pi & .34 [.05, .78] & .15 [.00, .47] & .34 [.03, .69] & .17 [.00, .46]\\
 Spatial Letter & .35 [.08, .71] & .18 [.00, .56] & .28 [.02, .66] & .19 [.00, .52]\\
 Spatial Gabor & .47 [.11, .87] & .10 [.00, .47] & .20 [.00, .63] & .23 [.00, .57]\\
-Spatial Pi & .34 [.05, .78] & .15 [.00, .47] & .34 [.03, .69] & .17 [.00, .46]\\
 \textbf{Average} & \textbf{.32 [.20, .45]} & \textbf{.16 [.07, .26]} & \textbf{.31 [.20, .42]} & \textbf{.22 [.12, .32]}\\
 \bottomrule
 \addlinespace
@@ -44,17 +44,17 @@ Spatial Pi & .34 [.05, .78] & .15 [.00, .47] & .34 [.03, .69] & .17 [.00, .46]\\
 Factor & \multicolumn{1}{c}{$r$} & \multicolumn{1}{c}{$\text{BF}_{10}$}\\
 \midrule
 General visual factor & .56 [.15, .84] & \textbf{12.5}\\
-Backward masking & -.03 [-.44, .39] & 0.43\\
+Temporal masking & -.03 [-.44, .39] & 0.43\\
 Spatial masking & .19 [-.29, .61] & 0.70\\
+Pi & .16 [-.20, .50] & 0.57\\
 Letter & -.15 [-.50, .24] & 0.53\\
 Gabor & .27 [-.23, .67] & 0.95\\
-Pi & .16 [-.20, .50] & 0.57\\
 \bottomrule
 \addlinespace
 \end{tabular}
 
 \begin{tablenotes}[para]
-\normalsize{\textit{Note.} $r$ is the posterior mean of the correlation $r^{(f)}$ between each non-cognitive factor and the cognitive factor, with 95\% credible interval. Bayes factors are Savage--Dickey density ratios with prior $b^{(f)} \sim \mathcal{N}(0, 1)$. $\text{BF}_{10}$ values above 3 provide positive evidence for a relation, and values above 20 provide strong evidence.}
+\normalsize{\textit{Note.} $r$ is the posterior mean of the correlation $r_l$ between each non-cognitive factor and the cognitive factor, with 95\% credible interval. Bayes factors are Savage--Dickey density ratios with prior $b_l \sim \mathcal{N}(0, 1)$. $\text{BF}_{10}$ values above 3 provide positive evidence for a relation, and values above 20 provide strong evidence.}
 \end{tablenotes}
 
 \end{threeparttable}
