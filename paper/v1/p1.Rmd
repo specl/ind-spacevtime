@@ -956,12 +956,12 @@ $$\text{BF}_{10} = \frac{p(b_\ell = 0)}{p(b_\ell = 0 \mid \text{data})},$$
 where the numerator is the prior density at zero, $1/\sqrt{2\pi}$, and
 the denominator was estimated from MCMC outputs using the CMDE method of [@Morey.etal.2011a]
 
-**Model fitting.** The model was implemented in JAGS [@Plummer.2003] and
-run from R with the R2jags package. We ran 4 chains, each with 10,000
-burn-in iterations followed by 20,000 retained iterations, yielding
-80,000 posterior draws. Convergence was assessed with the Gelman–Rubin
-$\hat{R}$ statistic [@Gelman.Rubin.1992], which was below 1.01 for all
-parameters.
+**Model fitting.** The model was implemented in JAGS [@Plummer.2003] and run from R with the
+R2jags package. We ran 4 chains, each with 50,000 burn-in steps followed
+by 400,000 sampling steps. Chains were thinned by a factor of 100,
+yielding 16,000 posterior draws. Convergence was assessed with the
+Gelman--Rubin $\hat{R}$ statistic [@Gelman.Rubin.1992], which was below 1.01
+for all parameters.
 
 # Appendix B: Derivation of the Variance Decomposition
 
