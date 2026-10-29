@@ -462,11 +462,7 @@ the higher-order cognitive tasks and the correlations between the
 spatial-masking tasks and the higher-order cognitive tasks. The two
 submatrices are shown in Panel B, and to our surprise the correlations
 are larger for spatial-masking tasks than for temporal-masking tasks
-(mean *r* = .30 vs. .19). This difference, however, is driven largely by
-a single task. The temporal Letter task was nearly uncorrelated with
-every cognitive task (*r* = -.05 to .06); without it, the mean
-correlation for the temporal-masking tasks rises to .28, comparable to
-that for the spatial-masking tasks. Thus, at the level of surface
+(mean *r* = .30 vs. .19). Thus, at the level of surface
 correlations, neither type of masking is clearly privileged in its
 relation to higher-order cognition.
 
@@ -617,7 +613,7 @@ notation in structural equation modeling [@Bollen.1989]. Readers in
 cognition should note that this notation, while standard, is a bit
 strange. The structural part of the model is given by
 $$\boldsymbol{\eta}_i = \mathbf{B}\,\boldsymbol{\eta}_i + \boldsymbol{\zeta}_i, \qquad
-\boldsymbol{\zeta}_i \sim \mathcal{N}_{7}\!\left(\mathbf{0}, \boldsymbol{I}\right)$$
+\boldsymbol{\zeta}_i \sim \mathcal{N}_{7}\!\left(\mathbf{0}, \mathbf{I}\right)$$
 The strange-looking part is
 $\boldsymbol{\eta}_i = \mathbf{B}\,\boldsymbol{\eta}_i + \boldsymbol{\zeta}_i$,
 which at first glance seems self referential or recursive. It is not
@@ -637,7 +633,7 @@ b_1 & b_2 & b_3 & b_4 & b_5 & b_6 & 0
 Only the last row contains free parameters, so the cognitive factor is
 the only factor that receives paths from the other factors. This
 specification then implies
-$\eta_{i7} = \sum_{l=1}^{6} b_l\,\eta_{il} + \zeta_{i7}$, where $l$
+$\eta_{i7} = \sum_{\ell=1}^{6} b_\ell\,\eta_{i\ell} + \zeta_{i7}$, where $\ell$
 indexes the six non-cognitive factors. This specification insures that the perceptual factors are orthogonal (any correlation is accounted for by the general visual factor) and that the effects of each perceptual factor on the cognitive factor is separately indexed by $b_1,\ldots,b_6$.
 
 How does this structural equation component capture the fast eyes, sharp
@@ -657,52 +653,52 @@ stimulus types may do well on higher-order cognition tasks.
 ```{r bifactor-post, include = FALSE}
 library(R2jags)
 library(papaja)
-library(polspline)
 
 fit <- readRDS("Data/sem.rds")
 sl  <- fit$BUGSoutput$sims.list
 
-# display order: Pi, Letter, Gabor
+# The refitted model already uses the display order, so nothing needs reordering:
+# tasks   = TPi, TLetter, TGabor, SPi, SLetter, SGabor
+# factors = V, Bwd, Spa, Pi, Letter, Gabor
 tasks   <- c("Temporal Pi", "Temporal Letter", "Temporal Gabor",
              "Spatial Pi",  "Spatial Letter",  "Spatial Gabor")
 vis     <- c("V", "Bwd", "Spa", "Pi", "Letter", "Gabor")
-vis_lab <- c("General visual factor", "Temporal masking", "Spatial masking", "Pi", "Letter", "Gabor")
-
-# the fitted model stores tasks as TLetter, TGabor, TPi, SLetter, SGabor, SPi
-# and factors as V, Bwd, Spa, Letter, Gabor, Pi; reorder for display only
-task_ord <- c(3, 1, 2, 6, 4, 5)
-fit_vis  <- c("V", "Bwd", "Spa", "Letter", "Gabor", "Pi")
-mask_col <- c(1, 1, 1, 2, 2, 2)
-stim_col <- c(3, 4, 5, 3, 4, 5)
+vis_lab <- c("General visual factor", "Temporal masking", "Spatial masking",
+             "Pi stimulus", "Letter stimulus", "Gabor stimulus")
 
 # formatting helpers
 f2  <- function(x) sub("^-\\.00$", ".00", sub("^(-?)0\\.", "\\1.", sprintf("%.2f", x)))
 ci  <- function(x) sprintf("%s [%s, %s]", f2(mean(x)), f2(quantile(x, .025)), f2(quantile(x, .975)))
 pct <- function(x) sprintf("%.0f%%", 100 * mean(x))
 
-# ---- variance components: draws x task (display order) ----
-shV <- sl$share_gen[, task_ord]
-shM <- sapply(1:6, function(j) sl$share_spec[, j, mask_col[j]])[, task_ord]
-shS <- sapply(1:6, function(j) sl$share_spec[, j, stim_col[j]])[, task_ord]
-shU <- sl$share_uni[, task_ord]
+# ---- variance components: draws x task ----
+shV <- sl$share_gen
+shM <- sl$share_mask
+shS <- sl$share_stim
+shU <- sl$share_uni
 avgV <- rowMeans(shV); avgM <- rowMeans(shM); avgS <- rowMeans(shS); avgU <- rowMeans(shU)
 
 bold <- function(x) paste0("\\textbf{", x, "}")
 tab_shares <- data.frame(
-  Task     = c(tasks, bold("Average")),
+  Task          = c(as.character(1:6), bold("Average")),
+  `Mask type`   = c(rep(c("Temporal", "Spatial"), each = 3), ""),
+  `Stimulus type` = c(rep(c("Pi", "Letter", "Gabor"), times = 2), ""),
   General  = c(apply(shV, 2, ci), bold(ci(avgV))),
   Masking  = c(apply(shM, 2, ci), bold(ci(avgM))),
   Stimulus = c(apply(shS, 2, ci), bold(ci(avgS))),
-  Unique   = c(apply(shU, 2, ci), bold(ci(avgU)))
+  Unique   = c(apply(shU, 2, ci), bold(ci(avgU))),
+  check.names = FALSE
 )
 p_S_gt_M <- mean(avgS > avgM)
 
 # ---- correlations with cognitive performance and Savage-Dickey Bayes factors ----
-bf_g  <- sl$gamma;     colnames(bf_g)  <- fit_vis; bf_g  <- bf_g[, vis]    # regression weights b_l, prior N(0, 1)
-bf_gs <- sl$gamma_std; colnames(bf_gs) <- fit_vis; bf_gs <- bf_gs[, vis]   # correlations r_l with the cognitive factor
-sd_bf01 <- function(x) dlogspline(0, logspline(x)) / dnorm(0, 0, 1)
-bf01    <- sapply(vis, function(f) sd_bf01(bf_g[, f]))
-bf10     <- 1 / bf01                             # all Bayes factors reported as BF10
+bf_g  <- sl$b; colnames(bf_g)  <- vis     # regression weights b_l, prior N(0, 1)
+bf_gs <- sl$r; colnames(bf_gs) <- vis     # correlations r_l with the cognitive factor
+
+# BF10 from the CMDE (Morey et al., 2011), computed and saved in SEM.Rmd
+bf10 <- readRDS("Data/sem_bf10.rds")
+stopifnot(identical(names(bf10), vis))    # same factor order as above
+
 bf10_fmt <- function(x) ifelse(x >= 10, sprintf("%.1f", x), sprintf("%.2f", x))
 bf_txt   <- function(b10) sprintf("$\\text{BF}_{10} = %s$", bf10_fmt(b10))
 r_ci     <- function(f) sprintf("*r* = %s, 95%% credible interval [%s, %s]", f2(mean(bf_gs[, f])),
@@ -727,9 +723,8 @@ and are summarized by their posterior means and 95% credible intervals.
 
 ## Manifest Correlation
 
-The first analysis presents the model-based version of the summary-score analysis.  Here, we derive the posterior manifest correlation matrix across the 10 tasks.  The covariance form of this matrix, denoted $\bfSigma$ is a $10\times10$ matrix given by 
-$\boldsymbol{\Sigma} = \boldsymbol{\Lambda}QQ'\boldsymbol{\Lambda}' + \boldsymbol{\Delta}$, where $Q=(I-B)^{-1}.$. The resulting values are shown in Figure \@ref(fig:sem)
-A. There are two main differences between these model-derived values and the summary score correlations.  First, the model-derived values are larger reflecting a disattenuation of trial noise.  Second, the model-derived values vary more smoothly reflecting regularization from a reduced number of factors.  Figure \@ref(fig:sem)B shows the submatrices for the fast and sharp eye hypotheses, and as can be seen, the cognitive factors seem somewhat better associated with spatial than temporal masks.  Figure C
+The first analysis presents the model-based version of the summary-score analysis.  Here, we derive the posterior manifest correlation matrix across the 10 tasks.  The covariance form of this matrix, denoted $\boldsymbol{\Sigma}$ is a $10\times10$ matrix given by 
+$\boldsymbol{\Sigma} = \boldsymbol{\Lambda}\mathbf{Q}\mathbf{Q}'\boldsymbol{\Lambda}' + \boldsymbol{\Delta}$, where $\mathbf{Q}=(\mathbf{I}-\mathbf{B})^{-1}.$. The resulting values are shown in Figure \@ref(fig:sem)A. There are two main differences between these model-derived values and the summary score correlations.  First, the model-derived values are larger reflecting a disattenuation of trial noise.  Second, the model-derived values vary more smoothly reflecting regularization from a reduced number of factors.  Figure \@ref(fig:sem)B shows the submatrices for the fast and sharp eye hypotheses, and as can be seen, the cognitive factors seem somewhat better associated with spatial than temporal masks.  Figure C
  shows the hierarchical clustering of the model-estimated
 correlations. The first three merges each joined the temporal and
 spatial versions of the same stimulus, first Pi, then Letter, then
@@ -743,15 +738,16 @@ organized primarily by stimulus type rather than by mask type.
 
 ## Bifactor Analysis of the Perception Tasks
 
-The six perception tasks were modeled as bifactor model with a common visual factor and unique factors for the two mask type and the three stimulus type.  For each task, we may ask how much variance is accounted for by this general factor, the particular masking factor, and the particular stimulus factor.  Table provides the proportions.  For example, the first row shows the proportion for Task 1, the temporal masking of pi stimuli.  The visual factor accounts for 30% of the variance; the relevant masking factor accounts for only 3% of the variance, the relevant stimulus factor accounts for 44% of the variance; and there 22% unique to this task.  Perhaps the most informative entry is the Average row, which shows that mask type accounts for very little variance in these tasks.  It seems that people vary on how good they are on all tasks, and how good they are differentially on the stimulus types.  This finding is in accordance with the clustering results in Figure XC, but the degree of uncertainty for both finite numbers of individuals and trials is included.
+The six perception tasks were modeled as bifactor model with a common visual factor and unique factors for the two mask type and the three stimulus type.  For each task, we may ask how much variance is accounted for by the general factor, the particular masking factor, and the particular stimulus factor.  Table \@ref(tab:tab-shares) provides the proportions.  For example, the first row shows the proportion for Task 1, the temporal masking of pi stimuli.  The visual factor accounts for 30% of the variance; the relevant masking factor accounts for only 4% of the variance, the relevant stimulus factor accounts for 45% of the variance; and there 21% unique to this task.  Perhaps the most informative entry is the Average row, which shows that mask type accounts for very little variance in these tasks.  It seems that people vary on how good they are on all tasks, and how good they are differentially on the stimulus types.  This finding is in accordance with the clustering results in Figure \@ref(fig:sem)C, but the degree of uncertainty for both finite numbers of individuals and trials is included.
 
 ```{r tab-shares, results = "asis"}
 apa_table(
   tab_shares,
   caption = "Proportion of variance of each masking task due to each source.",
   note = "Values are posterior means with 95\\% credible intervals.",
-  align = c("l", "c", "c", "c", "c"),
-  escape = FALSE
+  align = c("c", "l", "l", "c", "c", "c", "c"),
+  escape = FALSE,
+  font_size = "small"
 )
 ```
 
@@ -759,15 +755,15 @@ apa_table(
 
 The hierarchical model is designed to assess the critical hypotheses directly.
 The pivotal quantities are the regression weights
-$b_1, \ldots, b_6$ in the structural model.  One highly-interpretable way of assessing these wieghts is to report the implied correlation between each of the six perceptual factors and the cognitive score.  This correlation is given by
+$b_1, \ldots, b_6$ in the structural model.  One highly-interpretable way of assessing these weights is to report the implied correlation between each of the six perceptual factors and the cognitive score.  This correlation is given by
 $$
-r_l = \frac{b_l}{\sqrt{\operatorname{Var}(\eta_{i7})}},$$
-where $r_\ell$ is the correlation between the $\ell$th non-cognitive factor
+r_\ell = \frac{b_\ell}{\sqrt{\sum_{\ell'=1}^{6} b_{\ell'}^2 + 1}},$$
+where $r_\ell$ is the correlation between the $\ell$th perceptual factor
 and the cognitive factor. The fast-eyes, sharp-eyes, and good-eyes
 hypotheses thus correspond to large values of $r_2$, $r_3$, and $r_1$,
-respectively.  These correlation values, along with credible intervals, are shown in Table X.
+respectively.  These correlation values, along with credible intervals, are shown in Table \@ref(tab:tab-cor). The derivation of the correlation is provided in Appendix B.
 
-To perform inference on these values, we used a Bayes factor model comparison approach.  The main question is whether the perceptual factor is or is not related to the cognitive factor, and we did a separate model comparison test for each factor.  The Bayes factor is a ratio---it is the probability of the data under a model with possible correlation between the specified factor and the cognitive factor relative to the probability of the data under a model with no correlation under between the specified factor and the cognitive factor.  For example, for the visual factor, we tested whether the associated correlation was 0 given free correlations for all other factors, and so on.  Our computational approach was to use the Savage-Dickey ratio and evaluate it from MCMC outputs using the CMDE method of [cites].   Values less than 1 indicate evidence for a null correlation; values at 1 are equivacable; values greater than 1 are evidence for a substantial correlation. Table \@ref(tab:tab-cor) shows these Bayes factors.  One factor stands out---there is a substantial correlation between the visual factor, the one that captures what is in common in all the perceptual tasks, and higher order cognition.  The remaining factors have Bayes factors sufficiently close to one to be equivacable; the uncertainty in the data is just too great to make more certain inferences.  The good-eyes hypothesis is best supported by the data.
+To perform inference on these values, we used a Bayes factor model comparison approach.  The main question is whether the perceptual factor is or is not related to the cognitive factor, and we did a separate model comparison test for each factor.  The Bayes factor is a ratio---it is the probability of the data under a model with possible correlation between the specified factor and the cognitive factor relative to the probability of the data under a model with no correlation under between the specified factor and the cognitive factor.  For example, for the general visual factor, we tested whether the associated correlation was 0 given free correlations for all other factors, and so on.  Our computational approach was to use the Savage-Dickey ratio [@Dickey.Lientz.1970] and evaluate it from MCMC outputs using the CMDE method of [@Morey.etal.2011a].   Values less than 1 indicate evidence for a null correlation; values at 1 are equivocal; values greater than 1 are evidence for a substantial correlation. Table \@ref(tab:tab-cor) shows these Bayes factors.  One factor stands out---there is a substantial correlation between the visual factor, the one that captures what is in common in all the perceptual tasks, and higher-order cognition.  The remaining factors have Bayes factors sufficiently close to one to be equivacable; the uncertainty in the data is just too great to make more certain inferences.  The good-eyes hypothesis is best supported by the data.
 
 ```{r tab-cor, results = "asis"}
 apa_table(
@@ -932,7 +928,7 @@ fix the sign of each factor; all other elements of
 $\boldsymbol{\Lambda}$ were fixed at zero. The unique standard
 deviations were given half-$t$ priors, and the six free regression
 weights in $\mathbf{B}$ were given standard normal priors:
-\begin{equation*}
+$$
 \begin{aligned}
 \mu_t &\sim \mathcal{N}(0, 5^2), && t = 1, \ldots, 10, \\
 \beta_j &\sim \mathcal{N}(0, 5^2), && j = 1, \ldots, 6, \\
@@ -940,7 +936,7 @@ weights in $\mathbf{B}$ were given standard normal priors:
 \delta_t &\sim \text{Half-}t_3(0, 2.5), && t = 1, \ldots, 10, \\
 b_l &\sim \mathcal{N}(0, 1), && l = 1, \ldots, 6.
 \end{aligned}
-\end{equation*}
+$$
 
 **Implied covariance.** The covariance matrix of $\boldsymbol{\gamma}_i$
 is not a free parameter but is implied by the loadings, the regression
@@ -955,11 +951,10 @@ non-cognitive factor is unrelated to cognitive performance compares a
 model in which $b_l$ is free to a nested model in which $b_l = 0$, with
 all other parameters unchanged. Because the nested model is obtained by
 fixing a single parameter, the Bayes factor equals the Savage–Dickey
-density ratio [@Wagenmakers.etal.2010],
-$$\text{BF}_{10} = \frac{p(b_l = 0)}{p(b_l = 0 \mid \text{data})},$$
+density ratio [@Dickey.Lientz.1970],
+$$\text{BF}_{10} = \frac{p(b_\ell = 0)}{p(b_\ell = 0 \mid \text{data})},$$
 where the numerator is the prior density at zero, $1/\sqrt{2\pi}$, and
-the denominator was estimated from the posterior draws of $b_l$ with a
-logspline density estimator.
+the denominator was estimated from MCMC outputs using the CMDE method of [@Morey.etal.2011a]
 
 **Model fitting.** The model was implemented in JAGS [@Plummer.2003] and
 run from R with the R2jags package. We ran 4 chains, each with 10,000
@@ -983,15 +978,15 @@ non-cognitive factor is therefore equal to its own residual,
 $\eta_{il} = \zeta_{il}$, whereas the cognitive factor is a weighted sum
 of the non-cognitive factors plus its own residual,
 $\eta_{i7} = \sum_{l=1}^{6} b_l\,\eta_{il} + \zeta_{i7}$. The variances
-and covariances are therefore \begin{equation*}
+and covariances are therefore 
+$$
 \begin{aligned}
-\operatorname{Var}(\eta_{il}) &= 1, \qquad
-\operatorname{Cov}(\eta_{il}, \eta_{il'}) = 0 \ \ (l \neq l'), \qquad
-\operatorname{Cov}(\eta_{il}, \eta_{i7}) = b_l, \\
-\operatorname{Var}(\eta_{i7}) &= \sum_{l=1}^{6} b_l^2\,\operatorname{Var}(\eta_{il}) + \operatorname{Var}(\zeta_{i7}) = \sum_{l=1}^{6} b_l^2 + 1.
+\operatorname{Var}(\eta_{i\ell}) &= 1, \qquad
+\operatorname{Cov}(\eta_{i\ell}, \eta_{i\ell'}) = 0 \ \ (\ell \neq \ell'), \qquad
+\operatorname{Cov}(\eta_{i\ell}, \eta_{i7}) = b_l, \\
+\operatorname{Var}(\eta_{i7}) &= \sum_{\ell=1}^{6} b_\ell^2\,\operatorname{Var}(\eta_{i\ell}) + \operatorname{Var}(\zeta_{i7}) = \sum_{\ell=1}^{6} b_\ell^2 + 1.
 \end{aligned}
-\end{equation*}
-
+$$
 **Variance decomposition of the masking tasks.** The threshold on
 masking task $j$ is given by the $j$th row of the measurement level,
 $$\theta_{ij} = \mu_j + \sum_{l=1}^{6} \lambda_{jl}\,\eta_{il} + \epsilon_{ij},$$
@@ -1018,11 +1013,11 @@ Dividing each component by the total variance gives the proportion of
 variance due to each source.
 
 **Contribution of each non-cognitive factor to cognitive performance.**
-Given $\operatorname{Var}(\eta_{i7}) = \sum_{l=1}^{6} b_l^2 + 1$ and
-$\operatorname{Cov}(\eta_{il}, \eta_{i7}) = b_l$, the correlation
+Given $\operatorname{Var}(\eta_{i7}) = \sum_{\ell=1}^{6} b_\ell^2 + 1$ and
+$\operatorname{Cov}(\eta_{i\ell}, \eta_{i7}) = b_\ell$, the correlation
 between the $l$th non-cognitive factor and the cognitive factor is
-$$r_l = \frac{\operatorname{Cov}(\eta_{il}, \eta_{i7})}{\sqrt{\operatorname{Var}(\eta_{il})\operatorname{Var}(\eta_{i7})}}
-= \frac{b_l}{\sqrt{\sum_{l'=1}^{6} b_{l'}^2 + 1}} ,$$
+$$r_\ell = \frac{\operatorname{Cov}(\eta_{i\ell}, \eta_{i7})}{\sqrt{\operatorname{Var}(\eta_{i\ell})\operatorname{Var}(\eta_{i7})}}
+= \frac{b_\ell}{\sqrt{\sum_{\ell'=1}^{6} b_{\ell'}^2 + 1}} ,$$
 which was computed for each posterior draw; Table \@ref(tab:tab-cor)
 reports its posterior mean and 95% credible interval.
 

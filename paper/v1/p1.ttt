@@ -7,20 +7,24 @@
 
 \caption{\label{tab:tab-shares}Proportion of variance of each masking task due to each source.}
 
-\begin{tabular}{lcccc}
+\small{
+
+\begin{tabular}{cllcccc}
 \toprule
-Task & \multicolumn{1}{c}{General} & \multicolumn{1}{c}{Masking} & \multicolumn{1}{c}{Stimulus} & \multicolumn{1}{c}{Unique}\\
+Task & \multicolumn{1}{c}{Mask type} & \multicolumn{1}{c}{Stimulus type} & \multicolumn{1}{c}{General} & \multicolumn{1}{c}{Masking} & \multicolumn{1}{c}{Stimulus} & \multicolumn{1}{c}{Unique}\\
 \midrule
-Temporal Pi & .30 [.06, .62] & .03 [.00, .16] & .44 [.06, .83] & .22 [.00, .54]\\
-Temporal Letter & .17 [.01, .45] & .25 [.01, .67] & .39 [.05, .76] & .19 [.00, .58]\\
-Temporal Gabor & .29 [.04, .62] & .22 [.00, .65] & .20 [.00, .63] & .30 [.00, .66]\\
-Spatial Pi & .34 [.05, .78] & .15 [.00, .47] & .34 [.03, .69] & .17 [.00, .46]\\
-Spatial Letter & .35 [.08, .71] & .18 [.00, .56] & .28 [.02, .66] & .19 [.00, .52]\\
-Spatial Gabor & .47 [.11, .87] & .10 [.00, .47] & .20 [.00, .63] & .23 [.00, .57]\\
-\textbf{Average} & \textbf{.32 [.20, .45]} & \textbf{.16 [.07, .26]} & \textbf{.31 [.20, .42]} & \textbf{.22 [.12, .32]}\\
+1 & Temporal & Pi & .30 [.06, .64] & .04 [.00, .19] & .45 [.07, .82] & .21 [.00, .52]\\
+2 & Temporal & Letter & .17 [.01, .46] & .25 [.01, .65] & .39 [.05, .79] & .19 [.00, .58]\\
+3 & Temporal & Gabor & .28 [.04, .60] & .22 [.00, .66] & .20 [.00, .64] & .29 [.00, .67]\\
+4 & Spatial & Pi & .33 [.05, .70] & .15 [.00, .48] & .34 [.05, .70] & .18 [.00, .46]\\
+5 & Spatial & Letter & .36 [.07, .72] & .18 [.00, .56] & .28 [.02, .64] & .18 [.00, .51]\\
+6 & Spatial & Gabor & .48 [.12, .87] & .09 [.00, .42] & .20 [.00, .64] & .23 [.00, .57]\\
+\textbf{Average} &  &  & \textbf{.32 [.19, .45]} & \textbf{.16 [.07, .26]} & \textbf{.31 [.20, .43]} & \textbf{.21 [.12, .32]}\\
 \bottomrule
 \addlinespace
 \end{tabular}
+
+}
 
 \begin{tablenotes}[para]
 \normalsize{\textit{Note.} Values are posterior means with 95\% credible intervals.}
@@ -43,12 +47,12 @@ Spatial Gabor & .47 [.11, .87] & .10 [.00, .47] & .20 [.00, .63] & .23 [.00, .57
 \toprule
 Factor & \multicolumn{1}{c}{$r$} & \multicolumn{1}{c}{$\text{BF}_{10}$}\\
 \midrule
-General visual factor & .56 [.15, .84] & \textbf{12.5}\\
-Temporal masking & -.03 [-.44, .39] & 0.43\\
-Spatial masking & .19 [-.29, .61] & 0.70\\
-Pi & .16 [-.20, .50] & 0.57\\
-Letter & -.15 [-.50, .24] & 0.53\\
-Gabor & .27 [-.23, .67] & 0.95\\
+General visual factor & .56 [.15, .83] & \textbf{14.0}\\
+Temporal masking & -.03 [-.43, .40] & 0.44\\
+Spatial masking & .20 [-.27, .61] & 0.69\\
+Pi stimulus & .17 [-.19, .50] & 0.58\\
+Letter stimulus & -.16 [-.50, .23] & 0.55\\
+Gabor stimulus & .27 [-.25, .67] & 0.97\\
 \bottomrule
 \addlinespace
 \end{tabular}

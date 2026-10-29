@@ -1,5 +1,4 @@
 Merge individual scores
-
 ```{r}
 library(jsonlite)
 
@@ -185,7 +184,6 @@ dend <- reorder(as.dendrogram(hc), wts = seq_len(n), agglo.FUN = mean)   # maski
 leaves <- tasks[order.dendrogram(dend)]
 y_lo <- floor((min(hc$height) - 0.05) * 10) / 10
 y_hi <- max(hc$height) + 0.20                                             # headroom for the legend
-
 par(mar = c(3.2, 4.5, 1, 1), xpd = FALSE, yaxs = "i")
 plot(dend, leaflab = "none", ylim = c(y_lo, y_hi), yaxt = "n", edgePar = list(lwd = 1.4))
 axis(2, at = seq(y_lo, max(hc$height) + 0.06, by = 0.10), las = 1, cex.axis = 0.75, tcl = -0.3)

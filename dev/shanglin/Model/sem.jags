@@ -1,74 +1,78 @@
-
 model{
-  for (a in 1:(D+2)){
-    zero_all[a] <- 0
-    for (b in 1:(D+2)){
-      Omega[a,b] <- equals(a,b)}}
-  for (i in 1:I){
-    eta_all[i,1:(D+2)] ~ dmnorm(zero_all[1:(D+2)], Omega[1:(D+2),1:(D+2)])
-    eta_gen[i] <- eta_all[i,1]
-    for (d in 1:D){
-      eta_spec[i,d] <- eta_all[i,d+1]}
-    zeta[i] <- eta_all[i,D+2]}
+  ## Notation follows the paper.
+  ##   i = 1..I        individuals
+  ##   j = 1..J        perception tasks (Task 1-6)
+  ##   q = 1..nCog     cognitive tasks (Task 7-10)
+  ##   t = 1..nTask    all tasks, nTask = J + nCog
+  ##   l = 1..L        non-cognitive factors (V, temporal, spatial, Pi, Letter, Gabor)
+  ##   l = L+1         cognitive factor
+  ##   gamma[i,]       = (theta_i', c_i')'  abilities on the ten tasks
+  ##   measurement:    gamma_i = mu + Lambda eta_i + epsilon_i,  epsilon_i ~ N(0, Delta)
+  ##   structural:     eta_i = B eta_i + zeta_i,  zeta_i ~ N(0, I)
+  ##                   only the last row of B is free (b_1..b_L)
 
-  ## measurement model for perception thresholds
-  for (j in 1:J){
-    lambda_gen[j] ~ dnorm(0, 1) T(0,)
-    for (d in 1:D){
-      lam_raw[j,d] ~ dnorm(0, 1) T(0,)
-      lambda_spec[j,d] <- free[j,d] * lam_raw[j,d]}
-    mu[j] ~ dnorm(0, pow(5, -2))
-    delta[j] ~ dt(0, pow(2.5, -2), 3) T(0,)             # Half-t3(0, 2.5) on unique SD
-    delta2[j] <- pow(delta[j], 2)
-    pDelta2[j] <- 1 / delta2[j]
-    beta[j] ~ dnorm(0, pow(5, -2))}
+  ## ---- structural level ----
+  for (l in 1:L){
+    b[l] ~ dnorm(0, 1)}
   for (i in 1:I){
+    for (l in 1:(L+1)){
+      zeta[i,l] ~ dnorm(0, 1)}
+    for (l in 1:L){
+      eta[i,l] <- zeta[i,l]}                                           # non-cognitive factors equal their residuals
+    eta[i,L+1] <- inprod(b[1:L], eta[i,1:L]) + zeta[i,L+1]}            # cognitive factor
+
+  ## ---- measurement level ----
+  for (t in 1:nTask){
+    mu[t] ~ dnorm(0, pow(5, -2))
+    delta[t] ~ dt(0, pow(2.5, -2), 3) T(0,)                            # Half-t3(0, 2.5) on the unique SD
+    delta2[t] <- pow(delta[t], 2)
+    prec[t] <- 1 / delta2[t]
+    for (l in 1:(L+1)){
+      lam_raw[t,l] ~ dnorm(0, 1) T(0,)                                 # half-normal fixes the sign of each factor
+      Lambda[t,l] <- free[t,l] * lam_raw[t,l]}}                        # free[t,l] = 0 fixes the loading at zero
+
+  for (i in 1:I){
+    for (t in 1:nTask){
+      gamma[i,t] ~ dnorm(mu[t] + inprod(Lambda[t,1:(L+1)], eta[i,1:(L+1)]), prec[t])}
     for (j in 1:J){
-      center[i,j] <- mu[j] + lambda_gen[j] * eta_gen[i] + inprod(lambda_spec[j,1:D], eta_spec[i,1:D])
-      theta[i,j] ~ dnorm(center[i,j], pDelta2[j])}}
+      theta[i,j] <- gamma[i,j]}                                        # perceptual abilities
+    for (q in 1:nCog){
+      cog[i,q] ~ dnorm(gamma[i,J+q], precObs)}}                        # observed score pins c_iq (tiny variance)
 
-  ## data level: cumulative normal psychometric function (no guessing rate)
+  ## ---- data level: Bernoulli trials aggregated to binomial counts ----
+  for (j in 1:J){
+    beta[j] ~ dnorm(0, pow(5, -2))}
   for (n in 1:N){
-    p[n] <- eps + (1 - 2*eps) * phi(beta[task[n]] * (s[n] - theta[id[n], task[n]]))
-    k[n] ~ dbin(p[n], ntrials[n])}
+    p[n] <- eps + (1 - 2*eps) * phi(beta[task[n]] * (s[n] + theta[id[n], task[n]]))
+    y[n] ~ dbin(p[n], nTrial[n])}
 
-  ## structural model: C regressed on all non-cognitive factors
-  for (f in 1:(D+1)){
-    gamma[f] ~ dnorm(0, 1)}
-  for (i in 1:I){
-    Cf[i] <- gamma[1] * eta_gen[i] + inprod(gamma[2:(D+1)], eta_spec[i,1:D]) + zeta[i]}
-
-  ## measurement model for cognitive tasks
-  for (c in 1:Cn){
-    lambda_c[c] ~ dnorm(0, 1) T(0,)
-    mu_c[c] ~ dnorm(0, pow(5, -2))
-    delta_c[c] ~ dt(0, pow(2.5, -2), 3) T(0,)
-    delta2_c[c] <- pow(delta_c[c], 2)
-    pDelta2_c[c] <- 1 / delta2_c[c]
-    for (i in 1:I){
-      cog[i,c] ~ dnorm(mu_c[c] + lambda_c[c] * Cf[i], pDelta2_c[c])}}
-
-  ## derived quantities: variance shares
+  ## ---- derived: variance decomposition of the perception tasks (Appendix B) ----
   for (j in 1:J){
-    tot[j] <- pow(lambda_gen[j], 2) + inprod(lambda_spec[j,1:D], lambda_spec[j,1:D]) + delta2[j]
-    share_gen[j] <- pow(lambda_gen[j], 2) / tot[j]
-    for (d in 1:D){
-      share_spec[j,d] <- pow(lambda_spec[j,d], 2) / tot[j]}
-    share_uni[j] <- delta2[j] / tot[j]}
-  varC <- inprod(gamma[1:(D+1)], gamma[1:(D+1)]) + 1
-  for (f in 1:(D+1)){
-    gamma_std[f] <- gamma[f] / sqrt(varC)}
+    tot[j] <- inprod(Lambda[j,1:L], Lambda[j,1:L]) + delta2[j]
+    share_gen[j]  <- pow(Lambda[j,1], 2) / tot[j]
+    share_mask[j] <- (pow(Lambda[j,2], 2) + pow(Lambda[j,3], 2)) / tot[j]
+    share_stim[j] <- (pow(Lambda[j,4], 2) + pow(Lambda[j,5], 2) + pow(Lambda[j,6], 2)) / tot[j]
+    share_uni[j]  <- delta2[j] / tot[j]}
 
-  ## derived quantities: model-implied covariance of the J + Cn person-level variables
-  for (j in 1:J){
-    covTC[j] <- lambda_gen[j] * gamma[1] + inprod(lambda_spec[j,1:D], gamma[2:(D+1)])   # Cov(theta_j, C)
-    for (jj in 1:J){
-      Sigma[j,jj] <- lambda_gen[j] * lambda_gen[jj] + inprod(lambda_spec[j,1:D], lambda_spec[jj,1:D]) +
-                     equals(j,jj) * delta2[j]}
-    for (c in 1:Cn){
-      Sigma[j,J+c] <- covTC[j] * lambda_c[c]
-      Sigma[J+c,j] <- covTC[j] * lambda_c[c]}}
-  for (c in 1:Cn){
-    for (cc in 1:Cn){
-      Sigma[J+c,J+cc] <- lambda_c[c] * lambda_c[cc] * varC + equals(c,cc) * delta2_c[c]}}
+  ## ---- derived: correlation of each non-cognitive factor with the cognitive factor ----
+  varEta <- inprod(b[1:L], b[1:L]) + 1                              # Var(eta_{L+1})
+  for (l in 1:L){
+    r[l] <- b[l] / sqrt(varEta)}
+
+  ## ---- derived: model-implied covariance, Sigma = Lambda Q Q' Lambda' + Delta, Q = (I - B)^-1 = I + B ----
+  for (l in 1:L){
+    for (l2 in 1:(L+1)){
+      B[l,l2] <- 0}}
+  for (l in 1:L){
+    B[L+1,l] <- b[l]}
+  B[L+1,L+1] <- 0
+  # B has only its last row free, so B %*% B = 0 and Q = (I - B)^-1 = I + B exactly
+  # (JAGS inverse() requires a symmetric positive definite matrix, so it cannot be used here)
+  for (l in 1:(L+1)){
+    for (l2 in 1:(L+1)){
+      Q[l,l2] <- equals(l,l2) + B[l,l2]}}
+  LQ[1:nTask,1:(L+1)] <- Lambda[1:nTask,1:(L+1)] %*% Q[1:(L+1),1:(L+1)]
+  for (t in 1:nTask){
+    for (t2 in 1:nTask){
+      Sigma[t,t2] <- inprod(LQ[t,1:(L+1)], LQ[t2,1:(L+1)]) + equals(t,t2) * delta2[t]}}
 }
