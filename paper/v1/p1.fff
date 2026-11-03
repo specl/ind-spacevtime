@@ -1,22 +1,22 @@
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/temporal} \caption{Trial sequence of the three temporal masking tasks. Rows show the Pi, Letter, and Gabor tasks. Each trial began with a fixation cross (485 ms), followed by the target. After a variable stimulus onset asynchrony (SOA), the target was replaced by a sequence of five masks (48.5 ms each): line segments for the Pi task, frequency-matched letter noise for the Letter task, and white noise for the Gabor task. Individuals then judged which leg of the Pi was longer (left or right), which of nine letters (A-L) was presented, or whether the Gabor was tilted to the left or right. The response screen remained until response. Task difficulty was adjusted by varying the SOA.}\label{fig:temporal}
+\includegraphics[width=1\linewidth]{Figures/temporal} \caption{Trial sequence of the temporal-masking tasks. Panels A-C show the Pi, Letter, and Gabor tasks. After a fixation cross (485 ms) and the target, a variable stimulus onset asynchrony (SOA) elapsed before the target was replaced by five masks (48.5 ms each): line segments (Pi), frequency-matched letter noise (Letter), or white noise (Gabor). Participants judged which leg of the Pi was longer, which of nine letters (A-L) was shown, or whether the Gabor was tilted left or right. Difficulty was adjusted by varying the SOA.}\label{fig:temporal}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/spatial} \caption{Trial sequence of the three spatial masking tasks. Rows show the Pi, Letter, and Gabor tasks. Each trial began with a fixation cross (485 ms), followed by the target embedded in the same mask as in the corresponding temporal masking task (485 ms): line segments for the Pi task, frequency-matched letter noise for the Letter task, and white noise for the Gabor task. Individuals made the same judgments as in the temporal masking tasks, and the response screen remained until response. Task difficulty was adjusted by varying the leg-length difference of the Pi, the target weight in the letter-noise blend, and the contrast of the Gabor, respectively.}\label{fig:spatial}
+\includegraphics[width=1\linewidth]{Figures/spatial} \caption{Trial sequence of the spatial-masking tasks. Panels A-C show the Pi, Letter, and Gabor tasks. After a fixation cross (485 ms), the target was presented together with the same mask as in the temporal-masking tasks (485 ms). Participants made the same judgments. Difficulty was adjusted by varying the leg-length difference (Pi), the target weight in the letter-noise blend (Letter), or the contrast (Gabor).}\label{fig:spatial}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/leverage} \caption{Something}\label{fig:leverage}
+\includegraphics[width=1\linewidth]{Figures/leverage} \caption{Leverage of one outlying individual (red) on task correlations. Each panel plots two perceptual tasks against each other. Lines are least-squares fits with (solid) and without (dashed) the outlier. The outlier changes the correlation little in Panel A but substantially in Panel B.}\label{fig:leverage}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
-\includegraphics[width=1\linewidth]{Figures/summary} \caption{Something}\label{fig:summary}
+\includegraphics[width=1\linewidth]{Figures/summary} \caption{Observed correlations among the 10 tasks, computed from each individual's summary scores. (A) Correlation matrix of the six perceptual tasks and four cognitive tasks, with score histograms on the diagonal and scatterplots above it. (B) Correlations between each perceptual task and each cognitive task, shown separately for temporal-masking and spatial-masking tasks, with the mean correlation for each. (C) Hierarchical clustering of the 10 tasks.}\label{fig:summary}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
@@ -26,5 +26,5 @@
 
 }
 
-\caption{Something}\label{fig:sem}
+\caption{Model-implied correlations among the 10 tasks, based on the posterior of the hierarchical model. (A) Posterior mean correlation matrix of the six perceptual tasks and four cognitive tasks,  with score histograms on the diagonal and scatterplots above it. (B) Model-implied correlations between each perceptual task and each cognitive task, shown separately for temporal-masking and spatial-masking tasks, with the mean correlation for each. (C) Hierarchical clustering of the 10 tasks based on the model-implied correlations.}\label{fig:sem}
 \end{figure*}

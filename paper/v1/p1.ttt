@@ -5,13 +5,13 @@
 \begin{center}
 \begin{threeparttable}
 
-\caption{\label{tab:tab-shares}Proportion of variance of each masking task due to each source.}
+\caption{\label{tab:tab-shares}Proportion of variance of each perceptual task due to each source.}
 
 \small{
 
 \begin{tabular}{cllcccc}
 \toprule
-Task & \multicolumn{1}{c}{Mask type} & \multicolumn{1}{c}{Stimulus type} & \multicolumn{1}{c}{General} & \multicolumn{1}{c}{Masking} & \multicolumn{1}{c}{Stimulus} & \multicolumn{1}{c}{Unique}\\
+Task & \multicolumn{1}{c}{Masking type} & \multicolumn{1}{c}{Stimulus type} & \multicolumn{1}{c}{General} & \multicolumn{1}{c}{Masking} & \multicolumn{1}{c}{Stimulus} & \multicolumn{1}{c}{Unique}\\
 \midrule
 1 & Temporal & Pi & .30 [.06, .64] & .04 [.00, .19] & .45 [.07, .82] & .21 [.00, .52]\\
 2 & Temporal & Letter & .17 [.01, .46] & .25 [.01, .65] & .39 [.05, .79] & .19 [.00, .58]\\
@@ -41,7 +41,7 @@ Task & \multicolumn{1}{c}{Mask type} & \multicolumn{1}{c}{Stimulus type} & \mult
 \begin{center}
 \begin{threeparttable}
 
-\caption{\label{tab:tab-cor}Correlation of each non-cognitive factor with cognitive performance.}
+\caption{\label{tab:tab-cor}Correlation of each perceptual factor with cognitive performance.}
 
 \begin{tabular}{lcc}
 \toprule
@@ -58,7 +58,7 @@ Gabor stimulus & .27 [-.25, .67] & 0.97\\
 \end{tabular}
 
 \begin{tablenotes}[para]
-\normalsize{\textit{Note.} $r$ is the posterior mean of the correlation $r_l$ between each non-cognitive factor and the cognitive factor, with 95\% credible interval. Bayes factors are Savage--Dickey density ratios with prior $b_l \sim \mathcal{N}(0, 1)$. $\text{BF}_{10}$ values above 3 provide positive evidence for a relation, and values above 20 provide strong evidence.}
+\normalsize{\textit{Note.} $r$ is the posterior mean of the correlation $r_\ell$ between each perceptual factor and the cognitive factor, with 95\% credible interval. Bayes factors are Savage--Dickey density ratios with prior $b_\ell \sim \mathcal{N}(0, 1)$.}
 \end{tablenotes}
 
 \end{threeparttable}

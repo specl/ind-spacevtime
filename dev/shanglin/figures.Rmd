@@ -183,7 +183,7 @@ Leverage
 all_scores <- read.csv("Data/summary/all_scores.csv", check.names = FALSE)
 out_file   <- "Figure/leverage.png"
 perc_tasks <- c("TLetter", "TGabor", "TPi", "SLetter", "SGabor", "SPi")
-lab <- c(TLetter = "Backward Letter", TGabor = "Backward Gabor", TPi = "Backward Pi",
+lab <- c(TLetter = "Temporal Letter", TGabor = "Temporal Gabor", TPi = "Temporal Pi",
          SLetter = "Spatial Letter",  SGabor = "Spatial Gabor",  SPi = "Spatial Pi")
 
 # log thresholds, z-scored within task (same scale as the SD screen)
