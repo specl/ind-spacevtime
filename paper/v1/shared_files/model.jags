@@ -1,0 +1,78 @@
+model{
+  ## Notation follows the paper.
+  ##   i = 1..I        individuals
+  ##   j = 1..J        perception tasks (Task 1-6)
+  ##   q = 1..nCog     cognitive tasks (Task 7-10)
+  ##   t = 1..nTask    all tasks, nTask = J + nCog
+  ##   l = 1..L        non-cognitive factors (V, temporal, spatial, Pi, Letter, Gabor)
+  ##   l = L+1         cognitive factor
+  ##   gamma[i,]       = (theta_i', c_i')'  abilities on the ten tasks
+  ##   measurement:    gamma_i = mu + Lambda eta_i + epsilon_i,  epsilon_i ~ N(0, Delta)
+  ##   structural:     eta_i = B eta_i + zeta_i,  zeta_i ~ N(0, I)
+  ##                   only the last row of B is free (b_1..b_L)
+
+  ## ---- structural level ----
+  for (l in 1:L){
+    b[l] ~ dnorm(0, 1)}
+  for (i in 1:I){
+    for (l in 1:(L+1)){
+      zeta[i,l] ~ dnorm(0, 1)}
+    for (l in 1:L){
+      eta[i,l] <- zeta[i,l]}                                           # non-cognitive factors equal their residuals
+    eta[i,L+1] <- inprod(b[1:L], eta[i,1:L]) + zeta[i,L+1]}            # cognitive factor
+
+  ## ---- measurement level ----
+  for (t in 1:nTask){
+    mu[t] ~ dnorm(0, pow(5, -2))
+    delta[t] ~ dt(0, pow(2.5, -2), 3) T(0,)                            # Half-t3(0, 2.5) on the unique SD
+    delta2[t] <- pow(delta[t], 2)
+    prec[t] <- 1 / delta2[t]
+    for (l in 1:(L+1)){
+      lam_raw[t,l] ~ dnorm(0, 1) T(0,)                                 # half-normal fixes the sign of each factor
+      Lambda[t,l] <- free[t,l] * lam_raw[t,l]}}                        # free[t,l] = 0 fixes the loading at zero
+
+  for (i in 1:I){
+    for (t in 1:nTask){
+      gamma[i,t] ~ dnorm(mu[t] + inprod(Lambda[t,1:(L+1)], eta[i,1:(L+1)]), prec[t])}
+    for (j in 1:J){
+      theta[i,j] <- gamma[i,j]}                                        # perceptual abilities
+    for (q in 1:nCog){
+      cog[i,q] ~ dnorm(gamma[i,J+q], precObs)}}                        # observed score pins c_iq (tiny variance)
+
+  ## ---- data level: Bernoulli trials aggregated to binomial counts ----
+  for (j in 1:J){
+    beta[j] ~ dnorm(0, pow(5, -2))}
+  for (n in 1:N){
+    p[n] <- eps + (1 - 2*eps) * phi(beta[task[n]] * (s[n] + theta[id[n], task[n]]))
+    y[n] ~ dbin(p[n], nTrial[n])}
+
+  ## ---- derived: variance decomposition of the perception tasks (Appendix B) ----
+  for (j in 1:J){
+    tot[j] <- inprod(Lambda[j,1:L], Lambda[j,1:L]) + delta2[j]
+    share_gen[j]  <- pow(Lambda[j,1], 2) / tot[j]
+    share_mask[j] <- (pow(Lambda[j,2], 2) + pow(Lambda[j,3], 2)) / tot[j]
+    share_stim[j] <- (pow(Lambda[j,4], 2) + pow(Lambda[j,5], 2) + pow(Lambda[j,6], 2)) / tot[j]
+    share_uni[j]  <- delta2[j] / tot[j]}
+
+  ## ---- derived: correlation of each non-cognitive factor with the cognitive factor ----
+  varEta <- inprod(b[1:L], b[1:L]) + 1                              # Var(eta_{L+1})
+  for (l in 1:L){
+    r[l] <- b[l] / sqrt(varEta)}
+
+  ## ---- derived: model-implied covariance, Sigma = Lambda Q Q' Lambda' + Delta, Q = (I - B)^-1 = I + B ----
+  for (l in 1:L){
+    for (l2 in 1:(L+1)){
+      B[l,l2] <- 0}}
+  for (l in 1:L){
+    B[L+1,l] <- b[l]}
+  B[L+1,L+1] <- 0
+  # B has only its last row free, so B %*% B = 0 and Q = (I - B)^-1 = I + B exactly
+  # (JAGS inverse() requires a symmetric positive definite matrix, so it cannot be used here)
+  for (l in 1:(L+1)){
+    for (l2 in 1:(L+1)){
+      Q[l,l2] <- equals(l,l2) + B[l,l2]}}
+  LQ[1:nTask,1:(L+1)] <- Lambda[1:nTask,1:(L+1)] %*% Q[1:(L+1),1:(L+1)]
+  for (t in 1:nTask){
+    for (t2 in 1:nTask){
+      Sigma[t,t2] <- inprod(LQ[t,1:(L+1)], LQ[t2,1:(L+1)]) + equals(t,t2) * delta2[t]}}
+}

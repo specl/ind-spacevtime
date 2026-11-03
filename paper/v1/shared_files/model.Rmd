@@ -1,0 +1,209 @@
+
+```{r setup}
+library(R2jags)
+
+trace_file <- "SummaryData/trace.rds"      # MCMC trace (the only saved output)
+
+# Task order follows the paper (Task 1-10)
+perc_tasks <- c("TPi", "TLetter", "TGabor", "SPi", "SLetter", "SGabor")
+cog_tasks  <- c("OSpan", "CSpan", "Corsi", "Matrix")         # OSPAN, CSPAN, SSPAN, UCMRT
+vis_names  <- c("V", "Bwd", "Spa", "Pi", "Letter", "Gabor")  # perceptual factors, l = 1..6
+all_tasks  <- c(perc_tasks, cog_tasks)
+J     <- length(perc_tasks)     # 6
+nCog  <- length(cog_tasks)      # 4
+nTask <- J + nCog               # 10
+L     <- length(vis_names)      # 6 perceptual factors; factor L + 1 = cognitive
+
+prec_obs <- 1e6                 # observed cognitive score = c_iq with SD 0.001
+
+# posterior mean [95% CI]
+ci <- function(x) sprintf("%.2f [%.2f, %.2f]", mean(x), quantile(x, .025), quantile(x, .975))
+```
+
+```{r data}
+# Process perceptual data: log transform, then standardize within task
+perc_df <- read.csv("SummaryData/all_perceptual_scores.csv")
+perc_df$correct_num <- ifelse(perc_df$correct == "True", 1, 0)
+perc_df$x_raw <- ifelse(perc_df$staircase == 2, perc_df$param1, perc_df$param2)
+perc_df <- perc_df[perc_df$x_raw > 0, ]
+perc_df$x <- log(perc_df$x_raw)
+perc_df$x <- ave(perc_df$x, perc_df$task_name, FUN = function(v) as.numeric(scale(v)))
+
+# Exclude (subject, task) cells flagged as NA in the cleaned scores (4 SD criterion)
+clean_scores    <- read.csv("SummaryData/all_scores_clean.csv")
+clean_scores$id <- as.character(clean_scores$id)
+excluded_cells <- do.call(rbind, lapply(perc_tasks, function(t) {
+  bad_ids <- clean_scores$id[is.na(clean_scores[[t]])]
+  if (length(bad_ids) == 0) return(NULL)
+  data.frame(id = bad_ids, task_name = t, stringsAsFactors = FALSE)
+}))
+perc_df$id <- as.character(perc_df$id)
+perc_df <- subset(perc_df, !(paste(id, task_name, sep = "_") %in%
+                             paste(excluded_cells$id, excluded_cells$task_name, sep = "_")))
+
+# Map subject id and task name to indices (task index j = paper's Task number)
+ids <- sort(unique(perc_df$id))
+perc_df$id_idx   <- match(perc_df$id, ids)
+perc_df$task_idx <- match(perc_df$task_name, perc_tasks)
+I <- length(ids)
+
+# Aggregate Bernoulli trials -> Binomial counts
+agg_df <- aggregate(correct_num ~ id_idx + task_idx + x, data = perc_df,
+                    FUN = function(v) c(k = sum(v), n = length(v)))
+agg_df <- data.frame(agg_df[, 1:3], y = agg_df$correct_num[, "k"], n = agg_df$correct_num[, "n"])
+
+# Cognitive scores: standardized, higher = better (no sign flip)
+cog <- read.csv("SummaryData/all_cognitive_scores.csv")
+cog$id <- as.character(cog$id)
+cog <- reshape(cog, idvar = "id", timevar = "task_name", direction = "wide")
+names(cog) <- gsub("^score\\.", "", names(cog))
+cog[, cog_tasks] <- scale(cog[, cog_tasks])
+cog <- unname(as.matrix(cog[match(ids, cog$id), cog_tasks]))
+stopifnot(!anyNA(cog))
+```
+
+```{r model-data}
+# Support of Lambda (10 x 7): 1 = free loading, 0 = fixed at zero
+# columns: V, Temporal, Spatial, Pi, Letter, Gabor, Cognitive
+free <- rbind(
+  TPi     = c(1, 1, 0, 1, 0, 0, 0),
+  TLetter = c(1, 1, 0, 0, 1, 0, 0),
+  TGabor  = c(1, 1, 0, 0, 0, 1, 0),
+  SPi     = c(1, 0, 1, 1, 0, 0, 0),
+  SLetter = c(1, 0, 1, 0, 1, 0, 0),
+  SGabor  = c(1, 0, 1, 0, 0, 1, 0),
+  OSpan   = c(0, 0, 0, 0, 0, 0, 1),
+  CSpan   = c(0, 0, 0, 0, 0, 0, 1),
+  Corsi   = c(0, 0, 0, 0, 0, 0, 1),
+  Matrix  = c(0, 0, 0, 0, 0, 0, 1))
+stopifnot(identical(rownames(free), all_tasks))
+
+jags_data <- list(
+  N = nrow(agg_df), I = I, J = J, nCog = nCog, nTask = nTask, L = L,
+  id = agg_df$id_idx, task = agg_df$task_idx, s = agg_df$x,
+  y = agg_df$y, nTrial = agg_df$n,
+  eps = 1e-6, precObs = prec_obs,
+  free = unname(free), cog = cog
+)
+
+# Init theta using per-task probit MLE:  p = Phi(beta * (s + theta))
+mle_theta <- matrix(NA, I, J)
+mle_beta  <- numeric(J)
+for (j in 1:J) {
+  sub <- subset(perc_df, task_name == perc_tasks[j])
+  sub$id <- factor(sub$id, levels = ids)
+  cf <- coef(glm(correct_num ~ 0 + id + x, data = sub, family = binomial(link = "probit")))
+  b_hat <- cf["x"]                                  # slope = beta
+  a_hat <- cf[grepl("^id", names(cf))]              # Phi(a + b x) = Phi(b (x + a / b))
+  mle_theta[match(sub("^id", "", names(a_hat)), ids), j] <- a_hat / b_hat
+  mle_beta[j] <- b_hat
+}
+for (j in 1:J) mle_theta[is.na(mle_theta[, j]), j] <- mean(mle_theta[, j], na.rm = TRUE)
+mle_theta <- apply(mle_theta, 2, function(v) pmin(pmax(v, quantile(v, .02)), quantile(v, .98)))  # trim extreme MLEs
+
+inits <- function() list(
+  mu      = c(colMeans(mle_theta), rep(0, nCog)),
+  beta    = mle_beta,
+  lam_raw = matrix(.3, nTask, L + 1),
+  delta   = c(rep(.5, J), rep(.7, nCog)),
+  b       = rnorm(L, 0, .1),
+  zeta    = matrix(rnorm(I * (L + 1), 0, .1), I),
+  gamma   = cbind(mle_theta + matrix(rnorm(length(mle_theta), 0, .02), I), cog)
+)
+inits_clean <- function() lapply(inits(), unname)
+```
+
+```{r run}
+pars <- c("mu", "beta", "Lambda", "delta2", "b", "r",
+          "share_gen", "share_mask", "share_stim", "share_uni",
+          "Sigma", "theta",
+          "zeta")                                   # zeta (= eta_1..eta_L, and residual of eta_{L+1}) is needed for CMDE
+
+# 4 chains x 400,000 retained iterations, thinned by 100 -> 16,000 posterior draws
+fit <- jags(data = jags_data, inits = inits_clean, parameters.to.save = pars,
+            model.file = "model.jags",
+            n.chains = 4, n.iter = 450000, n.burnin = 50000, n.thin = 100)
+saveRDS(fit, trace_file)
+
+sl <- fit$BUGSoutput$sims.list
+
+# Diagnostics: Gelman-Rubin Rhat (free loadings only)
+summ <- fit$BUGSoutput$summary
+lam_free <- sprintf("Lambda[%d,%d]", row(free)[free == 1], col(free)[free == 1])
+key  <- grepl("^(mu|beta|b|delta2|share_gen|share_uni)\\[", rownames(summ)) | rownames(summ) %in% lam_free
+cat("Max Rhat:        ", max(summ[key, "Rhat"]), "\n")
+cat("Min n_eff:       ", min(summ[key, "n.eff"]), "\n")
+cat("Posterior draws: ", nrow(sl$b), "\n")
+```
+
+```{r table1}
+# Table 1: proportion of variance of each perceptual task due to each source
+shV <- sl$share_gen
+shM <- sl$share_mask
+shS <- sl$share_stim
+shU <- sl$share_uni
+
+tab_shares <- data.frame(
+  Task     = c(perc_tasks, "Average"),
+  General  = c(apply(shV, 2, ci), ci(rowMeans(shV))),
+  Masking  = c(apply(shM, 2, ci), ci(rowMeans(shM))),
+  Stimulus = c(apply(shS, 2, ci), ci(rowMeans(shS))),
+  Unique   = c(apply(shU, 2, ci), ci(rowMeans(shU)))
+)
+print(tab_shares, row.names = FALSE)
+
+# P(average stimulus share > average masking share)
+mean(rowMeans(shS) > rowMeans(shM))
+```
+
+```{r table2}
+# Table 2: correlation r_l of each perceptual factor with the cognitive factor,
+# and Savage-Dickey BF10 for b_l = 0 (prior b_l ~ N(0, 1)),
+# with the posterior density at 0 estimated by CMDE (Morey et al., 2011).
+#
+# Conditional on the sampled latent factors, the residuals zeta_{i,L+1} and the
+# cognitive-task parameters, b is multivariate normal:
+#   cog_iq ~ N(mu_q + lambda_q (b' x_i + zeta_i,L+1), delta2_q + 1/precObs),  x_i = (eta_i1..eta_iL)
+#   b | rest ~ N(V X' s, V),  V = (I / prior_sd^2 + tau X'X)^-1
+#   s_i = sum_q lambda_q r_iq / d2_q,  r_iq = cog_iq - mu_q - lambda_q zeta_i,L+1,  tau = sum_q lambda_q^2 / d2_q
+# The posterior density of b_l at 0 is the average over draws of N(0; m_l, V_ll).
+cmde_bf10 <- function(sl, cog, prec_obs, prior_sd = 1) {
+  zeta <- sl$zeta                                   # draws x I x (L + 1)
+  M <- dim(zeta)[1]
+  cidx <- (J + 1):nTask                             # cognitive tasks
+  dens0 <- cond_mean <- matrix(NA_real_, M, L)
+  for (m in 1:M) {
+    X    <- zeta[m, , 1:L]                          # I x L   (eta_il = zeta_il for l <= L)
+    lam  <- sl$Lambda[m, cidx, L + 1]               # loadings of cognitive tasks on cognitive factor
+    d2   <- sl$delta2[m, cidx] + 1 / prec_obs
+    R    <- sweep(cog, 2, sl$mu[m, cidx]) - outer(zeta[m, , L + 1], lam)   # I x nCog
+    s    <- as.numeric(R %*% (lam / d2))
+    tau  <- sum(lam^2 / d2)
+    V    <- solve(diag(L) / prior_sd^2 + tau * crossprod(X))
+    mb   <- as.numeric(V %*% crossprod(X, s))
+    cond_mean[m, ] <- mb
+    dens0[m, ]     <- dnorm(0, mb, sqrt(diag(V)))
+  }
+  list(bf10 = dnorm(0, 0, prior_sd) / colMeans(dens0),
+       cond_mean = colMeans(cond_mean))
+}
+
+res  <- cmde_bf10(sl, cog, prec_obs)
+bf10 <- setNames(res$bf10, vis_names)
+
+# Sanity check: E[m] must equal the posterior mean of b
+print(rbind(cmde = res$cond_mean, mcmc = colMeans(sl$b)))
+
+b_post <- sl$b;  colnames(b_post) <- vis_names      # regression weights b_l
+r_post <- sl$r;  colnames(r_post) <- vis_names      # correlations r_l with the cognitive factor
+
+tab_cor <- data.frame(
+  Factor = vis_names,
+  r      = apply(r_post, 2, ci),
+  BF10   = round(bf10, 2)
+)
+print(tab_cor, row.names = FALSE)
+
+# Variance of the cognitive factor explained by V
+ci(r_post[, "V"]^2)
+```

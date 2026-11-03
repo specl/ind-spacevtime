@@ -14,7 +14,7 @@ affiliation       :
   - id: 1
     institution: University of California, Irvine
 authornote: |
-  Version 1, September, 2026.
+  Version 1, November, 2026.
 abstract          :  "Why do simple perceptual tasks predict higher-order cognition, such as working memory and fluid intelligence? We contrast three hypotheses. Fast eyes: individuals who extract visual information quickly do well on both perceptual and cognitive tasks. Sharp eyes: individuals who resolve targets clearly in visual noise do well on both. Good eyes: a general visual ability, specific to neither speed nor noise, underlies both. To distinguish them, we crossed three stimulus types (Pi, letter, Gabor) with two masking types. In temporal masking, a mask follows the target and limits processing time; in spatial masking, the same mask accompanies the target and limits visibility through noise. Each task’s temporal and spatial versions thus shared the same stimulus and mask, differing only in how the mask was presented. 79 participants completed these perceptual tasks and four cognitive tasks. A hierarchical psychometric structural equation model decomposed individual differences into general visual, masking, and stimulus factors and related each to cognitive performance. The results show that masking type accounted for little variance and was unrelated to cognitive performance. Stimulus type accounted for more variance but was also unrelated to cognitive performance. Only the general visual factor, shared across all perceptual tasks, was strongly related to cognitive performance (*r* = .56), supporting the good-eyes hypothesis."
 
 keywords          : "visual masking, higher-order cognition, hierarchical Bayesian modeling, structural equation modeling, processing speed, visual acuity"
@@ -124,9 +124,9 @@ Phase II of each session was reserved for the working memory and matrix reasonin
 
 We analyzed the data in two ways. The first is a conventional analysis of summary scores. For each individual and task, we computed a single score, screened these scores for outliers, and examined the correlations among tasks. This analysis is simple and transparent, and it lets readers see the data directly. The second is a hierarchical psychometric model fit to the trial-level data. It estimates the relations among tasks while accounting for trial-to-trial noise, so that the estimated correlations are not attenuated and their uncertainty reflects both the sampling of trials and the sampling of individuals. The model also decomposes individual differences into general, masking-specific, and stimulus-specific sources, each of which is related to cognitive performance. The summary-score analysis serves as a descriptive first look, and the hierarchical model provides a more complete accounting of the data.
 
-The first step in the summary-score analysis is constructing a single score that summarizes performance on each task for each individual. For the three temporal-masking tasks, the main independent variable is the stimulus onset asynchrony between the target and the mask, which was manipulated adaptively in staircase fashion. For the three spatial-masking tasks, the main independent variables are the leg-length difference of the Pi stimulus, the target weight in the letter–noise blend, and the contrast of the Gabor patch, each of which was likewise manipulated adaptively. To construct these summary scores, the mean duration across the 250 analyzed trials was computed. For the four cognitive tasks, Tasks 7–10, the scoring method is standard to the task and described above.
+The first step in the summary-score analysis is constructing a single score that summarizes performance on each task for each individual. For the three temporal-masking tasks, the main independent variable is the stimulus onset asynchrony between the target and the mask, which was manipulated adaptively in staircase fashion. For the three spatial-masking tasks, the main independent variables are the leg-length difference of the Pi stimulus, the target weight in the letter–noise blend, and the contrast of the Gabor patch, each of which was likewise manipulated adaptively. To construct these summary scores, the mean duration across the last 150 analyzed trials was computed. For the four cognitive tasks, Tasks 7–10, the scoring method is standard to the task and described above.
 
-The main target of the summary-score analysis is the correlations between tasks across individuals. The main concern in data quality is that some scores exert unreasonably high leverage on these correlations. Figure \@ref(fig:leverage) shows two scatterplots of individual scores, each plotting one task against another. Both include the same outlying individual. In Figure \@ref(fig:leverage)A, this individual does not change the correlation appreciably; in Figure \@ref(fig:leverage)B, the individual does. We decided the best approach was to discard any score on a task that was more than 4 standard deviations from the task mean, regardless of its effect on the correlations. In total, data from two task-by-individual combinations (out of a total of 790 combinations) were discarded. Readers can access the raw data through the following link: [URL].
+The main target of the summary-score analysis is the correlations between tasks across individuals. The main concern in data quality is that some scores exert unreasonably high leverage on these correlations. Figure \@ref(fig:leverage) shows two scatterplots of individual scores, each plotting one task against another. Both include the same outlying individual. In Figure \@ref(fig:leverage)A, this individual does not change the correlation appreciably; in Figure \@ref(fig:leverage)B, the individual does. We decided the best approach was to discard any score on a task that was more than 4 standard deviations from the task mean, regardless of its effect on the correlations. In total, data from two task-by-individual combinations (out of a total of 790 combinations) were discarded. Readers can access the raw data and freely explore and visualize the data through the OSF repository: <https://osf.io/pzk35/overview?view_only=ae109a862cb54e74ba9fcedbeddbe069>.
 
 The surface-level results are shown in Figure \@ref(fig:summary). Panel A shows the correlations between tasks, and these are about .29 on average: .32 among the six perceptual tasks, .39 among the four cognitive tasks, and .25 between perceptual and cognitive tasks. To interpret the pattern of these surface correlations vis-à-vis the hypotheses, we simply replot the correlations between the temporal-masking tasks and the cognitive tasks and the correlations between the spatial-masking tasks and the cognitive tasks. The two submatrices are shown in Panel B, and to our surprise the correlations are larger for spatial-masking tasks than for temporal-masking tasks (mean *r* = .30 vs. .19). Thus, at the level of surface correlations, neither masking type is clearly privileged in its relation to higher-order cognition.
 
@@ -358,17 +358,17 @@ $$
 
 **Conflict of Interest**: None.
 
-**Ethical Approval**: Something
+**Ethical Approval**: This experiment was run in accordance with UCI IRB #STUDY00000064.
 
-**Consent to Participate**: Something
+**Consent to Participate**: On the first day of the experiment, participants read and signed an informed consent form to indicate their agreement to participate.
 
-**Consent for Publication**: Something
+**Consent for Publication**: None. This study does not involve the publication of identifiable participant information.
 
-**Data Availability**: Something
+**Data Availability**: Data were collected in a born-open manner [@Rouder.2016a], with experimental logs uploaded nightly to a publicly accessible GitHub repository: https://github.com/PerceptionCognitionLab/data6/tree/main/ind-spacevtime. The Python code used to run the experiment is also available there.
 
-**Code Availability**: All data and code required to reproduce the analyses are available at <wait>.
+**Code Availability**: All data and code required to reproduce the analyses are available at <https://osf.io/pzk35/overview?view_only=ae109a862cb54e74ba9fcedbeddbe069>.
 
-**Author Contributions**: Something
+**Author Contributions**: SY programmed the experiment, piloted various settings, ran the experiment, performed the majority of the data analysis, and contributed to writing the manuscript. JNR conceived the study and contributed to writing the manuscript. RD ran the experiment and performed a smaller portion of the data analysis.
 
 **Declaration of generative AI and AI-assisted technologies in the manuscript preparation process**:
 
