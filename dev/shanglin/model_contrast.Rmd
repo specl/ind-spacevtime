@@ -1,0 +1,300 @@
+
+```{r setup}
+library(R2jags)
+
+trace_file <- "SummaryData/trace_contrast.rds"  # MCMC trace (the only saved output)
+
+# Task order follows the paper (Task 1-10)
+perc_tasks <- c("TPi", "TLetter", "TGabor", "SPi", "SLetter", "SGabor")
+cog_tasks  <- c("OSpan", "CSpan", "Corsi", "Matrix")         # OSPAN, CSPAN, SSPAN, UCMRT
+vis_names  <- c("G", "M", "S1", "S2")                        # perceptual factors, l = 1..4 (contrasts of the 2 x 3 design, see below)
+all_tasks  <- c(perc_tasks, cog_tasks)
+J     <- length(perc_tasks)     # 6
+nCog  <- length(cog_tasks)      # 4
+nTask <- J + nCog               # 10
+L     <- length(vis_names)      # 4 perceptual factors; factor L + 1 = cognitive
+
+# posterior mean [95% CI]
+ci <- function(x) sprintf("%.2f [%.2f, %.2f]", mean(x), quantile(x, .025), quantile(x, .975))
+```
+
+```{r data}
+# Process perceptual data: log transform, then standardize within task
+perc_df <- read.csv("SummaryData/all_perceptual_scores.csv")
+perc_df$correct_num <- ifelse(perc_df$correct == "True", 1, 0)
+perc_df$x_raw <- ifelse(perc_df$staircase == 2, perc_df$param1, perc_df$param2)
+perc_df <- perc_df[perc_df$x_raw > 0, ]
+perc_df$x <- log(perc_df$x_raw)
+perc_df$x <- ave(perc_df$x, perc_df$task_name, FUN = function(v) as.numeric(scale(v)))
+
+# Exclude (subject, task) cells flagged as NA in the cleaned scores (4 SD criterion)
+clean_scores    <- read.csv("SummaryData/all_scores_clean.csv")
+clean_scores$id <- as.character(clean_scores$id)
+excluded_cells <- do.call(rbind, lapply(perc_tasks, function(t) {
+  bad_ids <- clean_scores$id[is.na(clean_scores[[t]])]
+  if (length(bad_ids) == 0) return(NULL)
+  data.frame(id = bad_ids, task_name = t, stringsAsFactors = FALSE)
+}))
+perc_df$id <- as.character(perc_df$id)
+perc_df <- subset(perc_df, !(paste(id, task_name, sep = "_") %in%
+                             paste(excluded_cells$id, excluded_cells$task_name, sep = "_")))
+
+# Map subject id and task name to indices (task index j = paper's Task number)
+ids <- sort(unique(perc_df$id))
+perc_df$id_idx   <- match(perc_df$id, ids)
+perc_df$task_idx <- match(perc_df$task_name, perc_tasks)
+I <- length(ids)
+
+# Aggregate Bernoulli trials -> Binomial counts
+agg_df <- aggregate(correct_num ~ id_idx + task_idx + x, data = perc_df,
+                    FUN = function(v) c(k = sum(v), n = length(v)))
+agg_df <- data.frame(agg_df[, 1:3], y = agg_df$correct_num[, "k"], n = agg_df$correct_num[, "n"])
+
+# Cognitive scores: standardized, higher = better (no sign flip)
+cog <- read.csv("SummaryData/all_cognitive_scores.csv")
+cog$id <- as.character(cog$id)
+cog <- reshape(cog, idvar = "id", timevar = "task_name", direction = "wide")
+names(cog) <- gsub("^score\\.", "", names(cog))
+cog[, cog_tasks] <- scale(cog[, cog_tasks])
+cog <- unname(as.matrix(cog[match(ids, cog$id), cog_tasks]))
+stopifnot(!anyNA(cog))
+```
+
+```{r design}
+# Design matrix of the perceptual factors: the orthogonal contrasts of the 2 (masking) x 3 (stimulus) design.
+#   G  = 1 for every task                 -> average level of the six tasks ("good eye")
+#   M  = +1 Temporal / -1 Spatial          -> Temporal minus Spatial (fast eye vs sharp eye)
+#   S1, S2 = Helmert contrasts of the stimuli (Pi, Letter, Gabor): S1 = Pi - Letter, S2 = (Pi + Letter)/2 - Gabor
+# Lambda[j, l] = omega[j] * dsg[j, l] * (one loading per contrast); S1 and S2 share the loading lamS (see model_contrast.jags).
+sign_m  <- c(1, 1, 1, -1, -1, -1)                      # TPi TLetter TGabor SPi SLetter SGabor
+stim_of <- c(1, 2, 3, 1, 2, 3)
+helm <- rbind(Pi     = c( 1 / sqrt(2), 1 / sqrt(6)),
+              Letter = c(-1 / sqrt(2), 1 / sqrt(6)),
+              Gabor  = c( 0,          -2 / sqrt(6)))
+dsg <- cbind(G = 1, M = sign_m, S1 = helm[stim_of, 1], S2 = helm[stim_of, 2])
+rownames(dsg) <- perc_tasks
+stopifnot(max(abs(crossprod(dsg) - diag(c(6, 6, 2, 2)))) < 1e-12)   # the four columns are orthogonal
+print(round(dsg, 3))
+```
+
+```{r model-data}
+# Init theta using per-task probit MLE:  p = Phi(beta * (s + theta))
+mle_theta <- matrix(NA, I, J)
+mle_beta  <- numeric(J)
+for (j in 1:J) {
+  sub <- subset(perc_df, task_name == perc_tasks[j])
+  sub$id <- factor(sub$id, levels = ids)
+  cf <- coef(glm(correct_num ~ 0 + id + x, data = sub, family = binomial(link = "probit")))
+  b_hat <- cf["x"]                                  # slope = beta
+  a_hat <- cf[grepl("^id", names(cf))]              # Phi(a + b x) = Phi(b (x + a / b))
+  mle_theta[match(sub("^id", "", names(a_hat)), ids), j] <- a_hat / b_hat
+  mle_beta[j] <- b_hat
+}
+for (j in 1:J) mle_theta[is.na(mle_theta[, j]), j] <- mean(mle_theta[, j], na.rm = TRUE)
+mle_theta <- apply(mle_theta, 2, function(v) pmin(pmax(v, quantile(v, .02)), quantile(v, .98)))  # trim extreme MLEs
+
+jags_data <- list(
+  N = nrow(agg_df), I = I, J = J,
+  id = agg_df$id_idx, task = agg_df$task_idx, s = agg_df$x,
+  y = agg_df$y, nTrial = agg_df$n, eps = 1e-6,       # eps: numerical guard, keeps p inside (0, 1)
+  nCog = nCog, nTask = nTask, L = L,
+  dsg = unname(dsg), hs = unname(helm),
+  gamma = cbind(matrix(NA, I, J), cog)               # first J columns: estimated (NA); last nCog columns: observed cognitive scores (data)
+)
+
+# Task scale omega[j] = exp(la[j]), sum la = 0 (geometric mean 1), estimated in the model (no pilot run).  Starting values only:
+sc0 <- apply(mle_theta, 2, sd)
+g0  <- exp(mean(log(sc0)))
+la0 <- log(sc0 / g0)
+
+inits <- function() list(
+  mu    = c(colMeans(mle_theta), rep(0, nCog)),
+  beta  = mle_beta,
+  la    = c(la0[1:(J - 1)], NA),                     # la[J] is deterministic
+  lamG  = .5 * g0, lamM = .2 * g0, lamS = .4 * g0,
+  lamC  = rep(.5, nCog),
+  delta = c(.5 * sc0, rep(.7, nCog)),
+  b     = rnorm(L, 0, .1),
+  zeta  = matrix(rnorm(I * (L + 1), 0, .1), I),
+  gamma = cbind(mle_theta + matrix(rnorm(length(mle_theta), 0, .02), I), matrix(NA, I, nCog))   # observed columns must be NA
+)
+inits_clean <- function() lapply(inits(), unname)
+```
+
+```{r run}
+pars <- c("mu", "beta", "omega", "Lambda", "lamG", "lamM", "lamS", "lamC", "delta2", "b", "r", "R2_G", "R2_M", "R2_S",
+          "r_fast_sharp", "r_comp", "ratio_gen", "ratio_mask", "ratio_stim",
+          "share_gen", "share_mask", "share_stim", "share_uni", "sdTheta",
+          "Sigma", "theta",
+          "zeta")                                   # zeta (= eta_1..eta_L, and residual of eta_{L+1}) is needed for CMDE
+
+# 4 chains x 400,000 retained iterations, thinned by 100 -> 16,000 posterior draws
+fit <- jags(data = jags_data, inits = inits_clean, parameters.to.save = pars,
+            model.file = "model_contrast.jags",
+            n.chains = 4, n.iter = 50000, n.burnin = 10000, n.thin = 10)
+saveRDS(fit, trace_file)
+
+sl <- fit$BUGSoutput$sims.list
+
+# Diagnostics: Gelman-Rubin Rhat
+summ <- fit$BUGSoutput$summary
+key  <- grepl("^(mu|beta|omega|b|lamC|delta2|share_gen|share_uni|r_comp)\\[|^(lamG|lamM|lamS|r_fast_sharp)$", rownames(summ))
+cat("Max Rhat:        ", max(summ[key, "Rhat"]), "\n")
+cat("Min n_eff:       ", min(summ[key, "n.eff"]), "\n")
+cat("Posterior draws: ", nrow(sl$b), "\n")
+```
+
+```{r table1}
+# Table 1: variance decomposition of the perceptual tasks into General, Masking, Stimulus (and Unique).
+#   General = the average-level factor G, Masking = the Temporal - Spatial contrast M, Stimulus = the two stimulus contrasts S1 + S2,
+#   Unique = task-specific (includes the Masking x Stimulus interaction).
+# (a) RATIO general : masking : stimulus.  omega[j] multiplies G, M, S1 and S2 of task j alike, so this ratio is the SAME for every task
+#     (it is lamG^2 : lamM^2 : (2/3) lamS^2, a by-construction property of the model, not a finding).  One row.
+tab_ratio <- data.frame(Source = c("General", "Masking", "Stimulus"),
+                        `Share of the common variance` = c(ci(sl$ratio_gen), ci(sl$ratio_mask), ci(sl$ratio_stim)),
+                        check.names = FALSE)
+print(tab_ratio, row.names = FALSE)
+cat("P(stimulus > masking):", mean(sl$ratio_stim > sl$ratio_mask), "\n")
+
+# (b) Shares of the TOTAL variance of each task.  The common part is split as in (a) and is scaled by omega[j]^2; only the unique variance
+#     delta2[j] differs between tasks, so the rows differ only in how large Unique is (and the other three shrink proportionally).
+shV <- sl$share_gen; shM <- sl$share_mask; shS <- sl$share_stim; shU <- sl$share_uni
+tab_shares <- data.frame(
+  Task     = c(perc_tasks, "Average"),
+  General  = c(apply(shV, 2, ci), ci(rowMeans(shV))),
+  Masking  = c(apply(shM, 2, ci), ci(rowMeans(shM))),
+  Stimulus = c(apply(shS, 2, ci), ci(rowMeans(shS))),
+  Unique   = c(apply(shU, 2, ci), ci(rowMeans(shU)))
+)
+print(tab_shares, row.names = FALSE)
+
+# (c) The loadings (in units of the geometric-mean task), the task scales and the SD of each task
+tab_lam <- data.frame(Parameter = c("lamG (average level)", "lamM (Temporal - Spatial)", "lamS (stimulus contrasts)",
+                                    paste0("omega[", perc_tasks, "] (relative scale)"), paste0("SD of theta[", perc_tasks, "]")),
+                      Posterior = c(ci(sl$lamG), ci(sl$lamM), ci(sl$lamS), apply(sl$omega, 2, ci), apply(sl$sdTheta, 2, ci)))
+print(tab_lam, row.names = FALSE)
+```
+
+```{r table2}
+# Table 2: how the perceptual factors relate to the cognitive factor.
+# The four factors are orthogonal contrasts, so the four coefficients b are all identified and the variance in the cognitive factor
+# they explain adds up exactly:  r_l = b_l / sqrt(1 + sum b^2),  R^2_l = r_l^2,  R^2_all = sum_l r_l^2.
+#   G  : the average level of the six tasks (good eye)
+#   M  : Temporal minus Spatial
+#   S1 : Pi minus Letter;  S2 : Pi and Letter against Gabor.  b_S1 and b_S2 depend on the order of the Helmert contrasts: read R^2 of S1 + S2.
+# R^2_all is the smallest R^2 that is compatible with the covariances (a representation with more perceptual factors can only
+# explain more), so it does not overstate the link.
+#
+# Savage-Dickey BF10 for b_l = 0 (prior N(0, 1)), with the posterior density at 0 estimated by CMDE (Morey et al., 2011).
+# Conditional on the sampled latent factors, the residuals zeta_{i,L+1}, lamC and the cognitive-task parameters, b is multivariate normal:
+#   cog_iq ~ N(mu_q + lambda_q (b' x_i + zeta_i,L+1), delta2_q),   x_i = (eta_i1, ..., eta_iL)       (cog is observed: no extra measurement error)
+#   b | rest ~ N(V X' s, V),  V = (I / prior_sd^2 + tau X'X)^-1
+#   s_i = sum_q lambda_q r_iq / d2_q,  r_iq = cog_iq - mu_q - lambda_q zeta_i,L+1,  tau = sum_q lambda_q^2 / d2_q
+# The posterior density of b_l at 0 is the average over draws of N(0; m_l, V_ll).
+cmde_bf10 <- function(sl, cog, prior_sd = 1) {
+  zeta <- sl$zeta                                   # draws x I x (L + 1)
+  M <- dim(zeta)[1]
+  cidx <- (J + 1):nTask                             # cognitive tasks
+  dens0 <- cond_mean <- matrix(NA_real_, M, L)
+  for (m in 1:M) {
+    X    <- zeta[m, , 1:L]                          # I x L: the perceptual factors themselves
+    lam  <- sl$lamC[m, ]                            # loadings of cognitive tasks on cognitive factor
+    d2   <- sl$delta2[m, cidx]
+    R    <- sweep(cog, 2, sl$mu[m, cidx]) - outer(zeta[m, , L + 1], lam)   # I x nCog
+    s    <- as.numeric(R %*% (lam / d2))
+    tau  <- sum(lam^2 / d2)
+    V    <- solve(diag(L) / prior_sd^2 + tau * crossprod(X))
+    mb   <- as.numeric(V %*% crossprod(X, s))
+    cond_mean[m, ] <- mb
+    dens0[m, ]     <- dnorm(0, mb, sqrt(diag(V)))
+  }
+  list(bf10 = dnorm(0, 0, prior_sd) / colMeans(dens0),
+       cond_mean = colMeans(cond_mean))
+}
+
+res  <- cmde_bf10(sl, cog)
+
+# Sanity check: E[m] must equal the posterior mean of b
+print(rbind(cmde = res$cond_mean, mcmc = colMeans(sl$b)))
+
+# (a) the coefficients and their Bayes factors
+b_names <- c("G (average level, good eye)", "M (Temporal - Spatial)", "S1 (Pi - Letter)", "S2 (Pi and Letter vs Gabor)")
+tab_b <- data.frame(Coefficient = b_names, b = apply(sl$b, 2, ci), `P(b>0)` = round(apply(sl$b, 2, function(x) mean(x > 0)), 3),
+                    BF10 = round(res$bf10, 2), check.names = FALSE)
+print(tab_b, row.names = FALSE)
+
+# (b) correlation of each perceptual factor with the cognitive factor
+r_post <- sl$r;  colnames(r_post) <- vis_names
+tab_cor <- data.frame(Factor = b_names, r = apply(r_post, 2, ci))
+print(tab_cor, row.names = FALSE)
+
+# (c) how much of the cognitive factor each source explains
+R2_all <- sl$R2_G + sl$R2_M + sl$R2_S
+tab_R2 <- data.frame(Source = c("G (average level)", "M (Temporal - Spatial)", "S1 + S2 (stimulus contrasts)", "All perceptual factors"),
+                     `R^2` = c(ci(sl$R2_G), ci(sl$R2_M), ci(sl$R2_S), ci(R2_all)),
+                     `Share of explained` = c(ci(sl$R2_G / R2_all), ci(sl$R2_M / R2_all), ci(sl$R2_S / R2_all), ""),
+                     check.names = FALSE)
+print(tab_R2, row.names = FALSE)
+
+# (d) composites: correlation with the cognitive factor of the composite ability of each margin (the true part of the mean of its tasks).
+# fast eye = mean of the three Temporal tasks, sharp eye = mean of the three Spatial tasks, Pi / Letter / Gabor = mean of the two tasks
+# with that stimulus.  These do not depend on any coding convention, but they overlap (they all contain G), so they are not additive.
+comp_names <- c("Fast eye (Temporal tasks)", "Sharp eye (Spatial tasks)", "Pi tasks", "Letter tasks", "Gabor tasks")
+tab_comp <- data.frame(Composite = comp_names, r = apply(sl$r_comp, 2, ci))
+print(tab_comp, row.names = FALSE)
+```
+
+```{r hypotheses}
+# The good eye / fast eye / sharp eye hypotheses.  Each claim has its own quantity:
+#   H1 "good eye": the six tasks share one general ability, and it relates to cognition.
+#        -> General share of the common variance (ratio_gen), lamG, b_G with its BF10 and R^2_G.
+#   H2 "fast eye and sharp eye are distinct abilities": Temporal and Spatial tasks differ beyond the general level.
+#        -> lamM (zero would make them identical), corr(fast, sharp) = (lamG^2 - lamM^2) / (lamG^2 + lamM^2) (1 = identical), Masking share.
+#   H3 "fast eye and sharp eye relate DIFFERENTLY to cognition": the Temporal - Spatial difference predicts the cognitive factor.
+#        -> b_M with its BF10 and R^2_M, and r(fast, cog) - r(sharp, cog) = 2 lamM b_M / sqrt((lamG^2 + lamM^2) v).
+rd <- sl$r_comp[, 1] - sl$r_comp[, 2]
+tab_h <- data.frame(
+  Hypothesis = c("H1 good eye", "H1 good eye", "H1 good eye", "H1 good eye",
+                 "H2 fast / sharp distinct", "H2 fast / sharp distinct", "H2 fast / sharp distinct", "H2 fast / sharp distinct",
+                 "H3 fast / sharp differ in cognition", "H3 fast / sharp differ in cognition", "H3 fast / sharp differ in cognition",
+                 "H3 fast / sharp differ in cognition", "H3 fast / sharp differ in cognition"),
+  Quantity = c("General share of the common variance", "lamG", "b_G", "R^2_G",
+               "Masking share of the common variance", "lamM", "corr(fast eye, sharp eye)", "P(corr(fast, sharp) < .90)",
+               "b_M", "R^2_M", "r(fast, cog)", "r(sharp, cog)", "r(fast, cog) - r(sharp, cog)"),
+  Posterior = c(ci(sl$ratio_gen), ci(sl$lamG), ci(sl$b[, 1]), ci(sl$R2_G),
+                ci(sl$ratio_mask), ci(sl$lamM), ci(sl$r_fast_sharp), sprintf("%.2f", mean(sl$r_fast_sharp < .90)),
+                ci(sl$b[, 2]), ci(sl$R2_M), ci(sl$r_comp[, 1]), ci(sl$r_comp[, 2]), ci(rd)),
+  stringsAsFactors = FALSE)
+print(tab_h, row.names = FALSE)
+cat(sprintf("BF10(b_G = 0) = %.3g;  BF10(b_M = 0) = %.2f;  P(r_fast > r_sharp) = %.2f;  R^2_M / R^2_G = %s\n",
+            res$bf10[1], res$bf10[2], mean(rd > 0), ci(sl$R2_M / sl$R2_G)))
+```
+
+```{r corr-matrix}
+# Model-fitted correlation matrix of the ten tasks (posterior mean, from Sigma), with 95% intervals.
+use  <- sort(sample(dim(sl$Sigma)[1], min(4000, dim(sl$Sigma)[1])))
+R10m <- sapply(use, function(m) cov2cor(sl$Sigma[m, , ]))
+R10a <- array(R10m, c(nTask, nTask, length(use)))
+cor_mean <- apply(R10a, c(1, 2), mean); dimnames(cor_mean) <- list(all_tasks, all_tasks)
+cor_lo   <- apply(R10a, c(1, 2), quantile, .025)
+cor_hi   <- apply(R10a, c(1, 2), quantile, .975)
+print(round(cor_mean, 2))
+
+# every pair with its interval
+pairs <- which(upper.tri(cor_mean), arr.ind = TRUE)
+tab_pairs <- data.frame(Pair = paste(all_tasks[pairs[, 1]], all_tasks[pairs[, 2]], sep = " - "),
+                        Implied = sprintf("%.2f [%.2f, %.2f]", cor_mean[pairs], cor_lo[pairs], cor_hi[pairs]))
+print(tab_pairs, row.names = FALSE)
+
+# Fit check.  The cognitive scores are data, so the model-implied cognitive block can be compared with the observed one directly.
+# Perceptual abilities are latent: the correlation of the per-task probit MLEs is shown only as a rough reference (it is attenuated by
+# the estimation error of each MLE, so it should lie BELOW the implied correlation).
+cog_idx <- (J + 1):nTask
+cat("\nCognitive block: observed (lower triangle) vs model-implied (upper triangle)\n")
+blk <- cor(cog); blk[upper.tri(blk)] <- cor_mean[cog_idx, cog_idx][upper.tri(blk)]
+dimnames(blk) <- list(cog_tasks, cog_tasks); print(round(blk, 2))
+cat("max |observed - implied| in the cognitive block:", round(max(abs((cor(cog) - cor_mean[cog_idx, cog_idx])[upper.tri(blk)])), 3), "\n")
+cat("\nPerceptual block: per-task probit MLE correlation (lower) vs model-implied (upper)\n")
+blk2 <- cor(mle_theta); blk2[upper.tri(blk2)] <- cor_mean[1:J, 1:J][upper.tri(blk2)]
+dimnames(blk2) <- list(perc_tasks, perc_tasks); print(round(blk2, 2))
+```

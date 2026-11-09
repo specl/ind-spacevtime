@@ -1,0 +1,179 @@
+---
+title: "Model Summary"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    number_sections: false
+geometry: margin=1in
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.align = "center", fig.width = 6.5, fig.height = 6.5)
+```
+
+**Data level**
+$$
+\begin{aligned}
+y_{ijk} &\sim \text{Bernoulli}\left(p_{ijk}\right) \\
+p_{ijk} &= \Phi\!\left(\beta_{j}\left(s_{ijk} + \theta_{ij}\right)\right)
+\end{aligned}
+$$
+**Measurement level**
+
+$$
+\begin{aligned}
+\boldsymbol{\gamma}_i &= \boldsymbol{\mu} + \boldsymbol{\Lambda}\,\boldsymbol{\eta}_i + \boldsymbol{\varepsilon}_i \\
+\boldsymbol{\gamma}_i &=
+\begin{pmatrix}
+\theta_{i1}, \theta_{i2}, \theta_{i3}, \theta_{i4}, \theta_{i5}, \theta_{i6}, c_{i1}, c_{i2}, c_{i3}, c_{i4}
+\end{pmatrix}' \\
+\boldsymbol{\Lambda} &=
+\begin{pmatrix}
+\omega_1\lambda_1 & \omega_1\lambda_2 & \frac{\omega_1\lambda_3}{\sqrt{2}} & \frac{\omega_1\lambda_3}{\sqrt{6}} & 0 \\
+\omega_2\lambda_1 & \omega_2\lambda_2 & -\frac{\omega_2\lambda_3}{\sqrt{2}} & \frac{\omega_2\lambda_3}{\sqrt{6}} & 0 \\
+\omega_3\lambda_1 & \omega_3\lambda_2 & 0 & -\frac{2\omega_3\lambda_3}{\sqrt{6}} & 0 \\
+\omega_4\lambda_1 & -\omega_4\lambda_2 & \frac{\omega_4\lambda_3}{\sqrt{2}} & \frac{\omega_4\lambda_3}{\sqrt{6}} & 0 \\
+\omega_5\lambda_1 & -\omega_5\lambda_2 & -\frac{\omega_5\lambda_3}{\sqrt{2}} & \frac{\omega_5\lambda_3}{\sqrt{6}} & 0 \\
+\omega_6\lambda_1 & -\omega_6\lambda_2 & 0 & -\frac{2\omega_6\lambda_3}{\sqrt{6}} & 0 \\
+0 & 0 & 0 & 0 & \kappa_1 \\
+0 & 0 & 0 & 0 & \kappa_2 \\
+0 & 0 & 0 & 0 & \kappa_3 \\
+0 & 0 & 0 & 0 & \kappa_4
+\end{pmatrix}, \quad
+\boldsymbol{\eta}_i =
+\begin{pmatrix}
+\eta_{i1} \\ \eta_{i2} \\ \eta_{i3} \\ \eta_{i4} \\ \eta_{i5}
+\end{pmatrix}, \quad
+\boldsymbol{\varepsilon}_i \sim N(\mathbf{0},\, \operatorname{diag}(\delta_1^2, \ldots, \delta_{10}^2)) \\
+\omega_j &= \exp(a_j), \quad \sum_{j=1}^{6} a_j = 0, \qquad j = 1, \ldots, 6
+\end{aligned}
+$$
+
+**Structural level**
+
+$$
+\begin{aligned}
+\boldsymbol{\eta}_i &= \mathbf{B}\,\boldsymbol{\eta}_i + \boldsymbol{\zeta}_i, \qquad \boldsymbol{\zeta}_i \sim N(\mathbf{0},\, \mathbf{I}_5) \\
+\mathbf{B} &=
+\begin{pmatrix}
+0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 \\
+b_1 & b_2 & b_3 & b_4 & 0
+\end{pmatrix} \\
+\operatorname{Cov}(\boldsymbol{\eta}_i) &=
+\begin{pmatrix}
+1 & 0 & 0 & 0 & b_1 \\
+0 & 1 & 0 & 0 & b_2 \\
+0 & 0 & 1 & 0 & b_3 \\
+0 & 0 & 0 & 1 & b_4 \\
+b_1 & b_2 & b_3 & b_4 & 1 + b_1^2 + b_2^2 + b_3^2 + b_4^2
+\end{pmatrix}
+\end{aligned}
+$$
+
+**Priors**
+
+$$
+\begin{aligned}
+\beta_j &\sim N(0,\, 5^2), & j &= 1, \ldots, 6 \\
+\mu_t &\sim N(0,\, 5^2), & t &= 1, \ldots, 10 \\
+a_j &\sim N(0,\, 1), & j &= 1, \ldots, 5 \quad (a_6 = -\textstyle\sum_{j=1}^{5} a_j) \\
+\lambda_1,\, \lambda_2,\, \lambda_3 &\sim \text{Half-}N(0,\, 1) \\
+\kappa_k &\sim \text{Half-}N(0,\, 1), & k &= 1, \ldots, 4 \\
+\delta_j &\sim \text{Half-}N(0,\, 1), & j &= 1, \ldots, 10\\
+b_l &\sim N(0,\, 1), & l &= 1, \ldots, 4
+\end{aligned}
+$$
+
+**Variance decomposition of perceptual task $j$**
+
+$$
+\begin{aligned}
+\operatorname{Var}(\theta_{ij}) &= \underbrace{\omega_j^2\lambda_1^2}_{\text{General}} + \underbrace{\omega_j^2\lambda_2^2}_{\text{Masking}} + \underbrace{\tfrac{2}{3}\,\omega_j^2\lambda_3^2}_{\text{Stimulus}} + \underbrace{\delta_j^2}_{\text{Unique}} \\[0.5em]
+\text{General}_j &= \frac{\omega_j^2\lambda_1^2}{\text{tot}_j}, \qquad
+\text{Masking}_j = \frac{\omega_j^2\lambda_2^2}{\text{tot}_j} \\[0.5em]
+\text{Stimulus}_j &= \frac{\tfrac{2}{3}\,\omega_j^2\lambda_3^2}{\text{tot}_j}, \qquad
+\text{Unique}_j = \frac{\delta_j^2}{\text{tot}_j}
+\end{aligned}
+$$
+**Relation to cognitive performance**
+
+$$
+\begin{aligned}
+v &= \operatorname{Var}(\eta_{i5}) = 1 + b_1^2 + b_2^2 + b_3^2 + b_4^2 \\[0.5em]
+r_l &= \operatorname{Corr}(\eta_{il},\, \eta_{i5}) = \frac{b_l}{\sqrt{v}}, \qquad l = 1, \ldots, 4 \\[0.5em]
+R^2_G &= r_1^2 = \frac{b_1^2}{v}, \qquad
+R^2_M = r_2^2 = \frac{b_2^2}{v}, \qquad
+R^2_S = r_3^2 + r_4^2 = \frac{b_3^2 + b_4^2}{v} \\[0.5em]
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+r_{\text{fast}} &= \operatorname{Corr}(\lambda_1\eta_{i1} + \lambda_2\eta_{i2},\; \eta_{i5})
+= \frac{\lambda_1 b_1 + \lambda_2 b_2}{\sqrt{(\lambda_1^2 + \lambda_2^2)\,v}} \\[0.5em]
+r_{\text{sharp}} &= \operatorname{Corr}(\lambda_1\eta_{i1} - \lambda_2\eta_{i2},\; \eta_{i5})
+= \frac{\lambda_1 b_1 - \lambda_2 b_2}{\sqrt{(\lambda_1^2 + \lambda_2^2)\,v}} \\[0.5em]
+r_{a} &= \operatorname{Corr}\big(\lambda_1\eta_{i1} + \lambda_3(h_{a1}\eta_{i3} + h_{a2}\eta_{i4}),\; \eta_{i5}\big)
+= \frac{\lambda_1 b_1 + \lambda_3\,(h_{a1} b_3 + h_{a2} b_4)}{\sqrt{\left(\lambda_1^2 + \tfrac{2}{3}\lambda_3^2\right) v}}, \qquad a \in \{\text{Pi, Letter, Gabor}\} \\[0.5em]
+\end{aligned}
+$$
+
+
+**Result1: Covaraince matrix**
+
+```{r}
+library(corrplot)
+tasks <- c("TPi","TLetter","TGabor","SPi","SLetter","SGabor","OSpan","CSpan","Corsi","Matrix")
+cor_mean <- matrix(c(
+  1.00,0.34,0.34,0.67,0.36,0.33,0.26,0.24,0.21,0.26,
+  0.34,1.00,0.29,0.29,0.57,0.27,0.12,0.11,0.09,0.12,
+  0.34,0.29,1.00,0.29,0.30,0.53,0.27,0.25,0.21,0.27,
+  0.67,0.29,0.29,1.00,0.48,0.45,0.33,0.31,0.27,0.34,
+  0.36,0.57,0.30,0.48,1.00,0.46,0.22,0.20,0.17,0.22,
+  0.33,0.27,0.53,0.45,0.46,1.00,0.38,0.36,0.30,0.38,
+  0.26,0.12,0.27,0.33,0.22,0.38,1.00,0.41,0.35,0.43,
+  0.24,0.11,0.25,0.31,0.20,0.36,0.41,1.00,0.32,0.41,
+  0.21,0.09,0.21,0.27,0.17,0.30,0.35,0.32,1.00,0.35,
+  0.26,0.12,0.27,0.34,0.22,0.38,0.43,0.41,0.35,1.00),
+  10, 10, byrow = TRUE, dimnames = list(tasks, tasks))
+
+corrplot(cor_mean, method = "color",
+         addCoef.col = "black", number.cex = 0.7,
+         tl.col = "black", tl.srt = 45, cl.pos = "r")
+```
+
+**Result2: Variance decomposition**
+
+
+| Task | $\omega_j$ | General | Masking | Stimulus | Unique |
+|---|---|---|---|---|---|
+| TPi | 1.64 [1.22, 2.10] | 0.47 [0.28, 0.66] | 0.04 [0.00, 0.10] | 0.20 [0.11, 0.33] | 0.28 [0.01, 0.56] |
+| TLetter | 0.74 [0.51, 0.99] | 0.33 [0.15, 0.53] | 0.03 [0.00, 0.08] | 0.14 [0.06, 0.26] | 0.50 [0.20, 0.77] |
+| TGabor | 0.90 [0.59, 1.23] | 0.34 [0.14, 0.56] | 0.03 [0.00, 0.08] | 0.15 [0.06, 0.28] | 0.49 [0.13, 0.79] |
+| SPi | 1.97 [1.52, 2.43] | 0.54 [0.34, 0.71] | 0.05 [0.00, 0.11] | 0.23 [0.13, 0.35] | 0.18 [0.00, 0.46] |
+| SLetter | 0.92 [0.69, 1.14] | 0.56 [0.33, 0.73] | 0.05 [0.00, 0.11] | 0.24 [0.13, 0.36] | 0.14 [0.00, 0.48] |
+| SGabor | 0.54 [0.38, 0.71] | 0.49 [0.25, 0.70] | 0.04 [0.00, 0.10] | 0.21 [0.10, 0.34] | 0.25 [0.00, 0.59] |
+| **Average** | | **0.46 [0.36, 0.55]** | **0.04 [0.00, 0.09]** | **0.20 [0.12, 0.28]** | **0.31 [0.22, 0.42]** |
+
+
+**Result3: Contribution to cognitive performance**
+
+| Factor | $b$ | $BF_{10}$ | $r$ |
+|---|---|---|---|---|
+| G (average level) | 1.01 [0.50, 1.72]  | 9,731.86 | 0.59 [0.37, 0.77] |
+| M (Temporal − Spatial) | −0.34 [−1.16, 0.40]  | 0.55 | −0.19 [−0.55, 0.24] |
+| S1 (Pi − Letter) | 0.39 [−0.05, 0.97] | 0.957  | 0.23 [−0.03, 0.48] |
+| S2 (Pi and Letter vs Gabor) | −0.47 [−1.19, 0.07] | 1.01 | −0.27 [−0.56, 0.05] |
+
+
+| Composite | $r$ with cognition |
+|---|---|
+| Temporal tasks | 0.51 [0.24, 0.74] |
+| Spatial tasks | 0.62 [0.40, 0.79] |
+| Pi tasks | 0.53 [0.29, 0.73] |
+| Letter tasks | 0.31 [0.02, 0.57] |
+| Gabor tasks | 0.64 [0.41, 0.83] |
