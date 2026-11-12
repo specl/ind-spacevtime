@@ -1,13 +1,11 @@
 
 ```{r setup}
 library(R2jags)
-library(polspline)   # only used to compare CMDE with the old logspline estimate
+library(corrplot)
 
-fit_file   <- "Data/summary/sem.rds"
-cog_file   <- "Data/summary/sem_cog.rds"          # cognitive score matrix passed to JAGS (needed for CMDE)
-bf_file    <- "Data/summary/sem_bf10.rds"         # CMDE Bayes factors
-sigma_file <- "Data/summary/sem_sigma.rds"        # posterior draws of the 10 x 10 covariance matrix
+trace_file <- "Data/summary/sem_trace.rds"        # MCMC output (all monitored parameters)
 theta_file <- "Data/summary/sem_theta.csv"        # posterior mean ability theta per person and task
+corr_file  <- "Data/summary/sem_corr.csv"         # posterior mean correlation matrix of the ten tasks
 
 # Task order follows the paper (Task 1-10)
 perc_tasks <- c("TPi", "TLetter", "TGabor", "SPi", "SLetter", "SGabor")
@@ -19,10 +17,14 @@ nCog  <- length(cog_tasks)      # 4
 nTask <- J + nCog               # 10
 L     <- length(vis_names)      # 6 non-cognitive factors; factor L + 1 = cognitive
 
-prec_obs <- 1e6                 # observed cognitive score = c_iq with SD 0.001
-
 # posterior mean [95% CI]
 ci <- function(x) sprintf("%.2f [%.2f, %.2f]", mean(x), quantile(x, .025), quantile(x, .975))
+# bold the last row of a table (for knitr::kable)
+bold_last <- function(tab) {
+  n <- nrow(tab); x <- unlist(tab[n, ])
+  tab[n, ] <- ifelse(nzchar(x), paste0("**", x, "**"), x)
+  tab
+}
 ```
 
 ```{r data}
@@ -65,103 +67,73 @@ names(cog) <- gsub("^score\\.", "", names(cog))
 cog[, cog_tasks] <- scale(cog[, cog_tasks])
 cog <- unname(as.matrix(cog[match(ids, cog$id), cog_tasks]))
 stopifnot(!anyNA(cog))
-saveRDS(cog, cog_file)
 ```
 
 ```{r model-data}
-# Support of Lambda (10 x 7): 1 = free loading, 0 = fixed at zero
-# columns: V, Temporal, Spatial, Pi, Letter, Gabor, Cognitive
-free <- rbind(
-  TPi     = c(1, 1, 0, 1, 0, 0, 0),
-  TLetter = c(1, 1, 0, 0, 1, 0, 0),
-  TGabor  = c(1, 1, 0, 0, 0, 1, 0),
-  SPi     = c(1, 0, 1, 1, 0, 0, 0),
-  SLetter = c(1, 0, 1, 0, 1, 0, 0),
-  SGabor  = c(1, 0, 1, 0, 0, 1, 0),
-  OSpan   = c(0, 0, 0, 0, 0, 0, 1),
-  CSpan   = c(0, 0, 0, 0, 0, 0, 1),
-  Corsi   = c(0, 0, 0, 0, 0, 0, 1),
-  Matrix  = c(0, 0, 0, 0, 0, 0, 1))
-stopifnot(identical(rownames(free), all_tasks))
+# Design of the six perception tasks.
+#   maskF: masking factor (2 = temporal, 3 = spatial)
+#   stim : stimulus (1 = Pi, 2 = Letter, 3 = Gabor); its factor is 3 + stim
+# Loadings (standardized scale):
+#   general  -> one loading lam_gen shared by all six tasks
+#   stimulus -> one loading lamStim[k] shared by the temporal and spatial task of stimulus k
+#   masking  -> free loading lamMask[j] for each task
+#   cognitive tasks -> free loading lamCog[q] on the cognitive factor
+design <- data.frame(task  = perc_tasks,
+                     maskF = c(2, 2, 2, 3, 3, 3),
+                     stim  = c(1, 2, 3, 1, 2, 3))
+stopifnot(identical(design$task, perc_tasks))
 
 jags_data <- list(
   N = nrow(agg_df), I = I, J = J, nCog = nCog, nTask = nTask, L = L,
   id = agg_df$id_idx, task = agg_df$task_idx, s = agg_df$x,
   y = agg_df$y, nTrial = agg_df$n,
-  eps = 1e-6, precObs = prec_obs,
-  free = unname(free), cog = cog
+  eps = 1e-6,
+  maskF = design$maskF, stim = design$stim,
+  isT = as.numeric(design$maskF == 2), isS = as.numeric(design$maskF == 3),
+  cog = cog
 )
-
-# Init theta using per-task probit MLE:  p = Phi(beta * (s + theta))
-mle_theta <- matrix(NA, I, J)
-mle_beta  <- numeric(J)
-for (j in 1:J) {
-  sub <- subset(perc_df, task_name == perc_tasks[j])
-  sub$id <- factor(sub$id, levels = ids)
-  cf <- coef(glm(correct_num ~ 0 + id + x, data = sub, family = binomial(link = "probit")))
-  b_hat <- cf["x"]                                  # slope = beta
-  a_hat <- cf[grepl("^id", names(cf))]              # Phi(a + b x) = Phi(b (x + a / b))
-  mle_theta[match(sub("^id", "", names(a_hat)), ids), j] <- a_hat / b_hat
-  mle_beta[j] <- b_hat
-}
-for (j in 1:J) mle_theta[is.na(mle_theta[, j]), j] <- mean(mle_theta[, j], na.rm = TRUE)
-mle_theta <- apply(mle_theta, 2, function(v) pmin(pmax(v, quantile(v, .02)), quantile(v, .98)))  # trim extreme MLEs
-
-inits <- function() list(
-  mu      = c(colMeans(mle_theta), rep(0, nCog)),
-  beta    = mle_beta,
-  lam_raw = matrix(.3, nTask, L + 1),
-  delta   = c(rep(.5, J), rep(.7, nCog)),
-  b       = rnorm(L, 0, .1),
-  zeta    = matrix(rnorm(I * (L + 1), 0, .1), I),
-  gamma   = cbind(mle_theta + matrix(rnorm(length(mle_theta), 0, .02), I), cog)
-)
-inits_clean <- function() lapply(inits(), unname)
 ```
 
-```{r run}
-pars <- c("mu", "beta", "Lambda", "delta2", "b", "r",
+```{r run, results = "hide", message = FALSE}
+pars <- c("mu", "beta", "sdT",
+          "lam_gen", "lamMask", "lamStim", "lamCog", "lamTbar", "lamSbar",
+          "Lambda", "delta2", "bfree", "b", "r", "rho",
           "share_gen", "share_mask", "share_stim", "share_uni",
           "Sigma", "theta",
           "zeta")                                   # zeta (= eta_1..eta_L, and residual of eta_{L+1}) is needed for CMDE
 
-# 4 chains x 20,000 retained iterations, thinned by 10 -> 8,000 posterior draws
-fit <- jags(data = jags_data, inits = inits_clean, parameters.to.save = pars,
-            model.file = "Model/sem.jags",
-            n.chains = 4, n.iter = 450000, n.burnin = 50000, n.thin = 100)
-saveRDS(fit, fit_file)
-
+# 2 chains x 40,000 post-burn-in iterations, thinned by 10 -> 8,000 posterior draws
+fit <- jags(data = jags_data, parameters.to.save = pars,
+            model.file = "sem.jags",
+            n.chains = 2, n.iter = 100000, n.burnin = 10000, n.thin = 10)
 sl <- fit$BUGSoutput$sims.list
 
-# Diagnostics: Gelman-Rubin Rhat (free loadings only)
-summ <- fit$BUGSoutput$summary
-lam_free <- sprintf("Lambda[%d,%d]", row(free)[free == 1], col(free)[free == 1])
-key  <- grepl("^(mu|beta|b|delta2|share_gen|share_uni)\\[", rownames(summ)) | rownames(summ) %in% lam_free
-cat("Max Rhat:        ", max(summ[key, "Rhat"]), "\n")
-cat("Min n_eff:       ", min(summ[key, "n.eff"]), "\n")
-cat("Posterior draws: ", nrow(sl$b), "\n")
-
-# ---- save covariance matrix and individual abilities ------------------------
-Sigma <- sl$Sigma                                  # draws x 10 x 10
-dimnames(Sigma) <- list(NULL, all_tasks, all_tasks)
-saveRDS(Sigma, sigma_file)
-Sigma_mean <- apply(Sigma, c(2, 3), mean)
-R_mean     <- apply(Sigma, 1, cov2cor)             # posterior mean of the correlation matrix
-R_mean     <- matrix(rowMeans(R_mean), nTask, dimnames = list(all_tasks, all_tasks))
-write.csv(round(Sigma_mean, 4), "Data/summary/sem_sigma_mean.csv")
-write.csv(round(R_mean, 4),     "Data/summary/sem_corr_mean.csv")
-
+# ---- save: trace, individual abilities, correlation matrix -------------------
+saveRDS(fit, trace_file)
 theta_mean <- apply(sl$theta, c(2, 3), mean)       # persons x tasks (larger = better)
-theta_sd   <- apply(sl$theta, c(2, 3), sd)
-dimnames(theta_mean) <- dimnames(theta_sd) <- list(ids, perc_tasks)
+dimnames(theta_mean) <- list(ids, perc_tasks)
 excl <- paste(excluded_cells$id, excluded_cells$task_name)   # excluded cells were imputed: set to NA
 for (t in perc_tasks) theta_mean[paste(ids, t) %in% excl, t] <- NA
 write.csv(data.frame(id = ids, theta_mean, check.names = FALSE), theta_file, row.names = FALSE)
-write.csv(data.frame(id = ids, theta_sd,   check.names = FALSE), "Data/summary/sem_theta_sd.csv", row.names = FALSE)
+
+R_mean <- apply(sl$Sigma, 1, cov2cor)              # posterior mean of the correlation matrix
+R_mean <- matrix(rowMeans(R_mean), nTask, dimnames = list(all_tasks, all_tasks))
+write.csv(round(R_mean, 4), corr_file)
+
+summ <- fit$BUGSoutput$summary
+key  <- grepl("^(mu|beta|sdT|lamMask|lamStim|lamCog|bfree|delta2|share_uni)\\[", rownames(summ)) |
+        rownames(summ) %in% c("lam_gen", "lamTbar", "lamSbar")
+if (max(summ[key, "Rhat"]) > 1.05)
+  warning(sprintf("Max Rhat = %.3f (> 1.05): run longer chains", max(summ[key, "Rhat"])))
 ```
 
 ```{r table1}
-# Table 1: proportion of variance of each perception task due to each source
+fit <- readRDS('Data/summary/sem_trace.rds')
+sl <- fit$BUGSoutput$sims.list
+# Table 1: proportion of variance of each perception task due to each source.
+# Loadings are standardized, so the shares are the model parameters themselves:
+# the general share is the same for all six tasks, and the stimulus share is the
+# same for the temporal and spatial task of each stimulus.
 shV <- sl$share_gen
 shM <- sl$share_mask
 shS <- sl$share_stim
@@ -174,66 +146,70 @@ tab_shares <- data.frame(
   Stimulus = c(apply(shS, 2, ci), ci(rowMeans(shS))),
   Unique   = c(apply(shU, 2, ci), ci(rowMeans(shU)))
 )
-print(tab_shares, row.names = FALSE)
-
-# P(average stimulus share > average masking share)
-mean(rowMeans(shS) > rowMeans(shM))
+knitr::kable(bold_last(tab_shares), row.names = FALSE, align = "lcccc",
+             caption = "Table 1. Variance decomposition of the perception tasks")
 ```
 
 ```{r table2}
-# Table 2: correlation r_l of each non-cognitive factor with the cognitive factor,
-# and Savage-Dickey BF10 for b_l = 0 (prior b_l ~ N(0, 1)),
-# with the posterior density at 0 estimated by CMDE (Morey et al., 2011).
+# Table 2: relation of the perceptual factors to cognitive performance.
 #
-# Conditional on the sampled latent factors, the residuals zeta_{i,L+1} and the
-# cognitive-task parameters, b is multivariate normal:
-#   cog_iq ~ N(mu_q + lambda_q (b' x_i + zeta_i,L+1), delta2_q + 1/precObs),  x_i = (eta_i1..eta_iL)
-#   b | rest ~ N(V X' s, V),  V = (I / prior_sd^2 + tau X'X)^-1
+# Savage-Dickey BF10 with the posterior density at 0 estimated by CMDE (Morey et al., 2011).
+# Free weights bfree = (b_1, b_2, b_4, b_5) ~ N(0, I); b_3, b_6 follow from (C1), (C2): b = A bfree.
+# Conditional on the latent factors, zeta_{i,L+1}, and the loadings / cognitive-task parameters:
+#   cog_iq ~ N(mu_q + lambda_q (bfree' Xt_i + zeta_i,L+1), delta2_q),  Xt = X A,  X_i = (eta_i1..eta_iL)
+#   bfree | rest ~ N(V Xt' s, V),  V = (I / prior_sd^2 + tau Xt'Xt)^-1
 #   s_i = sum_q lambda_q r_iq / d2_q,  r_iq = cog_iq - mu_q - lambda_q zeta_i,L+1,  tau = sum_q lambda_q^2 / d2_q
-# The posterior density of b_l at 0 is the average over draws of N(0; m_l, V_ll).
-cmde_bf10 <- function(sl, cog, prec_obs, prior_sd = 1) {
+# Tests:  general  H0: b_1 = 0s
+#         masking  H0: b_2 = 0            (equivalently b_2 = b_3 = 0)
+#         stimulus H0: (b_4, b_5) = 0     (equivalently b_4 = b_5 = b_6 = 0), joint 2-df test
+cmde_bf10 <- function(sl, cog, prior_sd = 1) {
   zeta <- sl$zeta                                   # draws x I x (L + 1)
-  M <- dim(zeta)[1]
+  M    <- dim(zeta)[1]
+  K    <- ncol(sl$bfree)                            # 4 free weights
   cidx <- (J + 1):nTask                             # cognitive tasks
-  dens0 <- cond_mean <- matrix(NA_real_, M, L)
+  d0   <- matrix(NA_real_, M, 3)                    # posterior density at 0: b_1, b_2, (b_4, b_5)
   for (m in 1:M) {
-    X    <- zeta[m, , 1:L]                          # I x L   (eta_il = zeta_il for l <= L)
-    lam  <- sl$Lambda[m, cidx, L + 1]               # loadings of cognitive tasks on cognitive factor
-    d2   <- sl$delta2[m, cidx] + 1 / prec_obs
-    R    <- sweep(cog, 2, sl$mu[m, cidx]) - outer(zeta[m, , L + 1], lam)   # I x nCog
+    A <- matrix(0, L, K)                            # b = A %*% bfree
+    A[1, 1]   <- 1
+    A[2, 2]   <- 1
+    A[3, 2]   <- -sl$lamTbar[m] / sl$lamSbar[m]                 # (C2)
+    A[4, 3]   <- 1
+    A[5, 4]   <- 1
+    A[6, 3:4] <- -sl$lamStim[m, 1:2] / sl$lamStim[m, 3]         # (C1)
+    X    <- zeta[m, , 1:L] %*% A                    # I x K   (eta_il = zeta_il for l <= L)
+    lam  <- sl$Lambda[m, cidx, L + 1]
+    d2   <- sl$delta2[m, cidx]
+    R    <- sweep(cog, 2, sl$mu[m, cidx]) - outer(zeta[m, , L + 1], lam)
     s    <- as.numeric(R %*% (lam / d2))
     tau  <- sum(lam^2 / d2)
-    V    <- solve(diag(L) / prior_sd^2 + tau * crossprod(X))
+    V    <- solve(diag(K) / prior_sd^2 + tau * crossprod(X))
     mb   <- as.numeric(V %*% crossprod(X, s))
-    cond_mean[m, ] <- mb
-    dens0[m, ]     <- dnorm(0, mb, sqrt(diag(V)))
+    Vs   <- V[3:4, 3:4]; ms <- mb[3:4]
+    d0[m, ] <- c(dnorm(0, mb[1], sqrt(V[1, 1])),
+                 dnorm(0, mb[2], sqrt(V[2, 2])),
+                 exp(-0.5 * sum(ms * solve(Vs, ms))) / (2 * pi * sqrt(det(Vs))))
   }
-  list(bf10 = dnorm(0, 0, prior_sd) / colMeans(dens0),
-       cond_mean = colMeans(cond_mean))
+  prior0 <- c(dnorm(0, 0, prior_sd), dnorm(0, 0, prior_sd), 1 / (2 * pi * prior_sd^2))
+  setNames(prior0 / colMeans(d0), c("General", "Masking", "Stimulus"))
 }
+bf10   <- cmde_bf10(sl, cog)
+saveRDS(bf10, "Data/summary/sem_bf10.rds")
+fmt_bf <- function(x) formatC(x, format = "f", digits = 2, big.mark = ",")
 
-res  <- cmde_bf10(sl, cog, prec_obs)
-bf10 <- setNames(res$bf10, vis_names)
-
-# Sanity check 1: E[m] must equal the posterior mean of b
-print(rbind(cmde = res$cond_mean, mcmc = colMeans(sl$b)))
-
-# Sanity check 2: compare with the old logspline estimate
-bf10_ls <- sapply(1:L, function(l) dnorm(0, 0, 1) / dlogspline(0, logspline(sl$b[, l])))
-print(rbind(cmde = bf10, logspline = bf10_ls))
-
-saveRDS(bf10, bf_file)
-
-b_post <- sl$b;  colnames(b_post) <- vis_names      # regression weights b_l
-r_post <- sl$r;  colnames(r_post) <- vis_names      # correlations r_l with the cognitive factor
-
-tab_cor <- data.frame(
-  Factor = vis_names,
+# (a) correlation of each factor with the cognitive factor, and BF10
+r_post <- sl$r
+tab_r <- data.frame(
+  Factor = c("General visual", "Temporal masking", "Spatial masking", "Pi", "Letter", "Gabor"),
   r      = apply(r_post, 2, ci),
-  BF10   = round(bf10, 2)
+  H0     = c("b1 = 0", "b2 = b3 = 0", "", "b4 = b5 = b6 = 0", "", ""),
+  BF10   = c(fmt_bf(bf10["General"]), fmt_bf(bf10["Masking"]), "", fmt_bf(bf10["Stimulus"]), "", "")
 )
-print(tab_cor, row.names = FALSE)
+knitr::kable(tab_r, row.names = FALSE, align = "lccc",
+             caption = "Table 2. Correlation of each perceptual factor with the cognitive factor")
+```
 
-# Variance of the cognitive factor explained by V
-ci(r_post[, "V"]^2)
+```{r corr-plot, fig.width = 6.5, fig.height = 6.5}
+corrplot(R_mean, method = "color",
+         addCoef.col = "black", number.cex = 0.7,
+         tl.col = "black", tl.srt = 45, cl.pos = "r")
 ```

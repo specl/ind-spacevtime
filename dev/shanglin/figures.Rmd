@@ -22,7 +22,7 @@ clean <- read.csv("Data/summary/all_scores_clean.csv", check.names = FALSE)
 R_sum <- cor(clean[, ord], use = "pairwise.complete.obs")   # excluded scores are NA
 Z_sum <- scale(clean[, ord])
 
-R_sem <- as.matrix(read.csv("Data/summary/sem_corr_mean.csv", row.names = 1, check.names = FALSE))[ord, ord]
+R_sem <- as.matrix(read.csv("Data/summary/sem_corr.csv", row.names = 1, check.names = FALSE))[ord, ord]
 theta <- read.csv("Data/summary/sem_theta.csv", check.names = FALSE)
 theta <- merge(theta, clean[, c("id", "OSpan", "CSpan", "Corsi", "Matrix")], by = "id")
 Z_sem <- scale(theta[, ord])

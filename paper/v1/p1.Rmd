@@ -4,18 +4,18 @@ shorttitle        : "Fast Eyes, Sharp Eyes, and Good Eyes"
 author:
   - name: Shanglin Yang
     affiliation: "1"
-  - name: Jeffrey N. Rouder
-    affiliation: "1"
-    email: jrouder@uci.edu
     corresponding: yes 
+    email: shangly2@uci.edu
   - name: Rean Du
+    affiliation: "1"
+  - name: Jeffrey N. Rouder
     affiliation: "1"
 affiliation       :
   - id: 1
     institution: University of California, Irvine
 authornote: |
   Version 1, November, 2026.
-abstract          :  "Why do simple perceptual tasks predict higher-order cognition, such as working memory and fluid intelligence? We contrast three hypotheses. Fast eyes: individuals who extract visual information quickly do well on both perceptual and cognitive tasks. Sharp eyes: individuals who resolve targets clearly in visual noise do well on both. Good eyes: a general visual ability, specific to neither speed nor noise, underlies both. To distinguish them, we crossed three stimulus types (Pi, letter, Gabor) with two masking types. In temporal masking, a mask follows the target and limits processing time; in spatial masking, the same mask accompanies the target and limits visibility through noise. Each task’s temporal and spatial versions thus shared the same stimulus and mask, differing only in how the mask was presented. 79 participants completed these perceptual tasks and four cognitive tasks. A hierarchical psychometric structural equation model decomposed individual differences into general visual, masking, and stimulus factors and related each to cognitive performance. The results show that masking type accounted for little variance and was unrelated to cognitive performance. Stimulus type accounted for more variance but was also unrelated to cognitive performance. Only the general visual factor, shared across all perceptual tasks, was strongly related to cognitive performance (*r* = .56), supporting the good-eyes hypothesis."
+abstract          :  "Why do simple perceptual tasks predict higher-order cognition, such as working memory and fluid intelligence? We contrast three hypotheses. Fast eyes: individuals who extract visual information quickly do well on both perceptual and cognitive tasks. Sharp eyes: individuals who resolve targets clearly in visual noise do well on both. Good eyes: a general visual ability, specific to neither speed nor noise, underlies both. To distinguish them, we crossed three stimulus types (Pi, letter, Gabor) with two masking types. In temporal masking, a mask follows the target and limits processing time; in spatial masking, the same mask accompanies the target and limits visibility through noise. Each task’s temporal and spatial versions thus shared the same stimulus and mask, differing only in how the mask was presented. 79 participants completed these perceptual tasks and four cognitive tasks. A hierarchical psychometric structural equation model decomposed individual differences into general visual, masking, and stimulus factors and related each to cognitive performance. The results show that masking type accounted for relatively little variance and was unrelated to cognitive performance. Stimulus type accounted for more variance but was also unrelated to cognitive performance. Only the general visual factor, shared across all perceptual tasks, was strongly related to cognitive performance (*r* = .64), supporting the good-eyes hypothesis."
 
 keywords          : "visual masking, higher-order cognition, hierarchical Bayesian modeling, structural equation modeling, processing speed, visual acuity"
 bibliography      : ["zlab.bib"]
@@ -78,7 +78,7 @@ We constructed six different perceptual tasks by crossing three stimulus types w
 
 The expected data patterns are as follows: if the fast-eyes hypothesis holds, then the three temporal-masking tasks should cluster well and the combined latent variable should correlate well with cognitive tasks. Conversely, if the sharp-eyes hypothesis holds, then the three spatial-masking tasks should cluster well and the combined latent variable should correlate well with cognitive tasks. Yet, there are data patterns that do not accord with either hypothesis. Perhaps, there is no special concept of fast or sharp eyes. An alternative is that some people have better vision than others, and that those with better vision tend to do better on higher-order cognition. We call this the *good-eyes* hypothesis.
 
-Given the large literature on the correlation between inspection time and IQ, we ran this experiment to confirm that processing speed was crucial. We fully expected the temporal-masking tasks to cluster and the shared variance among them to drive the correlation between perception and higher-order cognition. We were quite wrong in these expectations. To foreshadow, we find that the distinction between spatial and temporal masking accounts for little of the variance across individuals. A factor that accounts for more variance is stimulus type. It seems that people vary more across Gabors, letters, and Pi stimuli than they do across spatial and temporal masking types. Moreover, it seems that it is what is shared across the stimulus types that drives the correlation with higher-order cognition. And this fact provides the best evidence that neither spatial nor temporal masking is privileged in relating to higher-order cognition. It seems the good-eyes hypothesis, our add-on hypothesis for completeness, best describes the data.
+Given the large literature on the correlation between inspection time and IQ, we ran this experiment to confirm that processing speed was crucial. We fully expected the temporal-masking tasks to cluster and the shared variance among them to drive the correlation between perception and higher-order cognition. We were quite wrong in these expectations. To foreshadow, we find that the distinction between spatial and temporal masking accounts for relatively little of the variance across individuals. A factor that accounts for more variance is stimulus type. It seems that people vary more across Gabors, letters, and Pi stimuli than they do across spatial and temporal masking types. Moreover, it seems that it is what is shared across the stimulus types that drives the correlation with higher-order cognition. And this fact provides the best evidence that neither spatial nor temporal masking is privileged in relating to higher-order cognition. It seems the good-eyes hypothesis, our add-on hypothesis for completeness, best describes the data.
 
 # Experimental Method
 
@@ -142,32 +142,38 @@ The hierarchical model has three levels. The top level is termed here the *data 
 
 There are two parameters in the above psychophysical model: $\theta_{ij}$ and $\beta_j$. The parameter $\theta_{ij}$ denotes the latent ability of individual $i$ on task $j$, expressed on the same scale as $s_{ijk}$, and $\beta_j$ denotes the rate of the psychometric function on strengths for task $j$.
 
-**Measurement level.** The measurement level describes how true abilities reflect specific factors. Each individual's perceptual abilities are characterized by the vector $\boldsymbol{\theta}_i=(\theta_{i1},\ldots,\theta_{i6})'$. Individuals also performed in the cognitive tasks but the scoring rules are standard and do not reflect a trial structure. Let $\boldsymbol{c}_i=(c_{i1},\ldots,c_{i4})'$ be the vector of each individual's cognitive performance. A complete vector of abilities on the 10 tasks, denoted $\boldsymbol{\gamma}_i$ is: $$\boldsymbol{\gamma}_i = \left(\boldsymbol{\theta}_i',\boldsymbol{c}_i'\right)'.$$
+**Measurement level.** The measurement level describes how true abilities reflect specific factors. Each individual’s perceptual abilities are characterized by the vector $\boldsymbol{\theta}_i=(\theta_{i1},\ldots,\theta_{i6})'$. Because the scale of each $\theta_{ij}$ is set by the stimulus units of task $j$, and is therefore arbitrary across tasks, we work with standardized abilities:
 
+$$\theta_{ij} = \mu_j + \sigma_j\,\theta^*_{ij}, \qquad \operatorname{Var}(\theta^*_{ij}) = 1, \qquad j = 1,\ldots,6,$$
+where $\mu_j$ and $\sigma_j$ absorb the location and scale of each task. Individuals also performed in the cognitive tasks but the scoring rules are standard and do not reflect a trial structure. Let $\boldsymbol{c}^*_i=(c^*_{i1},\ldots,c^*_{i4})'$ be the vector of each individual’s standardized cognitive performance. A complete vector of standardized abilities on the 10 tasks, denoted $\boldsymbol{\gamma}^*_i$, is:
+
+$$\boldsymbol{\gamma}^*_i = \left(\boldsymbol{\theta}^{*\prime}_i,\boldsymbol{c}^{*\prime}_i\right)'.$$
 The next task is to define a reduced set of factors that capture the design and hypotheses. We specify seven factors as follows: a general visual factor, a factor that reflects temporal masking, a factor that reflects spatial masking, a factor that reflects Pi stimuli, a factor that reflects letter stimuli, a factor that reflects Gabor stimuli, and a factor that reflects higher-order cognition.
 
-The standard factor model is used to relate factors to abilities: $$\boldsymbol{\gamma}_i = \boldsymbol{\mu} + \boldsymbol{\Lambda}\,\boldsymbol{\eta}_i + \boldsymbol{\epsilon}_i, \qquad
-\boldsymbol{\epsilon}_i \sim \mathcal{N}_{10}\!\left(\mathbf{0}, \boldsymbol{\Delta}\right), \qquad
-\boldsymbol{\Delta} = \operatorname{diag}\!\left(\delta_1^2, \ldots, \delta_{10}^2\right),$$
+The standard factor model is used to relate factors to standardized abilities:
 
-where $\boldsymbol{\mu}$ captures the mean of each task, $\boldsymbol{\Lambda}$ is a $10 \times 7$ matrix of factor loadings, $\boldsymbol{\eta}_i$ is a 7-dimensional vector of latent factors for the $i$th individual, $\boldsymbol{\epsilon}_i$ is a residual with task-dependent variance. The key constraints are on the factor loadings, given as follows: $$\boldsymbol{\Lambda} =
+$$\boldsymbol{\gamma}^*_i = \boldsymbol{\Lambda}\,\boldsymbol{\eta}_i + \boldsymbol{\epsilon}_i, \qquad \boldsymbol{\epsilon}_i \sim \mathcal{N}_{10}\!\left(\mathbf{0}, \boldsymbol{\Delta}\right), \qquad \boldsymbol{\Delta} = \operatorname{diag}\!\left(\delta_1^2, \ldots, \delta_{10}^2\right),$$
+where $\boldsymbol{\Lambda}$ is a $10 \times 7$ matrix of factor loadings, $\boldsymbol{\eta}_i$ is a 7-dimensional vector of latent factors for the $i$th individual, and $\boldsymbol{\epsilon}_i$ is a residual with task-dependent variance. Because the loadings are defined on standardized abilities, equal loadings mean an equal proportion of variance in every task, independent of units. The key constraints are on the factor loadings, given as follows: 
+$$
+\boldsymbol{\Lambda} =
 \bordermatrix{
  & \text{General visual} & \text{Temporal} & \text{Spatial} & \text{Pi} & \text{Letter} & \text{Gabor} & \text{Cognitive} \cr
- & \lambda_{11} & \lambda_{12} & 0 & \lambda_{14} & 0 & 0 & 0 \cr
- & \lambda_{21} & \lambda_{22} & 0 & 0 & \lambda_{25} & 0 & 0 \cr
- & \lambda_{31} & \lambda_{32} & 0 & 0 & 0 & \lambda_{36} & 0 \cr
- & \lambda_{41} & 0 & \lambda_{43} & \lambda_{44} & 0 & 0 & 0 \cr
- & \lambda_{51} & 0 & \lambda_{53} & 0 & \lambda_{55} & 0 & 0 \cr
- & \lambda_{61} & 0 & \lambda_{63} & 0 & 0 & \lambda_{66} & 0 \cr
+ & \lambda_{1} & \lambda_{12} & 0 & \lambda_{4} & 0 & 0 & 0 \cr
+ & \lambda_{1} & \lambda_{22} & 0 & 0 & \lambda_{5} & 0 & 0 \cr
+ & \lambda_{1} & \lambda_{32} & 0 & 0 & 0 & \lambda_{6} & 0 \cr
+ & \lambda_{1} & 0 & \lambda_{43} & \lambda_{4} & 0 & 0 & 0 \cr
+ & \lambda_{1} & 0 & \lambda_{53} & 0 & \lambda_{5} & 0 & 0 \cr
+ & \lambda_{1} & 0 & \lambda_{63} & 0 & 0 & \lambda_{6} & 0 \cr
  & 0 & 0 & 0 & 0 & 0 & 0 & \lambda_{77} \cr
  & 0 & 0 & 0 & 0 & 0 & 0 & \lambda_{87} \cr
  & 0 & 0 & 0 & 0 & 0 & 0 & \lambda_{97} \cr
  & 0 & 0 & 0 & 0 & 0 & 0 & \lambda_{10,7}
 }.$$
 
-Here is how the factor loadings work. Each row is for a particular task, and the first row is for Task 1, the Pi stimulus with temporal masking. The first factor is the general visual factor for the perceptual tasks and there is a positive valued loading, $\lambda_{11}$ for this task and factor. The second and third factors are for temporal and spatial masking tasks, respectively, and whereas this task is temporal and not spatial, there is a positive loading $\lambda_{12}$ and a zero loading for $\lambda_{13}$. The fourth, fifth, and sixth factors are for Pi, letter, and Gabor stimuli, respectively, and consequently, there is a positive loading $\lambda_{14}$ and zero loadings for $\lambda_{15}$ and $\lambda_{16}$. The last factor is for cognitive tasks, and hence, there is a zero loading for $\lambda_{17}$. The remainder of the rows are evaluated analogously.
+Here is how the factor loadings work. Each row is for a particular task, and the first row is for Task 1, the Pi stimulus with temporal masking. The first factor is the general visual factor for the perceptual tasks and there is a positive valued loading, $\lambda_{1}$, for this task and factor. The second and third factors are for temporal and spatial masking tasks, respectively, and whereas this task is temporal and not spatial, there is a positive loading $\lambda_{12}$ and a zero loading on the spatial factor. The fourth, fifth, and sixth factors are for Pi, letter, and Gabor stimuli, respectively, and consequently, there is a positive loading $\lambda_{4}$ and zero loadings on the letter and Gabor factors. The last factor is for cognitive tasks, and hence, there is a zero loading on it. The remainder of the rows are evaluated analogously. Two sets of equality constraints are imposed: the general loading $\lambda_1$ is shared by all six perceptual tasks, and each stimulus loading ($\lambda_4$, $\lambda_5$, $\lambda_6$) is shared by the temporal and spatial versions of the same stimulus; the masking loadings are free. These equalities are needed for identification.
 
-The above factor loadings define a standard bifactor model for the six perceptual tasks. The first factor is the general visual factor across the six perceptual tasks; the next five factors define specific effects of masking type and stimulus type. The next level leverages this bifactor representation to provide specific assessments of the fast-eyes, sharp-eyes, and good-eyes hypotheses as discussed next.
+The above factor loadings define a standard bifactor model for the six perceptual
+tasks. The first factor is the general visual factor across the six perceptual tasks; the next five factors define specific effects of masking type and stimulus type. The next level leverages this bifactor representation to provide specific assessments of the fast-eyes, sharp-eyes, and good-eyes hypotheses as discussed next.
 
 **Structural level.** The structural model describes how cognitive performance relates to the perceptual abilities across individuals. The key constraint is on $\boldsymbol{\eta}_i$, each individual's 7-dimensional profile of abilities. In structural equation models, these abilities are related through regression equations. We follow a standard notation in structural equation modeling [SEM; @Bollen.1989]. Readers in cognition should note that this notation, while standard, is a bit strange. The structural part of the model is given by $$\boldsymbol{\eta}_i = \mathbf{B}\,\boldsymbol{\eta}_i + \boldsymbol{\zeta}_i, \qquad
 \boldsymbol{\zeta}_i \sim \mathcal{N}_{7}\!\left(\mathbf{0}, \mathbf{I}\right)$$ The strange-looking part is $\boldsymbol{\eta}_i = \mathbf{B}\,\boldsymbol{\eta}_i + \boldsymbol{\zeta}_i$, which at first glance seems self-referential or recursive. It is not, because there are strict constraints on $\mathbf{B}$, which is also known as the path matrix in SEM analysis. For our hypotheses, the appropriate specification of $\mathbf{B}$ is: $$\mathbf{B} =
@@ -179,10 +185,15 @@ The above factor loadings define a standard bifactor model for the six perceptua
 0 & 0 & 0 & 0 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0 & 0\\
 b_1 & b_2 & b_3 & b_4 & b_5 & b_6 & 0
-\end{pmatrix}.$$ Only the last row contains free parameters, so the cognitive factor is the only factor that receives paths from the other factors. This specification then implies $\eta_{i7} = \sum_{\ell=1}^{6} b_\ell\,\eta_{i\ell} + \zeta_{i7}$, where $\ell$ indexes the six perceptual factors. This specification ensures that the perceptual factors are orthogonal (any correlation is accounted for by the general visual factor) and that the effects of each perceptual factor on the cognitive factor are separately indexed by $b_1,\ldots,b_6$.
+\end{pmatrix}.$$ Only the last row contains nonzero parameters, so the cognitive factor is the only factor that receives paths from the other factors. This specification then implies $\eta_{i7} = \sum_{\ell=1}^{6} b_\ell\,\eta_{i\ell} + \zeta_{i7}$, where $\ell$ indexes the six perceptual factors. This specification ensures that the perceptual factors are orthogonal (any correlation is accounted for by the general visual factor) and that the effects of each perceptual factor on the cognitive factor are separately indexed by $b_1,\ldots,b_6$.
 
-How does this structural equation component capture the fast-eyes, sharp-eyes, and good-eyes hypotheses? If cognitive performance covaries uniquely with temporal masking abilities, that is, the fast-eyes hypothesis holds, then regression weight $b_2$ should be large. Likewise, if cognitive performance uniquely covaries with spatial masking abilities, that is, the sharp-eyes hypothesis holds, then regression weight $b_3$ should be large. Finally, if masking type has little differential effect, that is, the good-eyes hypothesis holds, then $b_1$ should be large. The regression weights $b_4$, $b_5$, and $b_6$ refer to the effect of stimulus type, and people who do differentially well on specific stimulus types may do well on cognitive tasks.
+Two constraints are placed on these weights:
+$$(\lambda_{12}+\lambda_{22}+\lambda_{32})\,b_2 + (\lambda_{43}+\lambda_{53}+\lambda_{63})\,b_3 = 0, \qquad \lambda_4 b_4 + \lambda_5 b_5 + \lambda_6 b_6 = 0.$$
 
+These constraints contrast-code the masking and stimulus effects. As a result, $b_1$ carries the link common to all six perceptual tasks, and $b_2,\ldots,b_6$ capture deviations from it. Under the constraints, $b_3$ and $b_6$ are determined by the other weights, and $b_1$, $b_2$, $b_4$, and $b_5$ are free.
+
+
+How does this structural equation component capture the fast-eyes, sharp-eyes, and good-eyes hypotheses? If cognitive performance covaries uniquely with temporal masking abilities, that is, the fast-eyes hypothesis holds, then regression weight $b_2$ should be large and positive. Likewise, if cognitive performance uniquely covaries with spatial masking abilities, that is, the sharp-eyes hypothesis holds, then regression weight $b_3$ should be large and positive. Finally, if masking type has little differential effect, that is, the good-eyes hypothesis holds, then $b_1$ should be large and $b_2$ (and hence $b_3$) should be near zero. The regression weights $b_4$, $b_5$, and $b_6$ refer to the effect of stimulus type, and people who do differentially well on specific stimulus types may do well on cognitive tasks.
 
 
 # Model-Based Analysis
@@ -191,10 +202,9 @@ How does this structural equation component capture the fast-eyes, sharp-eyes, a
 library(R2jags)
 library(papaja)
 
-fit <- readRDS("Data/sem.rds")
+fit <- readRDS("Data/sem_trace.rds")
 sl  <- fit$BUGSoutput$sims.list
 
-# The refitted model already uses the display order, so nothing needs reordering:
 # tasks   = TPi, TLetter, TGabor, SPi, SLetter, SGabor
 # factors = V, Bwd, Spa, Pi, Letter, Gabor
 tasks   <- c("Temporal Pi", "Temporal Letter", "Temporal Gabor",
@@ -204,21 +214,21 @@ vis_lab <- c("General visual factor", "Temporal masking", "Spatial masking",
              "Pi stimulus", "Letter stimulus", "Gabor stimulus")
 
 # formatting helpers
-f2  <- function(x) sub("^-\\.00$", ".00", sub("^(-?)0\\.", "\\1.", sprintf("%.2f", x)))
-ci  <- function(x) sprintf("%s [%s, %s]", f2(mean(x)), f2(quantile(x, .025)), f2(quantile(x, .975)))
-pct <- function(x) sprintf("%.0f%%", 100 * mean(x))
+f2   <- function(x) sub("^-\\.00$", ".00", sub("^(-?)0\\.", "\\1.", sprintf("%.2f", x)))
+ci   <- function(x) sprintf("%s [%s, %s]", f2(mean(x)), f2(quantile(x, .025)), f2(quantile(x, .975)))
+pct  <- function(x) sprintf("%.0f%%", 100 * mean(x))
+bold <- function(x) paste0("\\textbf{", x, "}")
 
-# ---- variance components: draws x task ----
-shV <- sl$share_gen
+# ---- Table 1: variance decomposition (standardized, so shares are proportions) ----
+shV <- sl$share_gen      # identical across tasks (shared general loading)
 shM <- sl$share_mask
-shS <- sl$share_stim
+shS <- sl$share_stim     # identical within stimulus (shared stimulus loading)
 shU <- sl$share_uni
 avgV <- rowMeans(shV); avgM <- rowMeans(shM); avgS <- rowMeans(shS); avgU <- rowMeans(shU)
 
-bold <- function(x) paste0("\\textbf{", x, "}")
 tab_shares <- data.frame(
-  Task          = c(as.character(1:6), bold("Average")),
-  `Masking type`   = c(rep(c("Temporal", "Spatial"), each = 3), ""),
+  Task            = c(as.character(1:6), bold("Average")),
+  `Masking type`  = c(rep(c("Temporal", "Spatial"), each = 3), ""),
   `Stimulus type` = c(rep(c("Pi", "Letter", "Gabor"), times = 2), ""),
   General  = c(apply(shV, 2, ci), bold(ci(avgV))),
   Masking  = c(apply(shM, 2, ci), bold(ci(avgM))),
@@ -228,32 +238,49 @@ tab_shares <- data.frame(
 )
 p_S_gt_M <- mean(avgS > avgM)
 
-# ---- correlations with cognitive performance and Savage-Dickey Bayes factors ----
-bf_g  <- sl$b; colnames(bf_g)  <- vis     # regression weights b_l, prior N(0, 1)
-bf_gs <- sl$r; colnames(bf_gs) <- vis     # correlations r_l with the cognitive factor
+# ---- Table 2: correlations and Bayes factors ----
+bf_g  <- sl$b; colnames(bf_g)  <- vis     # b_1..b_6 (b_3, b_6 derived from constraints)
+bf_gs <- sl$r; colnames(bf_gs) <- vis     # r_l with the cognitive factor
 
-# BF10 from the CMDE (Morey et al., 2011), computed and saved in SEM.Rmd
-bf10 <- readRDS("Data/sem_bf10.rds")
-stopifnot(identical(names(bf10), vis))    # same factor order as above
+# Three tests (contrast coding): G: b1 = 0; M: b2 = 0 (=> b3 = 0); S: b4 = b5 = 0 (=> b6 = 0)
+# Priors: bfree ~ N(0, 1) iid, so prior density at 0 is dnorm(0) (1-D) and dnorm(0)^2 (2-D)
+bf10_file <- "Data/sem_bf10.rds"
+if (file.exists(bf10_file) && identical(names(readRDS(bf10_file)), c("G", "M", "S"))) {
+  bf10 <- readRDS(bf10_file)              # CMDE values (Morey et al., 2011) from SEM.Rmd
+} else {
+  # fallback: Savage-Dickey with kernel density estimates of the posterior at 0
+  post0_1d <- function(x) { d <- density(x, n = 2^12); approx(d$x, d$y, xout = 0)$y }
+  post0_2d <- function(x, y) {
+    k <- MASS::kde2d(x, y, n = 201, lims = c(-1, 1, -1, 1) * max(abs(c(x, y))))
+    k$z[which.min(abs(k$x)), which.min(abs(k$y))]
+  }
+  bf10 <- c(G = dnorm(0)   / post0_1d(bf_g[, "V"]),
+            M = dnorm(0)   / post0_1d(bf_g[, "Bwd"]),
+            S = dnorm(0)^2 / post0_2d(bf_g[, "Pi"], bf_g[, "Letter"]))
+  warning("CMDE Bayes factors not found; using KDE Savage-Dickey approximation.")
+}
 
-bf10_fmt <- function(x) ifelse(x >= 10, sprintf("%.1f", x), sprintf("%.2f", x))
+bf10_fmt <- function(x) ifelse(x >= 10, formatC(x, format = "f", digits = 1, big.mark = ","),
+                               sprintf("%.2f", x))
 bf_txt   <- function(b10) sprintf("$\\text{BF}_{10} = %s$", bf10_fmt(b10))
 r_ci     <- function(f) sprintf("*r* = %s, 95%% credible interval [%s, %s]", f2(mean(bf_gs[, f])),
                                 f2(quantile(bf_gs[, f], .025)), f2(quantile(bf_gs[, f], .975)))
-bf_range <- function(fs) sprintf("%s to %s", bf10_fmt(min(bf10[fs])), bf10_fmt(max(bf10[fs])))
 
-bf10_col <- bf10_fmt(unname(bf10))
-bf10_col[1] <- bold(bf10_col[1])                 # general visual factor in bold
+H0_col   <- c("$b_1 = 0$", "$b_2 = 0$", "", "$b_4 = b_5 = 0$", "", "")
+bf10_col <- c(bold(bf10_fmt(bf10["G"])), bf10_fmt(bf10["M"]), "",
+              bf10_fmt(bf10["S"]), "", "")
+
 tab_cor <- data.frame(
   Factor = vis_lab,
   r      = unname(apply(bf_gs, 2, ci)),
+  H0     = H0_col,
   BF     = bf10_col,
   row.names = NULL
 )
-names(tab_cor) <- c("Factor", "$r$", "$\\text{BF}_{10}$")
+names(tab_cor) <- c("Factor", "$r$", "$H_0$", "$\\text{BF}_{10}$")
 ```
 
-The model is analyzed in the Bayesian framework using common Markov chain Monte Carlo methods [@Gelfand.etal.1992].  Priors on the remaining parameters, provided in Appendix A, are diffuse and have minimal impact on the posteriors.  The model was implemented in JAGS [@Plummer.2003] and run from R with the R2jags package. To overcome difficult mixing conditions, we ran four chains, each with 50,000 burn-in steps followed by 400,000 sampling steps. Chains were thinned by a factor of 100, yielding 16,000 posterior draws. Convergence was assessed with the Gelman--Rubin $\hat{R}$ statistic [@Gelman.Rubin.1992], which was below 1.01 for all parameters.  
+The model is analyzed in the Bayesian framework using common Markov chain Monte Carlo methods [@Gelfand.etal.1992].  Priors on the remaining parameters, provided in Appendix A, are diffuse and have minimal impact on the posteriors.  The model was implemented in JAGS [@Plummer.2003] and run from R with the R2jags package. To overcome difficult mixing conditions, we ran four chains, each with 10,000 burn-in steps followed by 100,000 sampling steps. Chains were thinned by a factor of 10, yielding 40,000 pterior draws. Convergence was assessed with the Gelman--Rubin $\hat{R}$ statistic [@Gelman.Rubin.1992], which was below 1.01 for all parameters.  
 
 ## Manifest Correlation
 
@@ -262,12 +289,12 @@ The first analysis presents the model-based version of the summary-score analysi
 ## Bifactor Analysis of the Perceptual Tasks
 
 The six perceptual tasks were modeled as a bifactor model with a general visual factor and unique factors for the two masking types and the three stimulus types. For each task, we may ask how much variance is accounted for by the general factor, the particular masking factor, and the particular stimulus factor. Formulas for computing the proportion of variance in a bifactor setup are easy to derive and well known [@Preacher.MacCallum.2003; @Reise.2012]. For our case, the key variance formula is:
-$$\operatorname{Var}(\theta_{ij}) = \sum_{l=1}^{6} \lambda_{jl}^2 + \delta_j^2
-= \underbrace{\lambda_{j1}^2}_{\text{general}}
-+ \underbrace{\lambda_{j2}^2 + \lambda_{j3}^2}_{\text{masking}}
-+ \underbrace{\lambda_{j4}^2 + \lambda_{j5}^2 + \lambda_{j6}^2}_{\text{stimulus}}
-+ \underbrace{\delta_j^2}_{\text{unique}} .$$ 
-For example, for the first task, temporal masking with the Pi stimulus, $\operatorname{Var}(\theta_{i1}) = \lambda_{11}^2 + \lambda_{12}^2 + \lambda_{14}^2 + \delta_1^2$. Dividing each component by the total variance gives the proportion of variance due to each source. Table \@ref(tab:tab-shares) provides the proportions. For example, the first row shows the proportion for Task 1, the temporal masking of Pi stimuli. The general visual factor accounts for 30% of the variance; the relevant masking factor accounts for only 4% of the variance; the relevant stimulus factor accounts for 45% of the variance; and 21% is unique to this task. Perhaps the most informative entry is the Average row, which shows that masking type accounts for little variance in these tasks. It seems that people vary on how good they are on all tasks, and how good they are differentially on the stimulus types. This finding is in accordance with the clustering results in Figure \@ref(fig:sem)C, but the degree of uncertainty for both finite numbers of individuals and trials is included.
+$$\operatorname{Var}(\theta^*_{ij}) = \sum_{l=1}^{6} \Lambda_{jl}^2 + \delta_j^2
+= \underbrace{\Lambda_{j1}^2}_{\text{general}}
++ \underbrace{\Lambda_{j2}^2 + \Lambda_{j3}^2}_{\text{masking}}
++ \underbrace{\Lambda_{j4}^2 + \Lambda_{j5}^2 + \Lambda_{j6}^2}_{\text{stimulus}}
++ \underbrace{\delta_j^2}_{\text{unique}} = 1 .$$
+For example, for the first task, temporal masking with the Pi stimulus, $\operatorname{Var}(\theta^*_{i1}) = \lambda_{1}^2 + \lambda_{12}^2 + \lambda_{4}^2 + \delta_1^2 = 1$. Because the abilities are standardized, each component is directly the proportion of variance due to each source. Table \@ref(tab:tab-shares) provides the proportions. For example, the first row shows the proportion for Task 1, the temporal masking of Pi stimuli. The general visual factor accounts for 31% of the variance; the relevant masking factor accounts for only 4% of the variance; the relevant stimulus factor accounts for 37% of the variance; and 28% is unique to this task. Perhaps the most informative entry is the Average row, which shows that masking type accounts for relatively little variance in these tasks (15%, compared with 31% for the general visual factor and 27% for stimulus type). It seems that people vary on how good they are on all tasks, and how good they are differentially on the stimulus types. This finding is in accordance with the clustering results in Figure \@ref(fig:sem)C, but the degree of uncertainty for both finite numbers of individuals and trials is included.
 
 ```{r tab-shares, results = "asis"}
 apa_table(
@@ -283,19 +310,23 @@ apa_table(
 ## Association Between Perceptual Factors and Higher-Order Cognition: A Test of the Fast-Eyes, Sharp-Eyes, and Good-Eyes Hypotheses.
 
 The hierarchical model is designed to assess the critical hypotheses directly. The pivotal quantities are the regression weights $b_1, \ldots, b_6$ in the structural model. One highly interpretable way of assessing these weights is to report the implied correlation between each of the six perceptual factors and cognitive performance. This correlation is given by $$
-r_\ell = \frac{b_\ell}{\sqrt{\sum_{\ell'=1}^{6} b_{\ell'}^2 + 1}},$$ where $r_\ell$ is the correlation between the $\ell$th perceptual factor and the cognitive factor. The fast-eyes, sharp-eyes, and good-eyes hypotheses thus correspond to large values of $r_2$, $r_3$, and $r_1$, respectively. These correlation values, along with credible intervals, are shown in Table \@ref(tab:tab-cor). The derivation of the correlation is provided in Appendix B.
+r_\ell = \frac{b_\ell}{\sqrt{\sum_{\ell'=1}^{6} b_{\ell'}^2 + 1}},$$ where $r_\ell$ is the correlation between the $\ell$th perceptual factor and the cognitive factor. Under the contrast coding of the structural model, $r_1$ captures the link common to all six perceptual tasks, and $r_2, \ldots, r_6$ capture deviations from it. The good-eyes hypothesis thus corresponds to a large value of $r_1$. The fast-eyes and sharp-eyes hypotheses correspond to a masking contrast: a large positive $r_2$ (and hence a negative $r_3$) for fast eyes, and the reverse for sharp eyes. These correlation values, along with credible intervals, are shown in Table \@ref(tab:tab-cor). The derivation of the correlation is provided in Appendix B.
 
-To perform inference on these values, we used a Bayes factor model comparison approach. The main question is whether the perceptual factor is or is not related to the cognitive factor, and we did a separate model comparison test for each factor. The Bayes factor is a ratio---it is the probability of the data under a model with possible correlation between the specified factor and the cognitive factor relative to the probability of the data under a model with no correlation between the specified factor and the cognitive factor. For example, for the general visual factor, we tested whether the associated correlation was 0 given free correlations for all other factors, and so on. Our computational approach was to use the Savage-Dickey ratio [@Dickey.Lientz.1970; @Wagenmakers.etal.2010]:
+To perform inference on these values, we used a Bayes factor model comparison approach. The main question is whether each source of perceptual variation (general, masking, or stimulus) is or is not related to the cognitive factor, and we did a separate model comparison test for each source. The Bayes factor is a ratio: it is the probability of the data under a model with a possible relation between the specified source and the cognitive factor, relative to the probability of the data under a model with no such relation. For the general visual factor, we tested $b_1 = 0$. For masking, we tested $b_2 = 0$, which by the constraint also implies $b_3 = 0$. For stimulus type, we tested $b_4 = b_5 = 0$, which also implies $b_6 = 0$. In each case the remaining weights were left free. Our computational approach was to use the Savage-Dickey ratio [@Dickey.Lientz.1970; @Wagenmakers.etal.2010]:
+
 $$
-\text{BF}_{10} = \frac{p(b_\ell = 0)}{p(b_\ell = 0 \mid \text{data})},
-$$ 
-where $b_\ell$ is the regression weight for the hypothesis in question. The Savage-Dickey ratio is evaluated from MCMC outputs using the CMDE method of [@Chen.1994; see @Morey.etal.2011a for details]. Values less than 1 indicate evidence for a null correlation; values at 1 are equivocal; values greater than 1 are evidence for a substantial correlation. Table \@ref(tab:tab-cor) shows these Bayes factors. One factor stands out---there is a substantial correlation between the general visual factor, the one that captures what is in common in all the perceptual tasks, and higher-order cognition. The remaining factors have Bayes factors sufficiently close to one to be equivocal; the uncertainty in the data is just too great to make more certain inferences. The good-eyes hypothesis is best supported by the data.
+\text{BF}_{10}^{G} = \frac{p(b_1 = 0)}{p(b_1 = 0 \mid \text{data})}, \qquad
+\text{BF}_{10}^{M} = \frac{p(b_2 = 0)}{p(b_2 = 0 \mid \text{data})}, \qquad
+\text{BF}_{10}^{S} = \frac{p(b_4 = b_5 = 0)}{p(b_4 = b_5 = 0 \mid \text{data})}.
+$$
+
+The Savage-Dickey ratio is evaluated from MCMC outputs using the CMDE method of @Chen.1994 [see @Morey.etal.2011a for details]. Values less than 1 indicate evidence for a null relation; values at 1 are equivocal; values greater than 1 are evidence for a substantial relation. Table \@ref(tab:tab-cor) shows these Bayes factors. One factor stands out: there is a substantial correlation ($r_1 = 0.64$, $\text{BF}_{10} \approx 10{,}413$) between the general visual factor, the one that captures what is in common in all the perceptual tasks, and higher-order cognition. The Bayes factors for masking (0.82) and stimulus type (0.48) are sufficiently close to one to be equivocal; the uncertainty in the data is just too great to make more certain inferences. The good-eyes hypothesis is best supported by the data.
 
 ```{r tab-cor, results = "asis"}
 apa_table(
   tab_cor,
   caption = "Correlation of each perceptual factor with cognitive performance.",
-  note = "$r$ is the posterior mean of the correlation $r_\\ell$ between each perceptual factor and the cognitive factor, with 95\\% credible interval. Bayes factors are Savage--Dickey density ratios with prior $b_\\ell \\sim \\mathcal{N}(0, 1)$.",
+  note = "$r$ is the posterior mean of the correlation $r_\\ell$ between each perceptual factor and the cognitive factor, with 95\\% credible interval. Bayes factors are Savage--Dickey density ratios.",
   align = c("l", "c", "c"),
   row.names = FALSE,
   escape = FALSE
@@ -307,28 +338,42 @@ apa_table(
 We asked whether the link between simple perceptual task performance and cognitive performance reflects fast eyes, sharp eyes, or good eyes. By fast eyes, we mean the ability to take in visual information quickly. By sharp eyes, we mean the ability to resolve a target clearly in the presence of visual noise. By good eyes, we mean a general visual factor that is not specific to either temporal or spatial factors. To answer this question, we crossed three stimulus types with two masking types, so that the temporal-masking and spatial-masking versions of each task used the same stimulus and the same judgment and differed only in masking type. The fast-eyes hypothesis predicted that the temporal-masking tasks would cluster together and that their shared variance would carry the relation to cognitive performance. The sharp-eyes hypothesis predicted the same for the spatial-masking tasks. To capture these hypotheses, we developed a hierarchical psychometric-SEM model that allows for understanding the effect of stimulus type and masking type as well as decomposing the relationship between the perceptual and cognitive tasks. The substantive implications of the results are as follows:
 
 
-1. Neither the fast-eyes nor the sharp-eyes hypothesis holds. Masking type accounts for little variation among the six perceptual tasks, and, moreover, does not correlate with cognitive tasks.
+1. Neither the fast-eyes nor the sharp-eyes hypothesis holds. Masking type accounts for relatively little variation among the six perceptual tasks, and, moreover, showed no clear relation with cognitive tasks.
 
 2. Stimulus type accounted for a sizable share of the variance. Hence, there are categories of individuals: some are good at seeing Pi stimuli, some are good at seeing letter stimuli, and some are good at seeing Gabor stimuli. Even so, this factor does not correlate with cognitive tasks.
 
 3. We included a general visual factor within a bifactor model of perceptual tasks. This factor accounts for commonalities among the six perceptual tasks. Although this factor does not account for all the variance---that is, there are stimulus-specific factors---it is the only factor that is associated with higher-order cognition. This result confirms the good-eyes hypothesis. The correlation between perceptual tasks and higher-order cognition goes to the common variance in the perceptual tasks.
 
 
-The general visual factor correlated $.56$ with cognitive performance. But what is the general visual factor? Technically, it is the variance that is shared among the six perceptual tasks. But where this variance comes from is unclear and not distinguishable within the current experimental design. Here are some possibilities: (1) this general visual factor may reflect the overall perceptual ability, including the ability to extract target features from noise in both spatial and temporal contexts [@Lu.Dosher.2008]. (2) Alternatively, this general visual factor may reflect attentional control processes [@Tsukahara.etal.2020]. Individuals who are good at staying on tasks in the presence of distractions may perform well on all visual tasks and on cognitive tasks. (3) Finally, as is often the case in individual-difference studies with perceptual and cognitive tasks, the general visual factor may reflect motivation, engagement, or test-taking strategies. Of note, these social-psychological factors cannot explain the presence of the stimulus factor. These possibilities are not mutually exclusive, and our design was not built to distinguish among them. Clearly, future designs may be able to disentangle the meanings of this general visual factor.
+The general visual factor correlated $.64$ with cognitive performance. But what is the general visual factor? Technically, it is the variance that is shared among the six perceptual tasks. But where this variance comes from is unclear and not distinguishable within the current experimental design. Here are some possibilities: (1) this general visual factor may reflect the overall perceptual ability, including the ability to extract target features from noise in both spatial and temporal contexts [@Lu.Dosher.2008]. (2) Alternatively, this general visual factor may reflect attentional control processes [@Tsukahara.etal.2020]. Individuals who are good at staying on tasks in the presence of distractions may perform well on all visual tasks and on cognitive tasks. (3) Finally, as is often the case in individual-difference studies with perceptual and cognitive tasks, the general visual factor may reflect motivation, engagement, or test-taking strategies. Of note, these social-psychological factors cannot explain the presence of the stimulus factor. These possibilities are not mutually exclusive, and our design was not built to distinguish among them. Clearly, future designs may be able to disentangle the meanings of this general visual factor.
 
 \newpage
 
-# Appendix A: Prior specification.
+# Appendix A: Prior specification and standardization
 
-Priors are needed for the task means $\boldsymbol{\mu}$, the slopes $\beta_j$, the free factor loadings in $\boldsymbol{\Lambda}$, the unique standard deviations in $\boldsymbol{\Delta}$, and the regression weights in $\mathbf{B}$. The task means and slopes were given weakly informative normal priors, which are wide relative to the standardized scale of $s_{ijk}$ and of cognitive performance. The free loadings were given half-normal priors, which fix the sign of each factor; all other elements of $\boldsymbol{\Lambda}$ were fixed at zero. The unique standard deviations were given half-$t$ priors, and the six free regression weights in $\mathbf{B}$ were given standard normal priors: $$
+**Standardization.** The perceptual abilities are modeled on the standardized scale, $\theta_{ij} = \mu_j + \sigma_j\theta^*_{ij}$ with $\operatorname{Var}(\theta^*_{ij}) = 1$. Because the six perceptual factors have unit variance and are mutually orthogonal, the variance of $\theta^*_{ij}$ is the sum of its squared loadings and its unique variance. The constraint $\operatorname{Var}(\theta^*_{ij}) = 1$ is imposed by parameterizing the loadings through variance proportions that sum to one. Let $g$ denote the general share, $s_k$ the share of stimulus $k$ ($k = 1, 2, 3$ for Pi, letter, and Gabor), $m_j$ the masking share of task $j$, and $u_j$ the unique share of task $j$. These are built by stick-breaking:
+$$
+\begin{aligned}
+g &\sim \text{Beta}(1, 3), \\
+s_k &= (1 - g)\,v_k, & v_k &\sim \text{Beta}(1, 2), \\
+m_j &= (1 - g - s_{k(j)})\,w_j, & w_j &\sim \text{Beta}(1, 1), \\
+u_j &= 1 - g - s_{k(j)} - m_j,
+\end{aligned}
+$$
+where $k(j)$ is the stimulus of task $j$. Each share has a prior mean of .25, so no source of variance is favored a priori. The standardized loadings are the square roots of the shares: $\lambda_1 = \sqrt{g}$, $\lambda_{3+k} = \sqrt{s_k}$, and the masking loading of task $j$ is $\sqrt{m_j}$. Taking positive square roots fixes the sign of each perceptual factor. The equality constraints of the measurement model are built in, because one general share is used for all six tasks and one stimulus share for both tasks of the same stimulus. The unique variance on the standardized scale is $\delta_j^2 = u_j$.
+
+**Priors.** The remaining parameters were given the following priors:
+$$
 \begin{aligned}
 \mu_t &\sim \mathcal{N}(0, 5^2), && t = 1, \ldots, 10, \\
 \beta_j &\sim \mathcal{N}(0, 5^2), && j = 1, \ldots, 6, \\
-\lambda_{tl} &\sim \mathcal{N}^{+}(0, 1), && \text{for each free loading } \lambda_{tl} \text{ in } \boldsymbol{\Lambda}, \\
-\delta_t &\sim \text{Half-}t_3(0, 2.5), && t = 1, \ldots, 10, \\
-b_\ell &\sim \mathcal{N}(0, 1), && \ell = 1, \ldots, 6.
+\sigma_j &\sim \mathcal{N}^{+}(0, 5^2), && j = 1, \ldots, 6, \\
+\lambda_{q7} &\sim \mathcal{N}^{+}(0, 1), && q = 7, \ldots, 10, \\
+\delta_q &\sim \mathcal{N}^{+}(0, 5^2), && q = 7, \ldots, 10, \\
+b_\ell &\sim \mathcal{N}(0, 1), && \ell = 1, 2, 4, 5.
 \end{aligned}
 $$
+The half-normal prior on the cognitive loadings fixes the sign of the cognitive factor. The weights $b_3$ and $b_6$ are not given priors; they are determined by the contrast-coding constraints of the structural model.
 
 
 # Appendix B: Contribution of each perceptual factor to cognitive performance
@@ -350,6 +395,7 @@ $$
 r_\ell = \frac{\operatorname{Cov}(\eta_{i\ell}, \eta_{i7})}{\sqrt{\operatorname{Var}(\eta_{i\ell})\operatorname{Var}(\eta_{i7})}}
 = \frac{b_\ell}{\sqrt{\sum_{\ell'=1}^{6} b_{\ell'}^2 + 1}}.
 $$
+This expression holds for all six weights, including $b_3$ and $b_6$, which are functions of the free weights and the loadings.
 \newpage
 
 # Declarations

@@ -1,0 +1,102 @@
+model{
+  ## ---- perception: standardized loadings via variance proportions (stick-breaking) ----
+  pg ~ dbeta(1, 3)                                   # general share, same for all six tasks (prior mean .25)
+  for (k in 1:3){
+    v[k] ~ dbeta(1, 2)
+    ps[k] <- (1 - pg) * v[k]}                        # stimulus share, same for both tasks of stimulus k (prior mean .25)
+  for (j in 1:J){
+    w[j] ~ dbeta(1, 1)
+    pm[j] <- (1 - pg - ps[stim[j]]) * w[j]           # masking share, free per task (prior mean .25)
+    pu[j] <- 1 - pg - ps[stim[j]] - pm[j]}           # unique share (prior mean .25)
+
+  lam_gen <- sqrt(pg)
+  for (k in 1:3){
+    lamStim[k] <- sqrt(ps[k])}
+  for (j in 1:J){
+    lamMask[j] <- sqrt(pm[j])}
+  lamTbar <- inprod(lamMask[1:J], isT[1:J]) / sum(isT[1:J])          # mean temporal-masking loading
+  lamSbar <- inprod(lamMask[1:J], isS[1:J]) / sum(isS[1:J])          # mean spatial-masking loading
+
+  ## ---- loading matrix on the original scale: Lambda[j,] = sdT[j] * LamStar[j,] ----
+  for (j in 1:J){
+    sdT[j] ~ dnorm(0, pow(5, -2)) T(0,)                            # Half-normal(0, 5^2) on the SD of theta_j
+    for (l in 1:L){
+      LamStar[j,l] <- lam_gen * equals(l, 1) +
+                      lamMask[j] * equals(l, maskF[j]) +
+                      lamStim[stim[j]] * equals(l, 3 + stim[j])
+      Lambda[j,l] <- sdT[j] * LamStar[j,l]}
+    Lambda[j,L+1] <- 0
+    delta2[j] <- pow(sdT[j], 2) * pu[j]}
+  for (q in 1:nCog){
+    lamCog[q] ~ dnorm(0, 1) T(0,)                                    # half-normal fixes the sign of the cognitive factor
+    delta[q] ~ dnorm(0, pow(5, -2)) T(0,)                          # Half-normal(0, 5^2) on the unique SD
+    for (l in 1:L){
+      Lambda[J+q,l] <- 0}
+    Lambda[J+q,L+1] <- lamCog[q]
+    delta2[J+q] <- pow(delta[q], 2)}
+  for (t in 1:nTask){
+    mu[t] ~ dnorm(0, pow(5, -2))
+    prec[t] <- 1 / delta2[t]}
+
+  ## ---- structural level ----
+  for (k in 1:4){
+    bfree[k] ~ dnorm(0, 1)}                                          # b_1, b_2, b_4, b_5
+  b[1] <- bfree[1]                                                   # general visual
+  b[2] <- bfree[2]                                                   # temporal masking
+  b[3] <- -(lamTbar / lamSbar) * bfree[2]                            # spatial masking   (C2)
+  b[4] <- bfree[3]                                                   # Pi
+  b[5] <- bfree[4]                                                   # Letter
+  b[6] <- -(lamStim[1] * bfree[3] + lamStim[2] * bfree[4]) / lamStim[3]   # Gabor   (C1)
+
+  for (i in 1:I){
+    for (l in 1:(L+1)){
+      zeta[i,l] ~ dnorm(0, 1)}
+    for (l in 1:L){
+      eta[i,l] <- zeta[i,l]}                                         # non-cognitive factors equal their residuals
+    eta[i,L+1] <- inprod(b[1:L], eta[i,1:L]) + zeta[i,L+1]}          # cognitive factor
+
+  ## ---- measurement level ----
+  for (i in 1:I){
+    for (j in 1:J){
+      theta[i,j] ~ dnorm(mu[j] + inprod(Lambda[j,1:(L+1)], eta[i,1:(L+1)]), prec[j])}        # latent perceptual abilities
+    for (q in 1:nCog){
+      cog[i,q] ~ dnorm(mu[J+q] + inprod(Lambda[J+q,1:(L+1)], eta[i,1:(L+1)]), prec[J+q])}}  # observed cognitive scores
+
+  ## ---- data level: Bernoulli trials aggregated to binomial counts ----
+  for (j in 1:J){
+    beta[j] ~ dnorm(0, pow(5, -2))}
+  for (n in 1:N){
+    p[n] <- eps + (1 - 2*eps) * phi(beta[task[n]] * (s[n] + theta[id[n], task[n]]))
+    y[n] ~ dbin(p[n], nTrial[n])}
+
+  ## ---- derived: variance decomposition of the perception tasks (standardized, so shares are the parameters) ----
+  for (j in 1:J){
+    share_gen[j]  <- pg
+    share_mask[j] <- pm[j]
+    share_stim[j] <- ps[stim[j]]
+    share_uni[j]  <- pu[j]}
+
+  ## ---- derived: correlations with the cognitive factor ----
+  varEta <- inprod(b[1:L], b[1:L]) + 1                              # Var(eta_{L+1})
+  for (l in 1:L){
+    r[l] <- b[l] / sqrt(varEta)}                                     # factor l with the cognitive factor
+  for (j in 1:J){
+    rho[j] <- inprod(LamStar[j,1:L], r[1:L])}                        # perception task j with the cognitive factor
+
+  ## ---- derived: model-implied covariance, Sigma = Lambda Q Q' Lambda' + Delta, Q = (I - B)^-1 = I + B ----
+  for (l in 1:L){
+    for (l2 in 1:(L+1)){
+      B[l,l2] <- 0}}
+  for (l in 1:L){
+    B[L+1,l] <- b[l]}
+  B[L+1,L+1] <- 0
+  # B has only its last row free, so B %*% B = 0 and Q = (I - B)^-1 = I + B exactly
+  # (JAGS inverse() requires a symmetric positive definite matrix, so it cannot be used here)
+  for (l in 1:(L+1)){
+    for (l2 in 1:(L+1)){
+      Q[l,l2] <- equals(l,l2) + B[l,l2]}}
+  LQ[1:nTask,1:(L+1)] <- Lambda[1:nTask,1:(L+1)] %*% Q[1:(L+1),1:(L+1)]
+  for (t in 1:nTask){
+    for (t2 in 1:nTask){
+      Sigma[t,t2] <- inprod(LQ[t,1:(L+1)], LQ[t2,1:(L+1)]) + equals(t,t2) * delta2[t]}}
+}
